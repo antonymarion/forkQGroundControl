@@ -187,14 +187,10 @@ private boolean isInitialised = false;
                 if(!isInitialised)
                     initAircraft();
                 if(!isInitialised) return;
-                try {
-                    Log.d("SendPos","===========================================================================");
+                Log.d("SendPos","===========================================================================");
                 // TODO change     CameraUtil.getCurrentValues();
                 // TODO change     sendRemotePilot();
                 // TODO change     sendAircraftPositionInfos();
-                } catch (JSONException e) {
-                    throw new RuntimeException(e);
-                }
             }
         },0,2000);
 
