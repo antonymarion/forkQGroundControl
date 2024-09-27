@@ -165,6 +165,8 @@ public class QGCActivity extends QtActivity
 
 private MqttClient mqttClient;
 private boolean isConnecting = false;
+private boolean isInitialised = false;
+
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -178,12 +180,12 @@ private boolean isConnecting = false;
         _setupUsbPermissionIntent();
 
         m_usbManager = (UsbManager) m_instance.getSystemService(Context.USB_SERVICE);
-        /*
+        
         new Timer().schedule(new TimerTask(){
             @Override
             public void run(){
                 if(!isInitialised)
-                // TODO change     initAircraft();
+                    initAircraft();
                 if(!isInitialised) return;
                 try {
                     Log.d("SendPos","===========================================================================");
@@ -194,7 +196,7 @@ private boolean isConnecting = false;
                     throw new RuntimeException(e);
                 }
             }
-        },0,2000);*/
+        },0,2000);
 
         new Thread(() -> {
             Log.i("MQTT", "Init mqttClient");
@@ -375,6 +377,18 @@ private boolean isConnecting = false;
                 Log.e("MQTT", String.valueOf(e));
             }
         }).start();
+    }
+
+    private void initAircraft(){
+        // initLocationManager();
+        getDroneInfo();
+        // TODO change  Log.d("cameraName", CameraUtil.name);
+        Log.d("init","passage init drone");
+        Log.i("init","aircraft initialised");
+        isInitialised = true;
+    }
+    
+    private void getDroneInfo() {
     }
 
     @Override
