@@ -2,12 +2,14 @@ package org.mavlink.qgroundcontrol;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
 import java.util.EnumSet;
 import java.util.TimerTask;
+import java.util.UUID;
 
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -33,6 +35,17 @@ import com.hoho.android.usbserial.util.*;
 
 import org.qtproject.qt.android.bindings.QtActivity;
 import org.qtproject.qt.android.QtNative;
+
+
+import org.eclipse.paho.mqttv5.client.IMqttToken;
+import org.eclipse.paho.mqttv5.client.MqttCallback;
+import org.eclipse.paho.mqttv5.client.MqttClient;
+import org.eclipse.paho.mqttv5.client.MqttConnectionOptions;
+import org.eclipse.paho.mqttv5.client.MqttDisconnectResponse;
+import org.eclipse.paho.mqttv5.client.persist.MemoryPersistence;
+import org.eclipse.paho.mqttv5.common.MqttException;
+import org.eclipse.paho.mqttv5.common.MqttMessage;
+import org.eclipse.paho.mqttv5.common.packet.MqttProperties;
 
 // TODO:
 // UsbSerialDriver getDriver();
@@ -147,6 +160,9 @@ public class QGCActivity extends QtActivity
 
     }
 
+
+private MqttClient mqttClient;
+private boolean isConnecting = false;
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -160,6 +176,203 @@ public class QGCActivity extends QtActivity
         _setupUsbPermissionIntent();
 
         m_usbManager = (UsbManager) m_instance.getSystemService(Context.USB_SERVICE);
+        /*
+        new Timer().schedule(new TimerTask(){
+            @Override
+            public void run(){
+                if(!isInitialised)
+                // TODO change     initAircraft();
+                if(!isInitialised) return;
+                try {
+                    Log.d("SendPos","===========================================================================");
+                // TODO change     CameraUtil.getCurrentValues();
+                // TODO change     sendRemotePilot();
+                // TODO change     sendAircraftPositionInfos();
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        },0,2000);*/
+
+        new Thread(() -> {
+            Log.i("MQTT", "Init mqttClient");
+            boolean setCleanStart = false;
+            int connectionTimeout = 30;
+            int keepAliveInterval = 60;
+            boolean setAutomaticReconnect = true;
+            String serverURI = "tcp://152.228.246.204";
+            String port = "1883";
+            String clientId = UUID.randomUUID().toString();
+            String username = "";
+            String fullURI = serverURI+":"+port;
+            MqttConnectionOptions mqttConnectionOptions = new MqttConnectionOptions();
+            mqttConnectionOptions.setCleanStart(setCleanStart);
+            mqttConnectionOptions.setConnectionTimeout(connectionTimeout);
+            mqttConnectionOptions.setKeepAliveInterval(keepAliveInterval);
+            mqttConnectionOptions.setAutomaticReconnect(setAutomaticReconnect);
+            mqttConnectionOptions.setUserName(username);
+            MemoryPersistence persistence = new MemoryPersistence();
+            Log.i("INFO", "END - Initializing mqttClient");
+            try {
+                mqttClient = new MqttClient(fullURI, clientId, persistence);
+            } catch (MqttException e) {
+                String errorMessage = e.getMessage();
+                Log.e("MQTT", "ERROR: " + errorMessage);
+            }
+            JSONObject lastWill = null;
+            if(lastWill != null){
+                Log.d("INFO", "lastWill not null");
+            }
+            if(!isConnecting && (mqttClient == null || !mqttClient.isConnected())){
+                isConnecting = true;
+                try {
+                    mqttClient = new MqttClient(fullURI, clientId, persistence);
+                } catch (MqttException e) {
+                    String errorMessage = e.getMessage();
+                    Log.e("MQTT", "ERROR: " + errorMessage);
+                }
+                mqttClient.setCallback(new MqttCallback() {
+                    @Override
+                    public void disconnected(MqttDisconnectResponse disconnectResponse) {
+                        String message = "Client disconnected ";
+                        message += disconnectResponse.getReasonString();
+                        int reasonCode = disconnectResponse.getReturnCode();
+                        Log.i("MQTT", message);
+                        Log.i("MQTT", String.valueOf(reasonCode));
+                    }
+
+                    @Override
+                    public void mqttErrorOccurred(MqttException exception) {
+                        Log.e("MQTT", "Error: "+exception.getMessage());
+                    }
+
+                    @Override
+                    public void messageArrived(String topic, MqttMessage message) throws Exception {
+
+                        JSONObject obj = new JSONObject(new String(message.getPayload()));
+                        Log.i("MQTT", "Message arrived on topic "+topic+": "+message);
+                        Log.i("MQTT", obj.toString());
+
+                        switch ((obj.getString("instruction"))){
+                            case "OPEN_STREAM":
+                                Log.i("openStream", "=================================================");
+                                Log.i("openStream", "recieved OPEN_STREAM");
+                                Log.i("openStream", "=================================================");
+                                break;
+                            case "STOP_STREAM":
+                                Log.i("stopStream", "=================================================");
+                                Log.i("stopStream", "recieved STOP_STREAM");
+                                Log.i("stopStream", "=================================================");
+                                break;
+                            case "RESET_GIMBAL":
+                                Log.i("resetGimbal", "=================================================");
+                                Log.i("resetGimbal", "recieved RESET_GIMBAL");
+                                Log.i("resetGimbal", "=================================================");
+                                break;
+                            case "MOVE_GIMBAL":
+                                Log.i("moveCam", "=================================================");
+                                Log.i("moveCam", "recieved MOVE_GIMBAL");
+                                Log.i("moveCam", "=================================================");
+                                break;
+                            case "GET_CAMERAS":
+                                Log.i("getCams", "=================================================");
+                                Log.i("getCams", "recieved GET_CAMERAS");
+                                Log.i("getCams", "=================================================");
+                                break;
+                            case "SET_CAMERA":
+                                Log.i("setCams", "=================================================");
+                                Log.i("setCams", "recieved SET_CAMERA");
+                                Log.i("setCams", "=================================================");
+                                break;
+                            case "SET_CAMERA_INTRINSICS":
+                                Log.i("getCam", "=================================================");
+                                Log.i("getCam", "recieved SET_CAMERA_INTRINSICS");
+                                Log.i("getCam", "=================================================");
+                                break;
+                            case "GET_CAMERA":
+                                Log.i("getCam", "=================================================");
+                                Log.i("getCam", "recieved GET_CAMERA");
+                                Log.i("getCam", "=================================================");
+                                break;
+                            case "ZOOM_CAMERA":
+                                Log.i("zoomCam", "=================================================");
+                                Log.i("zoomCam", "recieved ZOOM_CAMERA");
+                                Log.i("zoomCam", "=================================================");
+                                break;
+                            case "TAKE_PHOTO":
+                                Log.i("takePhoto", "=================================================");
+                                Log.i("takePhoto", "recieved TAKE_PHOTO");
+                                Log.i("takePhoto", "=================================================");
+                                break;
+                            case "START_RECORDING":
+                                Log.i("zoomCam", "=================================================");
+                                Log.i("zoomCam", "recieved START_RECORDING");
+                                Log.i("zoomCam", "=================================================");
+                                break;
+                            case "STOP_RECORDING":
+                                Log.i("zoomCam", "=================================================");
+                                Log.i("zoomCam", "recieved STOP_RECORDING");
+                                Log.i("zoomCam", "=================================================");
+                                break;
+                            default:
+                                Log.i("default", "=================================================");
+                                Log.i("default", "recieved STOP_RECORDING");
+                                Log.i("default", "=================================================");
+                        }
+
+                        // Create an MqttMessage object with the payload
+                        MqttMessage sendMessage = new MqttMessage(obj.toString().getBytes(StandardCharsets.UTF_8));
+
+                        // Set the qos to 1 (important!)
+                        sendMessage.setQos(1);
+                        sendMessage.setRetained(false);
+
+                        String responseTopic = message.getProperties().getResponseTopic();
+
+                        String correlationData = new String(message.getProperties().getCorrelationData(), StandardCharsets.US_ASCII);
+                        MqttProperties properties = new MqttProperties();
+
+                        properties.setCorrelationData(correlationData.getBytes());
+                        sendMessage.setProperties(properties);
+
+                        Log.i("MQTT", "Message send to topic "+responseTopic+": "+sendMessage);
+                        mqttClient.publish(responseTopic, sendMessage);
+
+                    }
+
+                    @Override
+                    public void deliveryComplete(IMqttToken token) {
+                        Log.i("MQTT", "Delivery completed for token "+token);
+                    }
+
+                    @Override
+                    public void connectComplete(boolean reconnect, String serverURI) {
+                        Log.i("MQTT", "connection Completed");
+                        Log.i("MQTT", "reconnect " + reconnect);
+                    }
+
+                    @Override
+                    public void authPacketArrived(int reasonCode, MqttProperties properties) {
+                        Log.i("MQTT", "Auth. packet arrived");
+
+                    }
+                });
+                try {
+                    mqttClient.connect(mqttConnectionOptions);
+                    isConnecting = false;
+                } catch (MqttException e) {
+                    isConnecting = false;
+                    String errorMessage = e.getMessage();
+                    Log.e("MQTT", "ERROR: "+errorMessage);
+                }
+            }
+            try {
+                mqttClient.subscribe("REQUEST/+/" + "testingSN" + "/+", 1);
+                Log.i("MQTT", "Client sub to REQUEST/+/"+ "testingSN" + "/+");
+            } catch (MqttException e) {
+                Log.e("MQTT", String.valueOf(e));
+            }
+        }).start();
     }
 
     @Override
