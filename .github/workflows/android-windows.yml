@@ -25,7 +25,7 @@ jobs:
 
     strategy:
       matrix:
-        BuildType: [Release]
+        BuildType: [Debug]
 
     defaults:
       run:
