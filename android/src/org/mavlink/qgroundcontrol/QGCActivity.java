@@ -427,7 +427,7 @@ public class QGCActivity extends QtActivity
                 }
 
                 email = DEFAULT_EMAIL;
-                User user = new User(email,DEFAULT_PASSWORD, false);
+                User user = new User(email,DEFAULT_PASSWORD, "false");
                 String POST_PARAMS = new Gson().toJson(user);
 
                 openedConnection.setRequestProperty("charset", "utf-8");
