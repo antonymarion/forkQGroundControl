@@ -614,7 +614,7 @@ private boolean isInitialised = false;
             final String deviceInfo = _formatDeviceInfo(device);
             deviceInfoList.add(deviceInfo);
         }
-
+        Log.d("availableDevicesInfo", deviceInfoList.toArray(new String[0]))
         return deviceInfoList.toArray(new String[0]);
     }
 
