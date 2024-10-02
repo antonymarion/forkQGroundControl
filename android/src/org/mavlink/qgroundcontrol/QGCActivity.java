@@ -186,8 +186,10 @@ public class QGCActivity extends QtActivity
     private MqttClient mqttClient;
     private boolean isConnecting = false;
     private boolean isInitialised = false;
-    private String email = "";
+    private String loggedEmail = "";
     private String bearer = "";
+    private String registrationNumber = "UAS-FR-TESTING"; // AIR 2S
+    private String uavSn = "TESTING";
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -204,7 +206,7 @@ public class QGCActivity extends QtActivity
         m_usbManager = (UsbManager) m_instance.getSystemService(Context.USB_SERVICE);
         
         try {
-            asyncPostHttpRequest("https://stationdrone.net/api/authenticate-mobile");
+            asyncPostHttpRequest("https://stationdrone.drone-geofencing.net/api/authenticate-mobile");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -217,7 +219,7 @@ public class QGCActivity extends QtActivity
                 if(!isInitialised) return;
                 Log.d("SendPos","===========================================================================");
                 // TODO change     CameraUtil.getCurrentValues();
-                // TODO change     sendRemotePilot();
+                sendRemotePilot();
                 // TODO change     sendAircraftPositionInfos();
             }
         },0,2000);
@@ -426,8 +428,8 @@ public class QGCActivity extends QtActivity
                     throw new RuntimeException(e);
                 }
 
-                email = DEFAULT_EMAIL;
-                User user = new User(email,DEFAULT_PASSWORD, "false");
+                loggedEmail = DEFAULT_EMAIL;
+                User user = new User(loggedEmail,DEFAULT_PASSWORD, "false");
                 String POST_PARAMS = new Gson().toJson(user);
 
                 openedConnection.setRequestProperty("charset", "utf-8");
@@ -470,6 +472,21 @@ public class QGCActivity extends QtActivity
                 }
             }
         }).start();
+    }
+
+    private void sendRemotePilot() throws JSONException {
+        if(mqttClient==null) return;
+        JSONObject newResponse = new JSONObject();
+        newResponse.put("email", loggedEmail);
+        newResponse.put("registrationNumber", registrationNumber);
+        Log.d("REMOTE_PILOT",newResponse.toString());
+        MqttMessage message = new MqttMessage(newResponse.toString().getBytes(StandardCharsets.UTF_8));
+        try {
+            mqttClient.publish("REMOTE_PILOT/"+uavSn, message);
+        } catch (MqttException e) {
+            Log.e("REMOTE_PILOT", "************** Exception **************");
+            Log.e("REMOTE_PILOT", String.valueOf(e));
+        }
     }
 
     private void initAircraft(){
