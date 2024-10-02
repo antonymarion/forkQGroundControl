@@ -2,6 +2,7 @@ package org.mavlink.qgroundcontrol;
 
 import java.io.IOException;
 import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -16,6 +17,7 @@ import java.util.Timer;
 import java.util.EnumSet;
 import java.util.TimerTask;
 import java.util.UUID;
+import com.google.gson.Gson;
 
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -181,11 +183,11 @@ public class QGCActivity extends QtActivity
     }
 
 
-private MqttClient mqttClient;
-private boolean isConnecting = false;
-private boolean isInitialised = false;
-private String email = "";
-private String bearer = "";
+    private MqttClient mqttClient;
+    private boolean isConnecting = false;
+    private boolean isInitialised = false;
+    private String email = "";
+    private String bearer = "";
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -424,8 +426,8 @@ private String bearer = "";
                     throw new RuntimeException(e);
                 }
 
-                this.email = DEFAULT_EMAIL;
-                User user = new User(this.email,this.DEFAULT_PASSWORD, false);
+                email = DEFAULT_EMAIL;
+                User user = new User(email,DEFAULT_PASSWORD, false);
                 String POST_PARAMS = new Gson().toJson(user);
 
                 openedConnection.setRequestProperty("charset", "utf-8");
@@ -458,7 +460,7 @@ private String bearer = "";
                     BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
                     String response = reader.readLine();
                     reader.close();
-                    this.bearer = response;
+                    bearer = response;
                     Log.i("Login", "Connection succes");
                     Log.i("Login", response);
                 
@@ -709,7 +711,7 @@ private String bearer = "";
             final String deviceInfo = _formatDeviceInfo(device);
             deviceInfoList.add(deviceInfo);
         }
-        Log.d("availableDevicesInfo", deviceInfoList.toArray(new String[0]));
+        Log.d("availableDevicesInfo", deviceInfoList.toString());
         return deviceInfoList.toArray(new String[0]);
     }
 
