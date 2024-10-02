@@ -1,12 +1,6 @@
 package org.mavlink.qgroundcontrol;
 
 import java.io.IOException;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -63,16 +57,6 @@ import org.json.JSONObject;
 // UsbAccessory, UsbConfiguration, UsbConstants, UsbDevice, UsbDeviceConnection, UsbEndpoint, UsbInterface, UsbManager, UsbRequest
 
 
-class User {
-    private String username;
-    private String password;
-    private String rememberMe;
-    public User(String username, String password, String rememberMe){
-        this.username = username;
-        this.password = password;
-        this.rememberMe = rememberMe;
-    }
-}
 
 public class QGCActivity extends QtActivity
 {
@@ -184,8 +168,6 @@ public class QGCActivity extends QtActivity
 private MqttClient mqttClient;
 private boolean isConnecting = false;
 private boolean isInitialised = false;
-private String email = "";
-private String bearer = "";
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -201,11 +183,6 @@ private String bearer = "";
 
         m_usbManager = (UsbManager) m_instance.getSystemService(Context.USB_SERVICE);
         
-        try {
-            asyncPostHttpRequest("https://stationdrone.net/api/authenticate-mobile");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
 
         new Timer().schedule(new TimerTask(){
             @Override
@@ -397,75 +374,6 @@ private String bearer = "";
                 Log.i("MQTT", "Client sub to REQUEST/+/"+ "testingSN" + "/+");
             } catch (MqttException e) {
                 Log.e("MQTT", String.valueOf(e));
-            }
-        }).start();
-    }
-
-    private final String DEFAULT_EMAIL = "graphx.stephaneroma@gmail.com";
-    private final String DEFAULT_PASSWORD = "Lenna2024!";
-
-    private void asyncPostHttpRequest(String endpoint) throws IOException {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                URL url = null;
-                try {
-                    url = new URL(endpoint);
-                } catch (MalformedURLException e) {
-                    throw new RuntimeException(e);
-                }
-
-                HttpURLConnection openedConnection = null;
-                try {
-                    openedConnection = (HttpURLConnection)url.openConnection();
-                    openedConnection.setRequestMethod("POST");
-                    openedConnection.setDoOutput(true);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-
-                this.email = DEFAULT_EMAIL;
-                User user = new User(this.email,this.DEFAULT_PASSWORD, false);
-                String POST_PARAMS = new Gson().toJson(user);
-
-                openedConnection.setRequestProperty("charset", "utf-8");
-                openedConnection.setRequestProperty("Content-length", String.valueOf(POST_PARAMS.length()));
-                openedConnection.setRequestProperty("Content-Type", "application/json");
-                OutputStream os = null;
-                try {
-                    os = openedConnection.getOutputStream();
-                } catch (IOException e) {
-                    Log.d("ERROR", "error");
-                    throw new RuntimeException(e);
-                }
-                try {
-                    os.write(POST_PARAMS.getBytes());
-                    os.flush();
-                    os.close();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-
-                int responseCode = 0;
-                try {
-                    responseCode = openedConnection.getResponseCode();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-                DataInputStream inputStream = null;
-                try {
-                    inputStream = new DataInputStream(openedConnection.getInputStream());
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-                    String response = reader.readLine();
-                    reader.close();
-                    this.bearer = response;
-                    Log.i("Login", "Connection succes");
-                    Log.i("Login", response);
-                
-                } catch (IOException e) {
-                    Log.e("Login", "************** Exception **************");
-                    Log.e("Login", e.toString());
-                }
             }
         }).start();
     }
