@@ -425,7 +425,7 @@ private String bearer = "";
                 }
 
                 this.email = DEFAULT_EMAIL;
-                User user = new User(mail,this.DEFAULT_PASSWORD, false);
+                User user = new User(this.email,this.DEFAULT_PASSWORD, false);
                 String POST_PARAMS = new Gson().toJson(user);
 
                 openedConnection.setRequestProperty("charset", "utf-8");
@@ -458,7 +458,6 @@ private String bearer = "";
                     BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
                     String response = reader.readLine();
                     reader.close();
-                    String text = editTextUsername.getText().toString();
                     this.bearer = response;
                     Log.i("Login", "Connection succes");
                     Log.i("Login", response);
