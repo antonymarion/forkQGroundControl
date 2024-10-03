@@ -217,10 +217,14 @@ public class QGCActivity extends QtActivity
                 if(!isInitialised)
                     initAircraft();
                 if(!isInitialised) return;
-                Log.d("SendPos","===========================================================================");
-                // TODO change     CameraUtil.getCurrentValues();
-                sendRemotePilot();
-                // TODO change     sendAircraftPositionInfos();
+                try {
+                    Log.d("SendPos","===========================================================================");
+                    // TODO change     CameraUtil.getCurrentValues();
+                    sendRemotePilot();
+                    // TODO change     sendAircraftPositionInfos();
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
             }
         },0,2000);
 
