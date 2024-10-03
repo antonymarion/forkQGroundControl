@@ -221,6 +221,7 @@ public class QGCActivity extends QtActivity
                     Log.d("SendPos","===========================================================================");
                     // TODO change     CameraUtil.getCurrentValues();
                     sendRemotePilot();
+                    String[] test = availableDevicesInfo();
                     // TODO change     sendAircraftPositionInfos();
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
