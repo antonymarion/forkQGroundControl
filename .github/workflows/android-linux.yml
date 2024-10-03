@@ -1,4 +1,4 @@
-name: Android-Windows
+name: Android-Linux
 
 on:
   push:
@@ -21,15 +21,15 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        BuildType: [Debug]
+        BuildType: [Release]
 
     defaults:
       run:
-        shell: cmd
+        shell: bash
 
     env:
       ARTIFACT: QGroundControl.apk
@@ -39,9 +39,15 @@ jobs:
       QT_ANDROID_KEYSTORE_ALIAS: QGCAndroidKeyStore
       QT_ANDROID_KEYSTORE_STORE_PASS: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
       QT_ANDROID_KEYSTORE_KEY_PASS: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-      QT_ANDROID_ABIS: 'arm64-v8a'
+      QT_ANDROID_ABIS: ${{ matrix.BuildType == 'Release' && 'armeabi-v7a;arm64-v8a' || 'arm64-v8a' }}
 
     steps:
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          android: 'false'
+        continue-on-error: true
+
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
@@ -51,48 +57,22 @@ jobs:
 
       - uses: seanmiddleditch/gha-setup-ninja@v5
 
-      - name: Install Dependencies
+      - name: Install CCache
         run: |
-          choco install --no-progress ninja pkgconfiglite -y
-          choco install --no-progress cmake --installargs 'ADD_CMAKE_TO_PATH=System' --apply-install-arguments-to-dependencies
-
-      # - name: Set Up sccache
-      #   uses: mozilla-actions/sccache-action@v0.0.5
+          wget --quiet https://github.com/ccache/ccache/releases/download/v4.10.2/ccache-4.10.2-linux-x86_64.tar.xz
+          tar -xvf ccache-*-linux-x86_64.tar.xz
+          cd ccache-*-linux-x86_64
+          sudo make install
 
       - name: Install Qt for Android
         uses: ./.github/actions/qt-android
         with:
-          host: windows
-          arch: win64_msvc2019_64
+          host: linux
+          arch: gcc_64
           version: ${{ env.QT_VERSION }}
           abis: ${{ env.QT_ANDROID_ABIS }}
 
-      - name: Set up Visual Studio shell
-        uses: ilammy/msvc-dev-cmd@v1
-        with:
-          arch: x64
-
-      - run: mkdir ${{ runner.temp }}\shadow_build_dir
-
-      - name: Setup MQTT
-        run: |
-          # set CMAKE_BIN_DIR="${{ env.QT_ROOT_DIR }}/Tools/Cmake/bin"
-          # set QMAKE_BIN_DIR="${{ env.QT_ROOT_DIR }}/${{ env.QT_VERSION }}/gcc_64/bin"
-          # set CMAKE_PREFIX_PATH="${{ env.QT_ROOT_DIR }}/${{ env.QT_VERSION }}/gcc_64"
-          # set NINJA_DIR="${{ env.QT_INSTALL_DIR }}/Tools/Ninja"
-          # set PATH="${{ env.PATH }}:${{ env.CMAKE_BIN_DIR }}:${{ env.QMAKE_BIN_DIR }}:${{ env.NINJA_DIR }}"
-          git clone https://code.qt.io/qt/qtmqtt.git --branch 6.6.3
-          cd qtmqtt
-          qmake -r 
-          make 
-          make install
-          # mkdir build
-          # cd build
-          # cmake ..
-          # make
-          # make install
-          cd ../..
-          
+      - run: mkdir ${{ runner.temp }}/shadow_build_dir
 
       - name: Configure
         working-directory: ${{ runner.temp }}/shadow_build_dir
@@ -100,8 +80,8 @@ jobs:
               -DCMAKE_BUILD_TYPE=${{ matrix.BuildType }}
               -DQT_ANDROID_ABIS="${{ env.QT_ANDROID_ABIS }}"
               -DQT_ANDROID_BUILD_ALL_ABIS=OFF
-              -DQT_HOST_PATH="${{ env.QT_ROOT_DIR }}/../msvc2019_64"
-              -DQT_ANDROID_SIGN_APK=OFF
+              -DQT_HOST_PATH="${{ env.QT_ROOT_DIR }}/../gcc_64"
+              -DQT_ANDROID_SIGN_APK=${{ github.ref == 'refs/heads/master' && github.event_name != 'pull_request' && 'ON' || 'OFF' }}
               -DQT_DEBUG_FIND_PACKAGE=ON
               -DQGC_STABLE_BUILD=${{ github.ref_type == 'tag' || contains(github.ref, 'Stable') && 'ON' || 'OFF' }}
 
@@ -109,8 +89,13 @@ jobs:
         working-directory: ${{ runner.temp }}/shadow_build_dir
         run: cmake --build . --target all --config ${{ matrix.BuildType }}
 
-      - name: Save APK
-        uses: actions/upload-artifact@v4
+      - run: cp ${{ runner.temp }}/shadow_build_dir/android-build/*.apk ${{ runner.temp }}/shadow_build_dir/${{ env.ARTIFACT }}
+
+      - name: Upload Build File
+        if: matrix.BuildType == 'Release'
+        uses: ./.github/actions/upload
         with:
-          name: ${{ env.ARTIFACT }}
-          path: ${{ runner.temp }}/shadow_build_dir/android-build/*.apk
+          artifact_name: ${{ env.ARTIFACT }}
+          aws_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          source: ''

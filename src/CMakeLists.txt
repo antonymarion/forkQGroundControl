@@ -61,6 +61,7 @@ add_subdirectory(Viewer3D)
 #######################################################
 target_link_libraries(QGC
     PRIVATE
+        Qt6::Mqtt
         Qt6::Quick
         Qt6::QuickControls2
         Qt6::QuickWidgets
