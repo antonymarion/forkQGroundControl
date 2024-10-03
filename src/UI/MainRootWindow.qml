@@ -113,7 +113,8 @@ ApplicationWindow {
         repeat: true
         running:true
         onTriggered: {
-            Log.d("SendPos","===========================================================================");
+            console.log(QGroundControl.multiVehicleManager.activeVehicle);
+            console.log("SendPos","===========================================================================");
             console.log("testing");
         }
     }
