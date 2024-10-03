@@ -26,6 +26,7 @@
 #include <QtNetwork/QNetworkProxyFactory>
 #include <QtQml/QQmlContext>
 #include <QtQml/QQmlApplicationEngine>
+#include <QMqttClient>
 
 #include "Audio/AudioOutput.h"
 #include "QGCConfig.h"
@@ -403,6 +404,29 @@ void QGCApplication::init()
     } else {
         AudioOutput::instance()->setMuted(true);
     }
+
+    console.log(Vehicle::coordinate());
+
+    QMqttClient client;
+    client.setHostname("tcp://152.228.246.204");
+    client.setPort(1883);
+    QObject::connect(&client, &QMqttClient::stateChange, [](QMqttClient::ClientState state){
+        if(state == QMqttClient::Connected)
+            console.log("******************************* client connected ******************************");
+        else if (state == QMqttClient::Disconnected)
+            console.log("******************************* client disconnected ***************************** ");
+    });
+    QObject::connect(&client, &QMqttClient::errorChanged, [](QMqttClient::ClientError error){
+        console.log("************* MQTT ERROR *****************");
+        console.log(error);
+    });
+    QObject::connect(&client, &QMqttClient::messageReceived, [&client](const QByteArray &message, const, QMqttTopicName &topic){
+        console.log("message reçu sur le topic : "+topic.name());
+        console.log(message);
+        client.publish("test/response", "Response : "+message);
+    });
+
+    client.connectToHost();
 }
 
 void QGCApplication::_initForNormalAppBoot()

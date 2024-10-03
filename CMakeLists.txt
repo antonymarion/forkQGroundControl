@@ -161,6 +161,7 @@ find_package(Qt6
         Core
         Core5Compat
         Location
+        Mqtt
         Multimedia
         Network
         Positioning
