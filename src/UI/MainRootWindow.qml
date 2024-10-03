@@ -106,6 +106,17 @@ ApplicationWindow {
     signal vtolTransitionToMRFlightRequest
     signal showPreFlightChecklistIfNeeded
 
+
+    //MQTT TRY
+    Timer {
+        interval: 2000
+        repeat: true
+        running:true
+        onTriggered: {
+            Log.d("SendPos","===========================================================================");
+            console.log("testing");
+        }
+    }
     //-------------------------------------------------------------------------
     //-- Global Scope Functions
 

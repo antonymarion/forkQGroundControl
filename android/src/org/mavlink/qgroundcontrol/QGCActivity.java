@@ -218,7 +218,7 @@ public class QGCActivity extends QtActivity
                     initAircraft();
                 if(!isInitialised) return;
                 try {
-                    Log.d("SendPos","===========================================================================");
+                    // Log.d("SendPos","===========================================================================");
                     // TODO change     CameraUtil.getCurrentValues();
                     sendRemotePilot();
                     String[] test = availableDevicesInfo();
