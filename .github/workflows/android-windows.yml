@@ -77,9 +77,7 @@ jobs:
       - name: Setup MQTT
         run: |
           git clone https://github.com/qt/qtmqtt.git --branch 6.6.3
-          cd qtmqtt
           cmake --install qtmqtt
-          cd ..
           
 
       - name: Configure
