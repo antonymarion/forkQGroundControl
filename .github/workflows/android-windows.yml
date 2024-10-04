@@ -80,8 +80,9 @@ jobs:
           cd qtmqtt
           mkdir build
           cd build
-          cmake .. -DCMAKE_PREFIX_PATH=D:/a/_temp/Qt/6.6.3/android_arm64_v8a
+          cmake ..
           make
+          make install
           cd ../..
           
 

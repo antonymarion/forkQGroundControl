@@ -124,8 +124,9 @@ jobs:
           cd qtmqtt
           mkdir build
           cd build
-          cmake .. -DCMAKE_PREFIX_PATH=D:/a/_temp/Qt/6.6.3/msvc2019_64
+          cmake ..
           make
+          make install
           cd ../..
 
       - name: Configure
