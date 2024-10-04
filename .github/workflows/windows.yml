@@ -122,8 +122,7 @@ jobs:
         run: |
           git clone https://github.com/qt/qtmqtt.git --branch 6.6.3
           cd qtmqtt
-          make
-          make install
+          cmake --install qtmqtt
           cd ..
 
       - name: Configure
