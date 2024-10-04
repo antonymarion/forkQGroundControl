@@ -19,8 +19,7 @@ echo "QT_MODULES $QT_MODULES"
 apt update
 apt install python3 python3-pip -y
 pip3 install setuptools wheel py7zr ninja cmake aqtinstall
-aqt list-qt windows desktop --modules 6.6.3 win64_mingw
-aqt install-qt ${QT_HOST} ${QT_TARGET} ${QT_VERSION} ${QT_ARCH} -O ${QT_PATH} -m ${QT_MODULES}
+aqt install-qt ${QT_HOST} ${QT_TARGET} ${QT_VERSION} ${QT_ARCH} -O ${QT_PATH} -m all
 export PATH=$(readlink -e ${QT_PATH}/${QT_VERSION}/${QT_ARCH}/bin/):$PATH
 export PKG_CONFIG_PATH=$(readlink -e ${QT_PATH}/${QT_VERSION}/${QT_ARCH}/lib/pkgconfig):$PKG_CONFIG_PATH
 export LD_LIBRARY_PATH=$(readlink -e ${QT_PATH}/${QT_VERSION}/${QT_ARCH}/lib):$LD_LIBRARY_PATH
