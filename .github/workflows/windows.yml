@@ -94,7 +94,7 @@ jobs:
           target: desktop
           arch: win64_msvc2019_64
           dir: ${{ runner.temp }}
-          modules: qtcharts qtlocation qtpositioning qtspeech qt5compat qtmultimedia qtserialport qtimageformats qtshadertools qtconnectivity qtquick3d qtsensors qtmqtt
+          modules: qtcharts qtlocation qtpositioning qtspeech qt5compat qtmultimedia qtserialport qtimageformats qtshadertools qtconnectivity qtquick3d qtsensors
           cache: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
 
       - name: Install Qt for Windows (Arm64)
@@ -108,7 +108,7 @@ jobs:
           arch: win64_msvc2019_arm64
           dir: ${{ runner.temp }}
           extra: --autodesktop
-          modules: qtcharts qtlocation qtpositioning qtspeech qt5compat qtmultimedia qtserialport qtimageformats qtshadertools qtconnectivity qtquick3d qtsensors qtmqtt
+          modules: qtcharts qtlocation qtpositioning qtspeech qt5compat qtmultimedia qtserialport qtimageformats qtshadertools qtconnectivity qtquick3d qtsensors
           cache: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
 
       - name: Set up Visual Studio shell
@@ -117,6 +117,16 @@ jobs:
           arch: x64
 
       - run: mkdir ${{ runner.temp }}\shadow_build_dir
+
+      - name: Setup MQTT
+        run: |
+          git clone https://code.qt.io/cgit/qt/qtmqtt.git
+          cd qtmqtt
+          git checkout 6.6.3
+          mkdir build
+          cd build
+          /opt/Qt/Tools/CMake/bin/cmake ..
+          cd ../..
 
       - name: Configure
         working-directory: ${{ runner.temp }}\shadow_build_dir
