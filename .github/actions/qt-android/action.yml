@@ -63,6 +63,7 @@ runs:
       uses: jurplel/install-qt-action@v4
       with:
         version: ${{ inputs.version }}
+        install-deps: false
         aqtversion: ==3.1.*
         host: ${{ inputs.host }}
         target: desktop
@@ -76,6 +77,7 @@ runs:
       uses: jurplel/install-qt-action@v4
       with:
         version: ${{ inputs.version }}
+        install-deps: false
         aqtversion: ==3.1.*
         host: ${{ inputs.host }}
         target: android
@@ -90,6 +92,7 @@ runs:
       uses: jurplel/install-qt-action@v4
       with:
         version: ${{ inputs.version }}
+        install-deps: false
         aqtversion: ==3.1.*
         host: ${{ inputs.host }}
         target: android
@@ -104,6 +107,7 @@ runs:
       uses: jurplel/install-qt-action@v4
       with:
         version: ${{ inputs.version }}
+        install-deps: false
         aqtversion: ==3.1.*
         host: ${{ inputs.host }}
         target: android
@@ -118,6 +122,7 @@ runs:
       uses: jurplel/install-qt-action@v4
       with:
         version: ${{ inputs.version }}
+        install-deps: false
         aqtversion: ==3.1.*
         host: ${{ inputs.host }}
         target: android
