@@ -405,9 +405,9 @@ void QGCApplication::init()
         AudioOutput::instance()->setMuted(true);
     }
 
-    VehicleManger* vehicleManager = toolbox()->vehicleManager();
+    MultiVehicleManager* vehicleManager = toolbox()->multiVehicleManager();
     Vehicle* activeVehicle = vehicleManager->activeVehicle();
-    console.log(activeVehicle.coordinate());
+    qDebug() << "Coordinates : " << activeVehicle->coordinate();
 
 
     /*
