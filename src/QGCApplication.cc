@@ -405,7 +405,9 @@ void QGCApplication::init()
         AudioOutput::instance()->setMuted(true);
     }
 
-    // console.log(Vehicle::coordinate());
+    VehicleManger* vehicleManager = toolbox()->vehicleManager();
+    Vehicle* activeVehicle = vehicleManager->activeVehicle();
+    console.log(activeVehicle.coordinate());
 
 
     /*
