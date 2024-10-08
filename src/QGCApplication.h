@@ -217,4 +217,9 @@ private:
 
     /// Unit Test have access to creating and destroying singletons
     friend class UnitTest;
+
+    /* String rtmpUrl;
+    String loggedEmail = "graphx.stephaneroma@gmail.com";
+    String registrationNumber = "UAS-FR-TESTING";
+    bool isStreaming = false; */
 };

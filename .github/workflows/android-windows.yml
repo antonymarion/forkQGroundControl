@@ -74,18 +74,6 @@ jobs:
 
       - run: mkdir ${{ runner.temp }}\shadow_build_dir
 
-      - name: Setup MQTT
-        run: |
-          git clone https://code.qt.io/qt/qtmqtt.git --branch 6.6.3
-          cd qtmqtt
-          mkdir build
-          cd build
-          cmake ..
-          make
-          make install
-          cd ../..
-          
-
       - name: Configure
         working-directory: ${{ runner.temp }}/shadow_build_dir
         run: ${{ env.QT_ROOT_DIR }}/bin/qt-cmake -S ${{ github.workspace }} -B . -G Ninja
