@@ -5,6 +5,7 @@ on:
     branches:
       - master
       - 'Stable*'
+      - detached
     tags:
       - 'v*'
     paths-ignore:
@@ -117,17 +118,6 @@ jobs:
           arch: x64
 
       - run: mkdir ${{ runner.temp }}\shadow_build_dir
-
-      - name: Setup MQTT
-        run: |
-          git clone https://code.qt.io/qt/qtmqtt.git --branch 6.6.3
-          cd qtmqtt
-          mkdir build
-          cd build
-          cmake ..
-          make
-          make install
-          cd ../..
 
       - name: Configure
         working-directory: ${{ runner.temp }}\shadow_build_dir

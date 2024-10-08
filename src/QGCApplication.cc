@@ -26,7 +26,8 @@
 #include <QtNetwork/QNetworkProxyFactory>
 #include <QtQml/QQmlContext>
 #include <QtQml/QQmlApplicationEngine>
-#include <QMqttClient>
+#include <QTimer>
+// #include <QMqttClient>
 
 #include "Audio/AudioOutput.h"
 #include "QGCConfig.h"
@@ -99,6 +100,7 @@
 #include "AudioOutput.h"
 #include "FollowMe.h"
 #include "JsonHelper.h"
+#include "VehicleBatteryFactGroup.h"
 // #ifdef QGC_VIEWER3D
 #include "Viewer3DManager.h"
 // #endif
@@ -405,7 +407,13 @@ void QGCApplication::init()
         AudioOutput::instance()->setMuted(true);
     }
 
-    console.log(Vehicle::coordinate());
+    QTimer *timer = new QTimer(this);
+
+    QObject::connect(timer, &QTimer::timeout, this, &QGCApplication::sendInfos);
+
+    timer->start(2000);
+
+    /*
 
     QMqttClient client;
     client.setHostname("tcp://152.228.246.204");
@@ -423,10 +431,514 @@ void QGCApplication::init()
     QObject::connect(&client, &QMqttClient::messageReceived, [&client](const QByteArray &message, const, QMqttTopicName &topic){
         console.log("message reçu sur le topic : "+topic.name());
         console.log(message);
+        switch ((message.getString("instruction"))){
+            case "OPEN_STREAM":
+                Log.i("openStream", "=================================================");
+                Log.i("openStream", "recieved OPEN_STREAM");
+                Log.i("openStream", "=================================================");
+                break;
+            case "STOP_STREAM":
+                Log.i("stopStream", "=================================================");
+                Log.i("stopStream", "recieved STOP_STREAM");
+                Log.i("stopStream", "=================================================");
+                break;
+            case "RESET_GIMBAL":
+                Log.i("resetGimbal", "=================================================");
+                Log.i("resetGimbal", "recieved RESET_GIMBAL");
+                Log.i("resetGimbal", "=================================================");
+                break;
+            case "MOVE_GIMBAL":
+                Log.i("moveCam", "=================================================");
+                Log.i("moveCam", "recieved MOVE_GIMBAL");
+                Log.i("moveCam", "=================================================");
+                break;
+            case "GET_CAMERAS":
+                Log.i("getCams", "=================================================");
+                Log.i("getCams", "recieved GET_CAMERAS");
+                Log.i("getCams", "=================================================");
+                break;
+            case "SET_CAMERA": // TODO rework
+                Log.i("setCams", "=================================================");
+                Log.i("setCams", "recieved SET_CAMERA");
+                Log.i("setCams", "=================================================");
+                break;
+            case "SET_CAMERA_INTRINSICS":
+                Log.i("getCam", "=================================================");
+                Log.i("getCam", "recieved SET_CAMERA_INTRINSICS");
+                Log.i("getCam", "=================================================");
+                break;
+            case "GET_CAMERA": // TODO to finish
+                Log.i("getCam", "=================================================");
+                Log.i("getCam", "recieved GET_CAMERA");
+                Log.i("getCam", "=================================================");
+                break;
+            case "ZOOM_CAMERA": // TODO test and rework
+                Log.i("zoomCam", "=================================================");
+                Log.i("zoomCam", "recieved ZOOM_CAMERA");
+                Log.i("zoomCam", "=================================================");
+                break;
+            case "TAKE_PHOTO": // TODO firmware exam
+                Log.i("takePhoto", "=================================================");
+                Log.i("takePhoto", "recieved TAKE_PHOTO");
+                Log.i("takePhoto", "=================================================");
+                break;
+            case "START_RECORDING": // TODO firmware exam
+                Log.i("zoomCam", "=================================================");
+                Log.i("zoomCam", "recieved START_RECORDING");
+                Log.i("zoomCam", "=================================================");
+                break;
+            case "STOP_RECORDING": // TODO firmware exam
+                Log.i("zoomCam", "=================================================");
+                Log.i("zoomCam", "recieved STOP_RECORDING");
+                Log.i("zoomCam", "=================================================");
+                break;
+            default: // TODO check if new
+                message.put("status", "KO");
+                message.put("error", "KO");
+        }
         client.publish("test/response", "Response : "+message);
     });
 
-    client.connectToHost();
+    client.connectToHost(); */
+}
+
+void QGCApplication::sendInfos(){
+    qCDebug(QGCApplicationLog) << "sendInfos init =================================================";
+    MultiVehicleManager* vehicleManager = toolbox()->multiVehicleManager();
+    if(vehicleManager->vehicles()->count() == 0) return;
+    qCDebug(QGCApplicationLog) << "sendInfos vehicle found ========================================";
+    Vehicle* activeVehicle = vehicleManager->activeVehicle();
+    if(!activeVehicle) return;
+    qCDebug(QGCApplicationLog) << "============== start send infos ==============";
+    qCDebug(QGCApplicationLog) << "loggedEmail : " << this->loggedEmail;
+    qCDebug(QGCApplicationLog) << "registrationNumber : " << this->registrationNumber;
+    qCDebug(QGCApplicationLog) << "isStreaming : " << this->isStreaming;
+    qCDebug(QGCApplicationLog) << "rtmpUrl : " << this->rtmpUrl;
+    qCDebug(QGCApplicationLog) << "System : " << activeVehicle->firmwareTypeString();
+    qCDebug(QGCApplicationLog) << "productType : " << activeVehicle->vehicleTypeString();
+    qCDebug(QGCApplicationLog) << "latitude : " << activeVehicle->coordinate().latitude();
+    qCDebug(QGCApplicationLog) << "longitude : " << activeVehicle->coordinate().longitude();
+    qCDebug(QGCApplicationLog) << "altitude : " << activeVehicle->coordinate().altitude();
+    qCDebug(QGCApplicationLog) << "isFlying : " << activeVehicle->flying();
+    qCDebug(QGCApplicationLog) << "firmwareVersionUav : " << activeVehicle->firmwarePatchVersion();
+    qCDebug(QGCApplicationLog) << "firmwareVersion : " << this->_buildVersion;
+    qCDebug(QGCApplicationLog) << "simulated : " << false;
+    qCDebug(QGCApplicationLog) << "systemOS : " << "Android"; // TODO change to include Windows
+    qCDebug(QGCApplicationLog) << "systemVersion : " << "V1"; // TODO ???
+    qCDebug(QGCApplicationLog) << "firmwareVersionUav : " << activeVehicle->firmwarePatchVersion();
+    qCDebug(QGCApplicationLog) << "gpsSatelliteCount : " << qobject_cast<VehicleGPSFactGroup*>(activeVehicle->gpsFactGroup())->count()->rawValueString();
+    qCDebug(QGCApplicationLog) << "velocity : " << qobject_cast<VehicleFactGroup*>(activeVehicle->vehicleFactGroup())->airSpeed()->rawValueString();
+    
+    bool hasCamera = activeVehicle->cameraManager()->cameras()->count() != 0;
+    qCDebug(QGCApplicationLog) << "hasCamera : " << hasCamera;
+    if(hasCamera) {
+        MavlinkCameraControl *activeCamera = activeVehicle->cameraManager()->currentCameraInstance();
+        if(activeCamera) {
+            qCDebug(QGCApplicationLog) << "============== current camera values ==============";
+            qCDebug(QGCApplicationLog) << "sensorName : " << activeCamera->modelName();
+            qCDebug(QGCApplicationLog) << "hasZoom : " << activeCamera->hasZoom();
+            if(activeCamera->modelName() != "Simulated Camera"){
+                qCDebug(QGCApplicationLog) << "ISO : " << activeCamera->iso()->rawValueString();
+                qCDebug(QGCApplicationLog) << "whiteBalance : " << activeCamera->wb()->rawValueString();
+                qCDebug(QGCApplicationLog) << "aperture : " << activeCamera->aperture()->rawValueString();
+            }
+        }
+    }
+
+    bool hasGimbal = activeVehicle->gimbalController()->gimbals()->count() != 0;
+    qCDebug(QGCApplicationLog) << "hasGimbal : " << hasGimbal;
+    if(hasGimbal) {
+        Gimbal *activeGimbal = activeVehicle->gimbalController()->activeGimbal();
+        if(activeGimbal) {
+            qCDebug(QGCApplicationLog) << "============== current gimbal values ==============";
+            qCDebug(QGCApplicationLog) << "yaw : " << activeGimbal->absoluteYaw()->rawValueString();
+            qCDebug(QGCApplicationLog) << "pitch : " << activeGimbal->absolutePitch()->rawValueString();
+            qCDebug(QGCApplicationLog) << "roll : " << activeGimbal->absoluteRoll()->rawValueString();
+            qCDebug(QGCApplicationLog) << "whikeyYawRelativeToAircraftHeadingteBalance : " << activeGimbal->bodyYaw()->rawValueString();
+            qCDebug(QGCApplicationLog) << "KeyGimbalReset : " << "null";
+        }
+    }
+    QmlObjectListModel* batteries = activeVehicle->batteries();
+    int res = 0;
+    for (int i=0; i<batteries->count(); i++) {
+        VehicleBatteryFactGroup* battery = qobject_cast<VehicleBatteryFactGroup*>(batteries->get(i));
+        res += battery->percentRemaining()->rawValue().toInt();
+    }
+    qCDebug(QGCApplicationLog) << "batteryPowerPercentUav : " << res/batteries->count();
+
+    qCDebug(QGCApplicationLog) << "==============  end send infos  ==============";
+
+    QmlObjectListModel *cameras = activeVehicle->cameraManager()->cameras();
+    if (hasCamera) {
+        for (int i = 0; i < cameras->count(); i++) {
+            MavlinkCameraControl *camera = qobject_cast<MavlinkCameraControl*>(cameras->get(i));
+            qCDebug(QGCApplicationLog) << "============== START GET_CAMERAS ==============";
+            qCDebug(QGCApplicationLog) << "index : " << i;
+            qCDebug(QGCApplicationLog) << "name : " << camera->modelName();
+            qCDebug(QGCApplicationLog) << "==============  END GET_CAMERAS  ==============";
+        }
+    }
+
+    qCDebug(QGCApplicationLog) << "============== START GET_CAMERA ==============";
+    if(hasGimbal) {
+        Gimbal *activeGimbal = activeVehicle->gimbalController()->activeGimbal();
+        if(activeGimbal) {
+            qCDebug(QGCApplicationLog) << "============== gimbal ranges ==============";
+            qCDebug(QGCApplicationLog) << "minYaw : " << activeGimbal->absoluteYaw()->cookedMinString();
+            qCDebug(QGCApplicationLog) << "maxYaw : " << activeGimbal->absoluteYaw()->cookedMaxString();
+            qCDebug(QGCApplicationLog) << "minPitch : " << activeGimbal->absolutePitch()->cookedMinString();
+            qCDebug(QGCApplicationLog) << "maxPitch : " << activeGimbal->absolutePitch()->cookedMaxString();
+            qCDebug(QGCApplicationLog) << "minRoll : " << activeGimbal->absoluteRoll()->cookedMinString();
+            qCDebug(QGCApplicationLog) << "maxRoll : " << activeGimbal->absoluteRoll()->cookedMaxString();
+            qCDebug(QGCApplicationLog) << "minBodyYaw : " << activeGimbal->bodyYaw()->cookedMinString();
+            qCDebug(QGCApplicationLog) << "maxBodyYaw : " << activeGimbal->bodyYaw()->cookedMaxString();
+        }
+    }
+
+    if(hasCamera) {
+        MavlinkCameraControl *activeCamera = activeVehicle->cameraManager()->currentCameraInstance();
+        if(activeCamera) {
+            qCDebug(QGCApplicationLog) << "============== camera ranges ==============";
+            qCDebug(QGCApplicationLog) << "hasZoom : " << activeCamera->hasZoom();
+            if(activeCamera->modelName() != "Simulated Camera"){
+                qCDebug(QGCApplicationLog) << "minIso : " << activeCamera->iso()->cookedMinString();
+                qCDebug(QGCApplicationLog) << "maxIso : " << activeCamera->iso()->cookedMaxString();
+                qCDebug(QGCApplicationLog) << "minAperture : " << activeCamera->aperture()->cookedMinString();
+                qCDebug(QGCApplicationLog) << "maxAperture : " << activeCamera->aperture()->cookedMaxString();
+            }
+        }
+
+    }
+    qCDebug(QGCApplicationLog) << "==============  END GET_CAMERA  ==============";
+
+
+    
+    QGCApplication::takePhoto();
+
+    QGCApplication::startRecording();
+
+    QGCApplication::stopRecording();
+
+
+
+    qCDebug(QGCApplicationLog) << "==============   TESTING SET COMMANDS   ==============";
+
+    if(this->countdown == 10){
+        if(hasGimbal){
+            if(this->reset){
+                QGCApplication::resetGimbal();
+            }
+            else  {
+                QGCApplication::moveGimbal("yaw", "20");
+            }
+        }
+        this->reset = !this->reset;
+    }
+
+
+
+    this->countdown -= 1;
+    if(this->countdown == 0) this->countdown = 10;
+
+}
+
+/* QGCApplication:: sendAircraftPositionInfos() {
+        if(mqttClient==null) return;
+        JSONObject newResponse = new JSONObject();
+        newResponse.put("registrationNumber", this.registrationNumber);
+        newResponse.put("emailRemotePilot", this.loggedEmail);
+        newResponse.put("isStreaming", this.isStreaming);
+        newResponse.put("hasCamera", Vehicule::cameraManager().cameras().count() != 0); O
+        newResponse.put("sensorName", Vehicule::cameraManager().currentCameraInstance().modelName()); O
+        newResponse.put("hasZoom", Vehicule::cameraManager().currentCameraInstance().hasZoom()); O
+
+        JSONObject currentValues = new JSONObject();
+        currentValues.put("ISO", Vehicule::cameraManager().currentCameraInstance().iso()); 
+        currentValues.put("whiteBalance", Vehicule::cameraManager().currentCameraInstance().wb());
+        currentValues.put("aperture", Vehicule::cameraManager().currentCameraInstance().aperture());
+        newResponse.put("intrinsics", currentValues);
+
+        newResponse.put("hasGimbal", Vehicule::gimbalController().gimbals().count() != 0);
+
+        JSONObject currentState = new JSONObject();
+        JSONObject attitude = new JSONObject();
+        attitude.put("yaw", Vehicule::gimbalController().activeGimbal().absoluteYaw());
+        attitude.put("pitch", Vehicule::gimbalController().activeGimbal().absolutePitch());
+        attitude.put("roll", Vehicule::gimbalController().activeGimbal().absoluteRoll());
+        currentState.put("KeyGimbalReset", "null");
+        currentState.put("attitude", attitude);
+        currentState.put("keyYawRelativeToAircraftHeading", Vehicule::gimbalController().activeGimbal().bodyYaw());
+        newResponse.put("gimbal", currentState);
+
+        newResponse.put("system", Vehicle::firmwareTypeString());
+        newResponse.put("systemVersion", "V1"); // TODO ???
+        newResponse.put("simulated", false);
+        newResponse.put("systemOS", "Android"); // TODO change to include Windows
+        newResponse.put("productType", Vehicle::vehicleTypeString());
+        newResponse.put("rtmpUrl", this.rtmpUrl);
+        newResponse.put("latitude", Vehicle::coordinate().latitude());
+        newResponse.put("longitude", Vehicle::coordinate().longitude());
+        newResponse.put("altitude", Vehicle::coordinate().altitude());
+        newResponse.put("isFlying", Vehicle::flying());
+        newResponse.put("gpsSatelliteCount", satellite_info_s::count);
+        newResponse.put("firmwareVersionUav", Vehicle::firmwarePatchVersion());
+        newResponse.put("firmwareVersion", this._buildVersion);
+        // newResponse.put("velocity",velocity);
+        // newResponse.put("batteryPowerPercentRC", batteryRCLevel);
+        // int res = 0;
+        // for (int j : batteryLevelAircraft) {
+        //     res += j;
+        // }
+        // newResponse.put("batteryPowerPercentUav", res/batteryLevelAircraft.length);
+        // newResponse.put("batteryBehavior",batteryBehavior);
+
+        // Might not do that
+        
+        currentValues.put("sharpness", Vehicule::cameraManager().currentCameraInstance().); // TODO
+        currentValues.put("orientation", Vehicule::cameraManager().currentCameraInstance().); // TODO
+        currentValues.put("videoResolutionAndFrameRate", Vehicule::cameraManager().currentCameraInstance().); // TODO
+        currentValues.put("videoFileFormat", Vehicule::cameraManager().currentCameraInstance().); // TODO
+        currentValues.put("photoFileFormat", Vehicule::cameraManager().currentCameraInstance().); // TODO
+        newResponse.put("isZooming", Vehicule::cameraManager().currentCameraInstance().);
+        newResponse.put("isMovingGimbal", Vehicule::gimbalController().activeGimbal());
+        
+        Log.d("POSITION",newResponse.toString());
+        MqttMessage message = new MqttMessage(newResponse.toString().getBytes(StandardCharsets.UTF_8));
+        try {
+            mqttClient.publish("POSITION/"+uavSn, message);
+        } catch (MqttException e) {
+            Log.e("POSITION", "************** Exception **************");
+            Log.e("POSITION", String.valueOf(e));
+        }
+    }
+
+    switch ((obj.getString("instruction"))){
+         case "OPEN_STREAM":
+            Log.i("openStream", "=================================================");
+            Log.i("openStream", "recieved OPEN_STREAM");
+            Log.i("openStream", "================================================="); _updateVideoUri()
+            startLiveShow(obj.getString("rtmpChannel"));
+            rtmpUrl = BaseUrl + obj.getString("rtmpChannel");
+            obj.put("url", rtmpUrl);
+            break;
+        case "STOP_STREAM":
+            Log.i("stopStream", "=================================================");
+            Log.i("stopStream", "recieved STOP_STREAM");
+            Log.i("stopStream", "=================================================");
+            stopLiveShow();
+            obj.put("url", "null");
+            break;
+        case "RESET_GIMBAL":
+            Log.i("resetGimbal", "=================================================");
+            Log.i("resetGimbal", "recieved RESET_GIMBAL");
+            Log.i("resetGimbal", "=================================================");
+            GimbalUtil.resetGimbal();
+            break; 
+        case "MOVE_GIMBAL":
+            Log.i("moveCam", "=================================================");
+            Log.i("moveCam", "recieved MOVE_GIMBAL");
+            Log.i("moveCam", "=================================================");
+            String axis = obj.get("axis").toString();
+            String value = obj.get("value").toString();
+            QGCApplication::moveGimbal(axis, value);
+            break;
+        case "GET_CAMERAS":
+            Log.i("getCams", "=================================================");
+            Log.i("getCams", "recieved GET_CAMERAS");
+            Log.i("getCams", "=================================================");
+            obj.put("availableCameraListData", CameraUtil.getCameras());
+            break;
+        case "SET_CAMERA": // TODO rework
+            Log.i("setCams", "=================================================");
+            Log.i("setCams", "recieved SET_CAMERA");
+            Log.i("setCams", "=================================================");
+            break; 
+        case "SET_CAMERA_INTRINSICS":
+            Log.i("getCam", "=================================================");
+            Log.i("getCam", "recieved SET_CAMERA_INTRINSICS");
+            Log.i("getCam", "=================================================");
+            //Log.i("getCam", "recieved photo "+obj.getString("imageFormat"));
+            // CameraUtil.setPhotoFormat(obj.getString("imageFormat"));
+            // Log.i("getCam", "recieved video "+obj.getString("videoFormat"));
+            // CameraUtil.setVideoFormat(obj.getString("videoFormat"));
+            //Log.i("getCam", "recieved resolution and framerate "+obj.getString("resolutionAndFramerate"));
+            //CameraUtil.setVideoResolutionAndFrameRate(obj.getString("resolutionAndFramerate"));
+            Log.i("getCam", "recieved whiteBalance "+obj.getString("whiteBalance"));
+            CameraUtil.setWhiteBalancePreset(obj.getString("whiteBalance"));
+            //Log.i("getCam", "recieved sharpness "+obj.getString("sharpness"));
+            //CameraUtil.setSharpness(obj.getString("sharpness"));
+            // Log.i("getCam", "recieved ISO "+obj.getString("iso"));
+            // CameraUtil.setISO(obj.getString("iso"));
+            //Log.i("getCam", "recieved orientation "+obj.getString("imageOrientation"));
+            //CameraUtil.setOrientation(obj.getString("imageOrientation"));
+            CameraUtil.getCurrentValues();
+            break; 
+        case "GET_CAMERA": // TODO to finish
+            Log.i("getCam", "=================================================");
+            Log.i("getCam", "recieved GET_CAMERA");
+            Log.i("getCam", "=================================================");
+            obj.put("gimbalRange", GimbalUtil.gimbalRange);
+            obj.put("gimbalSN", GimbalUtil.gimbalSN);
+            obj.put("hasZoom", CameraUtil.hasZoom);
+            obj.put("hasLens", CameraUtil.hasLens);
+            obj.put("isoRange", CameraUtil.ISO);
+            obj.put("aperture", CameraUtil.aperture);
+            obj.put("photoFileFormatList", CameraUtil.photoFormats);
+            obj.put("videoFileFormatList", CameraUtil.videoFormats);
+            obj.put("streamSource", CameraUtil.streamSource);
+            obj.put("zoomRatiosRange", new int[]{1});
+            Log.d("GET_CAMERA", "end");
+            break;
+        case "ZOOM_CAMERA": // TODO test and rework
+            Log.i("zoomCam", "=================================================");
+            Log.i("zoomCam", "recieved ZOOM_CAMERA");
+            Log.i("zoomCam", "=================================================");
+            String zoomValue = obj.getString("zoomValue");
+            CameraUtil.zoomCamera(zoomValue);
+            break;
+        case "TAKE_PHOTO": // TODO firmware exam
+            Log.i("takePhoto", "=================================================");
+            Log.i("takePhoto", "recieved TAKE_PHOTO");
+            Log.i("takePhoto", "=================================================");
+            CameraUtil.takePhoto();
+            break;
+        case "START_RECORDING": // TODO firmware exam
+            Log.i("zoomCam", "=================================================");
+            Log.i("zoomCam", "recieved START_RECORDING");
+            Log.i("zoomCam", "=================================================");
+            CameraUtil.startVideo();
+            break;
+        case "STOP_RECORDING": // TODO firmware exam
+            Log.i("zoomCam", "=================================================");
+            Log.i("zoomCam", "recieved STOP_RECORDING");
+            Log.i("zoomCam", "=================================================");
+            CameraUtil.stopVideo();
+            break; 
+        default: // TODO check if new
+            obj.put("status", "KO");
+            obj.put("error", "KO"); 
+    }
+
+JSONArray QGCApplication::getCameras() {
+    const cameras = Vehicule::cameraManager().cameras();
+    JSONArray cameraList = new JSONArray();
+    if (cameras.count() != 0) {
+        for (int i = 0; i < cameras.count(); i++) {
+            JSONObject newResponse = new JSONObject();
+            newResponse.put("index", i);
+            newResponse.put("name", cameras.get(i).modelName());
+            cameraList.put(newResponse);
+        }
+    }
+}
+
+void QGCApplication::setZoom(float value){
+    Vehicule::cameraManager().currentCameraInstance().setZoomLevel(qreal level);
+}
+
+void QGCApplication::getCamera(){
+    JSONObject obj = new JSONObject();
+    obj.put("hasZoom", Vehicule::cameraManager().currentCameraInstance().hasZoom());
+
+     
+    obj.put("isoRange", Vehicule::cameraManager().currentCameraInstance().iso());
+    obj.put("gimbalRange", GimbalUtil.gimbalRange);
+    obj.put("gimbalSN", Vehicule::gimbalController().activeGimbal().);
+    obj.put("hasLens", CameraUtil.hasLens);
+    obj.put("aperture", CameraUtil.aperture);
+    obj.put("photoFileFormatList", CameraUtil.photoFormats);
+    obj.put("videoFileFormatList", CameraUtil.videoFormats);
+    obj.put("streamSource", CameraUtil.streamSource);
+    obj.put("zoomRatiosRange", new int[]{1});
+     
+    return obj;
+}
+
+void QGCApplication::setCamera(int i){
+    Vehicule::cameraManager().setCurrentCamera(i);
+} */
+
+Vehicle* QGCApplication::getActiveVehicle(){
+    MultiVehicleManager* vehicleManager = toolbox()->multiVehicleManager();
+    if(vehicleManager->vehicles()->count() == 0) return nullptr;
+    Vehicle* activeVehicle = vehicleManager->activeVehicle();
+    if(!activeVehicle) return nullptr;
+    return activeVehicle;
+}
+
+MavlinkCameraControl* QGCApplication::getActiveCamera(){
+    Vehicle* activeVehicle = QGCApplication::getActiveVehicle();
+    if(!activeVehicle || activeVehicle->cameraManager()->cameras()->count() <= 0) return nullptr;
+    MavlinkCameraControl *activeCamera = activeVehicle->cameraManager()->currentCameraInstance();
+    if(!activeCamera) return nullptr;
+    return activeCamera;
+}
+
+void QGCApplication::takePhoto(){
+    qCDebug(QGCApplicationLog) << "==============  START TAKE_PHOTO  ==============";
+    MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
+    if(!activeCamera) return;
+    activeCamera->setCameraModePhoto();
+    activeCamera->takePhoto();
+    qCDebug(QGCApplicationLog) << "==============   END TAKE_PHOTO   ==============";
+}
+
+void QGCApplication::startRecording(){
+    qCDebug(QGCApplicationLog) << "==============  START START_RECORDING  ==============";
+    MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
+    if(!activeCamera) return;
+    activeCamera->setCameraModeVideo();
+    activeCamera->startVideoRecording();
+    qCDebug(QGCApplicationLog) << "==============   END START_RECORDING   ==============";
+}
+
+void QGCApplication::stopRecording(){
+    qCDebug(QGCApplicationLog) << "==============  START STOP_RECORDING  ==============";
+    MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
+    if(!activeCamera) return;
+    activeCamera->stopVideoRecording();
+    qCDebug(QGCApplicationLog) << "==============   END STOP_RECORDING   ==============";
+}
+
+void QGCApplication::resetGimbal() {
+    qCDebug(QGCApplicationLog) << "==============  START RESET_GIMBAL  ==============";
+    MultiVehicleManager* vehicleManager = toolbox()->multiVehicleManager();
+    if(vehicleManager->vehicles()->count() == 0) return;
+    Vehicle* activeVehicle = vehicleManager->activeVehicle();
+    if(!activeVehicle || activeVehicle->gimbalController()->gimbals()->count() == 0) return;
+    Gimbal *activeGimbal = activeVehicle->gimbalController()->activeGimbal();
+    if(!activeGimbal) return;
+    activeGimbal->setAbsolutePitch(0);
+    activeGimbal->setBodyYaw(0);
+    activeGimbal->setAbsoluteRoll(0);
+    qCDebug(QGCApplicationLog) << "==============   END RESET_GIMBAL   ==============";
+}
+
+void QGCApplication::moveGimbal(QString axis, QString value) {
+    qCDebug(QGCApplicationLog) << "==============  START MOVE_GIMBAL  ==============";
+    MultiVehicleManager* vehicleManager = toolbox()->multiVehicleManager();
+    if(vehicleManager->vehicles()->count() == 0) return;
+    Vehicle* activeVehicle = vehicleManager->activeVehicle();
+    if(!activeVehicle || activeVehicle->gimbalController()->gimbals()->count() == 0) return;
+    Gimbal *activeGimbal = activeVehicle->gimbalController()->activeGimbal();
+    if(!activeGimbal) return;
+    QStringList axisList;
+    axisList << "pitch" << "yaw" << "roll";
+    switch (axisList.indexOf(axis)) {
+        case 0:
+            qCDebug(QGCApplicationLog) << "==============   MOVE_GIMBAL CASE PITCH  ==============";
+            activeGimbal->setAbsolutePitch(value.toFloat());
+            break;
+        case 1:
+            qCDebug(QGCApplicationLog) << "==============   MOVE_GIMBAL CASE YAW   ==============";
+            activeGimbal->setBodyYaw(value.toFloat());
+            break;
+        case 2:
+            qCDebug(QGCApplicationLog) << "==============   MOVE_GIMBAL CASE ROLL   ==============";
+            activeGimbal->setAbsoluteRoll(value.toFloat());
+            break;
+    }
+    qCDebug(QGCApplicationLog) << "==============   END MOVE_GIMBAL   ==============";
 }
 
 void QGCApplication::_initForNormalAppBoot()
