@@ -5,6 +5,8 @@ on:
     branches:
       - master
       - 'Stable*'
+      - detached
+      - detached_squashed
     tags:
       - 'v*'
     paths-ignore:
@@ -36,9 +38,9 @@ jobs:
 
     env:
       ARTIFACT: QGroundControl-installer.exe
-      QT_VERSION: 6.6.3
       GST_VERSION: 1.22.12
       SCCACHE_GHA_ENABLED: "true"
+      QT_VERSION: 6.6.3
 
     steps:
       - name: Checkout repo
@@ -118,16 +120,20 @@ jobs:
 
       - run: mkdir ${{ runner.temp }}\shadow_build_dir
 
-      - name: Setup MQTT
+      - name: Setup QMQTT
         run: |
-          git clone https://code.qt.io/qt/qtmqtt.git --branch 6.6.3
+          set QT_VERSION=6.6.3
+          set QT_INSTALL_DIR=D:/a/_temp/Qt
+          set CMAKE_BIN_DIR=$QT_INSTALL_DIR/Tools/CMake/bin"
+          set QMAKE_BIN_DIR=$QT_INSTALL_DIR/$QT_VERSION/msvc2019_64/bin"
+          set CMAKE_PREFIX_PATH=$QT_INSTALL_DIR/$QT_VERSION/msvc2019_64/"
+          set NINJA_DIR=$QT_INSTALL_DIR/Tools/Ninja"
+          git clone git://code.qt.io/qt/qtmqtt.git --branch 6.6.3
           cd qtmqtt
           mkdir build
-          cd build
-          cmake ..
-          make
-          make install
-          cd ../..
+          cd build/
+          D:/a/_temp/Qt/6.6.3/msvc2019_64/bin/qt-configure-module ..
+          D:/a/_temp/Qt/Tools/CMake/bin/cmake --build .
 
       - name: Configure
         working-directory: ${{ runner.temp }}\shadow_build_dir
