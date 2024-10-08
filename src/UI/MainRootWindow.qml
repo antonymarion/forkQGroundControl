@@ -113,10 +113,10 @@ ApplicationWindow {
         repeat: true
         running:true
         onTriggered: {
+            console.log("SendPos","===========================================================================");
             console.log(QGroundControl.multiVehicleManager.activeVehicle.latitude);
             console.log(QGroundControl.multiVehicleManager.activeVehicle.longitude);
             console.log("SendPos","===========================================================================");
-            console.log("testing");
         }
     }
     //-------------------------------------------------------------------------

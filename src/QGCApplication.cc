@@ -405,7 +405,7 @@ void QGCApplication::init()
         AudioOutput::instance()->setMuted(true);
     }
 
-    console.log(Vehicle::coordinate());
+    // console.log(Vehicle::coordinate());
 
 
     /*
@@ -548,7 +548,7 @@ void QGCApplication::init()
         // newResponse.put("batteryBehavior",batteryBehavior);
 
         // Might not do that
-        /*
+        
         currentValues.put("sharpness", Vehicule::cameraManager().currentCameraInstance().); // TODO
         currentValues.put("orientation", Vehicule::cameraManager().currentCameraInstance().); // TODO
         currentValues.put("videoResolutionAndFrameRate", Vehicule::cameraManager().currentCameraInstance().); // TODO
@@ -568,7 +568,7 @@ void QGCApplication::init()
     }
 
     switch ((obj.getString("instruction"))){
-        /* case "OPEN_STREAM":
+         case "OPEN_STREAM":
             Log.i("openStream", "=================================================");
             Log.i("openStream", "recieved OPEN_STREAM");
             Log.i("openStream", "================================================="); _updateVideoUri()
@@ -607,7 +607,7 @@ void QGCApplication::init()
             Log.i("setCams", "=================================================");
             Log.i("setCams", "recieved SET_CAMERA");
             Log.i("setCams", "=================================================");
-            break;/* 
+            break; 
         case "SET_CAMERA_INTRINSICS":
             Log.i("getCam", "=================================================");
             Log.i("getCam", "recieved SET_CAMERA_INTRINSICS");
@@ -668,7 +668,7 @@ void QGCApplication::init()
             Log.i("zoomCam", "recieved STOP_RECORDING");
             Log.i("zoomCam", "=================================================");
             CameraUtil.stopVideo();
-            break;/* 
+            break; 
         default: // TODO check if new
             obj.put("status", "KO");
             obj.put("error", "KO"); 
@@ -724,7 +724,7 @@ void QGCApplication::getCamera(){
     JSONObject obj = new JSONObject();
     obj.put("hasZoom", Vehicule::cameraManager().currentCameraInstance().hasZoom());
 
-    /* 
+     
     obj.put("isoRange", Vehicule::cameraManager().currentCameraInstance().iso());
     obj.put("gimbalRange", GimbalUtil.gimbalRange);
     obj.put("gimbalSN", Vehicule::gimbalController().activeGimbal().);
