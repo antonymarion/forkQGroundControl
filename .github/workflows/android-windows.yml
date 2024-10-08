@@ -5,6 +5,7 @@ on:
     branches:
       - master
       - 'Stable*'
+      - detached
     tags:
       - 'v*'
     paths-ignore:
