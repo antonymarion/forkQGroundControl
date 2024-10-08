@@ -408,9 +408,9 @@ void QGCApplication::init()
 
     QTimer *timer = new QTimer(this);
 
-    QObject::connect(&timer, &QTimer::timeout, this, &QGCApplication::sendInfos);
+    QObject::connect(timer, &QTimer::timeout, this, &QGCApplication::sendInfos);
 
-    timer.start(2000);
+    timer->start(2000);
 
     /*
 
