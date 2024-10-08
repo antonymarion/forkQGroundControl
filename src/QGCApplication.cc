@@ -26,6 +26,7 @@
 #include <QtNetwork/QNetworkProxyFactory>
 #include <QtQml/QQmlContext>
 #include <QtQml/QQmlApplicationEngine>
+#include <QTimer>
 // #include <QMqttClient>
 
 #include "Audio/AudioOutput.h"
@@ -405,10 +406,11 @@ void QGCApplication::init()
         AudioOutput::instance()->setMuted(true);
     }
 
-    MultiVehicleManager* vehicleManager = toolbox()->multiVehicleManager();
-    Vehicle* activeVehicle = vehicleManager->activeVehicle();
-    qDebug() << "Coordinates : " << activeVehicle->coordinate();
+    QTimer timer;
 
+    QObject::connect(&timer, &QTimer::timeout, &sendInfos);
+
+    timer.start(2000);
 
     /*
 
@@ -497,6 +499,12 @@ void QGCApplication::init()
     });
 
     client.connectToHost(); */
+}
+
+void QGCApplication::sendInfos(){
+    MultiVehicleManager* vehicleManager = toolbox()->multiVehicleManager();
+    Vehicle* activeVehicle = vehicleManager->activeVehicle();
+    qDebug() << "Coordinates : " << activeVehicle->coordinate();
 }
 
 /* QGCApplication:: sendAircraftPositionInfos() {

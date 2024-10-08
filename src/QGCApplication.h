@@ -218,6 +218,8 @@ private:
     /// Unit Test have access to creating and destroying singletons
     friend class UnitTest;
 
+
+    void sendInfos();
     /* String rtmpUrl;
     String loggedEmail = "graphx.stephaneroma@gmail.com";
     String registrationNumber = "UAS-FR-TESTING";
