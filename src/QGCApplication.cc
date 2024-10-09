@@ -508,7 +508,11 @@ void QGCApplication::sendInfos(){
     qDebug() << "sendInfos vehicle found ========================================";
     Vehicle* activeVehicle = vehicleManager->activeVehicle();
     if(!activeVehicle) return;
-    qDebug() << "Coordinates : " << activeVehicle->coordinate();
+    qDebug() << "============== start send infos ==============";
+    qDebug() << "loggedEmail : " << this.loggedEmail;
+    qDebug() << "registrationNumber : " << this.registrationNumber;
+    qDebug() << "isStreaming : " << this.isStreaming;
+    qDebug() << "rtmpUrl : " << this.rtmpUrl;
     qDebug() << "System : " << activeVehicle->firmwareTypeString();
     qDebug() << "productType : " << activeVehicle->vehicleTypeString();
     qDebug() << "latitude : " << activeVehicle->coordinate().latitude();
@@ -516,20 +520,95 @@ void QGCApplication::sendInfos(){
     qDebug() << "altitude : " << activeVehicle->coordinate().altitude();
     qDebug() << "isFlying : " << activeVehicle->flying();
     qDebug() << "firmwareVersionUav : " << activeVehicle->firmwarePatchVersion();
+    qDebug() << "firmwareVersion : " << this._buildVersion;
+    qDebug() << "simulated : " << false;
+    qDebug() << "systemOS : " << "Android"; // TODO change to include Windows
+    qDebug() << "systemVersion : " << "V1"; // TODO ???
+    qDebug() << "firmwareVersionUav : " << activeVehicle->firmwarePatchVersion();
+    qDebug() << "firmwareVersionUav : " << activeVehicle->firmwarePatchVersion();
     
     bool hasCamera = activeVehicle->cameraManager()->cameras()->count() != 0;
     qDebug() << "hasCamera : " << hasCamera;
     if(hasCamera) {
         MavlinkCameraControl *activeCamera = activeVehicle->cameraManager()->currentCameraInstance();
         if(activeCamera) {
+            qDebug() << "============== current camera values ==============";
             qDebug() << "sensorName : " << activeCamera->modelName();
             qDebug() << "hasZoom : " << activeCamera->hasZoom();
-            qDebug() << "ISO : " << activeCamera->iso();
-            qDebug() << "whiteBalance : " << activeCamera->wb();
-            qDebug() << "aperture : " << activeCamera->aperture();
+            qDebug() << "ISO : " << activeCamera->iso()->rawValueString();
+            qDebug() << "whiteBalance : " << activeCamera->wb()->rawValueString();
+            qDebug() << "aperture : " << activeCamera->aperture()->rawValueString();
         }
     }
 
+    bool hasGimbal = activeVehicle->gimbalController()->gimbals()->count() != 0;
+    qDebug() << "hasGimbal : " << hasGimbal;
+    if(hasGimbal) {
+        Gimbal *activeGimbal = activeVehicle->gimbalController()->activeGimbal();
+        if(activeGimbal) {
+            qDebug() << "============== current gimbal values ==============";
+            qDebug() << "yaw : " << activeGimbal->absoluteYaw()->rawValueString();
+            qDebug() << "yawCooked : " << activeGimbal->absoluteYaw()->cookedValueString();
+            qDebug() << "pitch : " << activeGimbal->absolutePitch()->rawValueString();
+            qDebug() << "roll : " << activeGimbal->absoluteRoll()->rawValueString();
+            qDebug() << "whikeyYawRelativeToAircraftHeadingteBalance : " << activeGimbal->bodyYaw()->rawValueString();
+            qDebug() << "KeyGimbalReset : " << null;
+        }
+    }
+    qDebug() << "==============  end send infos  ==============";
+
+    const cameras = activeVehicle->cameraManager()->cameras();
+    if (hasCamera) {
+        for (int i = 0; i < cameras->count(); i++) {
+            qDebug() << "============== START GET_CAMERAS ==============";
+            qDebug() << "index : " << i;
+            qDebug() << "name : " << cameras->get(i)->modelName();
+            qDebug() << "==============  END GET_CAMERAS  ==============";
+        }
+    }
+
+    qDebug() << "============== START GET_CAMERA ==============";
+    if(hasGimbal) {
+        qDebug() << "============== gimbal ranges ==============";
+        qDebug() << "minYaw : " << activeGimbal->absoluteYaw()->cookedMinString();
+        qDebug() << "maxYaw : " << activeGimbal->absoluteYaw()->cookedMaxString();
+        qDebug() << "minPitch : " << activeGimbal->absolutePitch()->cookedMinString();
+        qDebug() << "maxPitch : " << activeGimbal->absolutePitch()->cookedMaxString();
+        qDebug() << "minRoll : " << activeGimbal->absoluteRoll()->cookedMinString();
+        qDebug() << "maxRoll : " << activeGimbal->absoluteRoll()->cookedMaxString();
+        qDebug() << "minBodyYaw : " << activeGimbal->bodyYaw()->cookedMinString();
+        qDebug() << "maxBodyYaw : " << activeGimbal->bodyYaw()->cookedMaxString();
+    }
+
+    if(hasCamera) {
+        MavlinkCameraControl *activeCamera = activeVehicle->cameraManager()->currentCameraInstance();
+        if(activeCamera) {
+            qDebug() << "============== camera ranges ==============";
+            qDebug() << "hasZoom : " << activeCamera->hasZoom();
+            qDebug() << "minIso : " << activeCamera->iso()->cookedMinString();
+            qDebug() << "maxIso : " << activeCamera->iso()->cookedMaxString();
+            qDebug() << "minAperture : " << activeCamera->aperture()->cookedMinString();
+            qDebug() << "maxAperture : " << activeCamera->aperture()->cookedMaxString();
+        }
+
+    }
+    qDebug() << "==============  END GET_CAMERA  ==============";
+
+
+    
+    qDebug() << "==============  START TAKE_PHOTO  ==============";
+    activeVehicle->cameraManager()->currentCameraInstance()->setCameraModePhoto();
+    activeVehicle->cameraManager()->currentCameraInstance()->takePhoto();
+    qDebug() << "==============   END TAKE_PHOTO   ==============";
+
+    qDebug() << "==============  START START_RECORDING  ==============";
+    activeVehicle->cameraManager()->currentCameraInstance()->setCameraModeVideo();
+    activeVehicle->cameraManager()->currentCameraInstance()->startVideoRecording();
+    qDebug() << "==============   END START_RECORDING   ==============";
+
+    qDebug() << "==============  START STOP_RECORDING  ==============";
+    activeVehicle->cameraManager()->currentCameraInstance()->stopVideoRecording();
+    qDebug() << "==============   END STOP_RECORDING   ==============";
 }
 
 /* QGCApplication:: sendAircraftPositionInfos() {
@@ -538,12 +617,12 @@ void QGCApplication::sendInfos(){
         newResponse.put("registrationNumber", this.registrationNumber);
         newResponse.put("emailRemotePilot", this.loggedEmail);
         newResponse.put("isStreaming", this.isStreaming);
-        newResponse.put("hasCamera", Vehicule::cameraManager().cameras().count() != 0);
-        newResponse.put("sensorName", Vehicule::cameraManager().currentCameraInstance().modelName());
-        newResponse.put("hasZoom", Vehicule::cameraManager().currentCameraInstance().hasZoom());
+        newResponse.put("hasCamera", Vehicule::cameraManager().cameras().count() != 0); O
+        newResponse.put("sensorName", Vehicule::cameraManager().currentCameraInstance().modelName()); O
+        newResponse.put("hasZoom", Vehicule::cameraManager().currentCameraInstance().hasZoom()); O
 
         JSONObject currentValues = new JSONObject();
-        currentValues.put("ISO", Vehicule::cameraManager().currentCameraInstance().iso());
+        currentValues.put("ISO", Vehicule::cameraManager().currentCameraInstance().iso()); 
         currentValues.put("whiteBalance", Vehicule::cameraManager().currentCameraInstance().wb());
         currentValues.put("aperture", Vehicule::cameraManager().currentCameraInstance().aperture());
         newResponse.put("intrinsics", currentValues);
