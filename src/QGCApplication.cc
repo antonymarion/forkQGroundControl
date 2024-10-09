@@ -511,9 +511,9 @@ void QGCApplication::sendInfos(){
     qDebug() << "Coordinates : " << activeVehicle->coordinate();
     qDebug() << "System : " << activeVehicle->firmwareTypeString();
     qDebug() << "productType : " << activeVehicle->vehicleTypeString();
-    qDebug() << "latitude : " << activeVehicle->coordinate()->latitude();
-    qDebug() << "longitude : " << activeVehicle->coordinate()->longitude();
-    qDebug() << "altitude : " << activeVehicle->coordinate()->altitude();
+    qDebug() << "latitude : " << activeVehicle->coordinate().latitude();
+    qDebug() << "longitude : " << activeVehicle->coordinate().longitude();
+    qDebug() << "altitude : " << activeVehicle->coordinate().altitude();
     qDebug() << "isFlying : " << activeVehicle->flying();
     qDebug() << "firmwareVersionUav : " << activeVehicle->firmwarePatchVersion();
     
