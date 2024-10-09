@@ -507,7 +507,29 @@ void QGCApplication::sendInfos(){
     if(vehicleManager->vehicles()->count() == 0) return;
     qDebug() << "sendInfos vehicle found ========================================";
     Vehicle* activeVehicle = vehicleManager->activeVehicle();
+    if(!activeVehicle) return;
     qDebug() << "Coordinates : " << activeVehicle->coordinate();
+    qDebug() << "System : " << activeVehicle->firmwareTypeString();
+    qDebug() << "productType : " << activeVehicle->vehicleTypeString();
+    qDebug() << "latitude : " << activeVehicle->coordinate()->latitude();
+    qDebug() << "longitude : " << activeVehicle->coordinate()->longitude();
+    qDebug() << "altitude : " << activeVehicle->coordinate()->altitude();
+    qDebug() << "isFlying : " << activeVehicle->flying();
+    qDebug() << "firmwareVersionUav : " << activeVehicle->firmwarePatchVersion();
+    
+    bool hasCamera = activeVehicle->cameraManager()->cameras()->count() != 0;
+    qDebug() << "hasCamera : " << hasCamera;
+    if(hasCamera) {
+        MavlinkCameraControl *activeCamera = activeVehicle->cameraManager()->currentCameraInstance();
+        if(activeCamera) {
+            qDebug() << "sensorName : " << activeCamera->modelName();
+            qDebug() << "hasZoom : " << activeCamera->hasZoom();
+            qDebug() << "ISO : " << activeCamera->iso();
+            qDebug() << "whiteBalance : " << activeCamera->wb();
+            qDebug() << "aperture : " << activeCamera->aperture();
+        }
+    }
+
 }
 
 /* QGCApplication:: sendAircraftPositionInfos() {
