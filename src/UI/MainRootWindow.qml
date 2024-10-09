@@ -108,7 +108,7 @@ ApplicationWindow {
 
 
     //MQTT TRY
-    Timer {
+    /* Timer {
         interval: 2000
         repeat: true
         running:true
@@ -118,7 +118,9 @@ ApplicationWindow {
             console.log(QGroundControl.multiVehicleManager.activeVehicle.longitude);
             console.log("SendPos","===========================================================================");
         }
-    }
+    } */
+
+    
     //-------------------------------------------------------------------------
     //-- Global Scope Functions
 

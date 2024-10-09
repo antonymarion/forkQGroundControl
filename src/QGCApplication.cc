@@ -502,8 +502,10 @@ void QGCApplication::init()
 }
 
 void QGCApplication::sendInfos(){
+    qDebug() << "sendInfos init =================================================";
     MultiVehicleManager* vehicleManager = toolbox()->multiVehicleManager();
     if(vehicleManager->vehicles()->count() == 0) return;
+    qDebug() << "sendInfos vehicle found ========================================";
     Vehicle* activeVehicle = vehicleManager->activeVehicle();
     qDebug() << "Coordinates : " << activeVehicle->coordinate();
 }
