@@ -220,7 +220,7 @@ private:
 
 
     void sendInfos();
-    QString rtmpUrl;
+    QString rtmpUrl = "";
     QString loggedEmail = "graphx.stephaneroma@gmail.com";
     QString registrationNumber = "UAS-FR-TESTING";
     bool isStreaming = false;
