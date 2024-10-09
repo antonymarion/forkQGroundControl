@@ -560,7 +560,7 @@ void QGCApplication::sendInfos(){
     QmlObjectListModel *cameras = activeVehicle->cameraManager()->cameras();
     if (hasCamera) {
         for (int i = 0; i < cameras->count(); i++) {
-            MavlinkCameraControl *camera = cameras->value(i);
+            MavlinkCameraControl *camera = qobject_cast<MavlinkCameraControl*>(cameras->get(i));
             qDebug() << "============== START GET_CAMERAS ==============";
             qDebug() << "index : " << i;
             qDebug() << "name : " << camera->modelName();
