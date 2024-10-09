@@ -406,11 +406,11 @@ void QGCApplication::init()
         AudioOutput::instance()->setMuted(true);
     }
 
-    QTimer *timer = new QTimer(this);
+    /* QTimer *timer = new QTimer(this);
 
     QObject::connect(timer, &QTimer::timeout, this, &QGCApplication::sendInfos);
 
-    timer->start(2000);
+    timer->start(2000); */
 
     /*
 
