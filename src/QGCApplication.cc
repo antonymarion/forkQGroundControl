@@ -535,9 +535,9 @@ void QGCApplication::sendInfos(){
             qDebug() << "============== current camera values ==============";
             qDebug() << "sensorName : " << activeCamera->modelName();
             qDebug() << "hasZoom : " << activeCamera->hasZoom();
-            qDebug() << "ISO : " << activeCamera->iso()->cookedValueString();
-            qDebug() << "whiteBalance : " << activeCamera->wb()->cookedValueString();
-            qDebug() << "aperture : " << activeCamera->aperture()->cookedValueString();
+            // qDebug() << "ISO : " << activeCamera->iso()->cookedValueString();
+            // qDebug() << "whiteBalance : " << activeCamera->wb()->cookedValueString();
+            // qDebug() << "aperture : " << activeCamera->aperture()->cookedValueString();
         }
     }
 
@@ -547,10 +547,10 @@ void QGCApplication::sendInfos(){
         Gimbal *activeGimbal = activeVehicle->gimbalController()->activeGimbal();
         if(activeGimbal) {
             qDebug() << "============== current gimbal values ==============";
-            qDebug() << "yaw : " << activeGimbal->absoluteYaw()->cookedValueString();
-            qDebug() << "pitch : " << activeGimbal->absolutePitch()->cookedValueString();
-            qDebug() << "roll : " << activeGimbal->absoluteRoll()->cookedValueString();
-            qDebug() << "whikeyYawRelativeToAircraftHeadingteBalance : " << activeGimbal->bodyYaw()->cookedValueString();
+            // qDebug() << "yaw : " << activeGimbal->absoluteYaw()->cookedValueString();
+            // qDebug() << "pitch : " << activeGimbal->absolutePitch()->cookedValueString();
+            // qDebug() << "roll : " << activeGimbal->absoluteRoll()->cookedValueString();
+            // qDebug() << "whikeyYawRelativeToAircraftHeadingteBalance : " << activeGimbal->bodyYaw()->cookedValueString();
             qDebug() << "KeyGimbalReset : " << "null";
         }
     }
