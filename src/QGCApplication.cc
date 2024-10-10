@@ -572,14 +572,14 @@ void QGCApplication::sendInfos(){
         Gimbal *activeGimbal = activeVehicle->gimbalController()->activeGimbal();
         if(activeGimbal) {
             qDebug() << "============== gimbal ranges ==============";
-            qDebug() << "minYaw : " << activeGimbal->absoluteYaw()->cookedMinString();
+            /* qDebug() << "minYaw : " << activeGimbal->absoluteYaw()->cookedMinString();
             qDebug() << "maxYaw : " << activeGimbal->absoluteYaw()->cookedMaxString();
             qDebug() << "minPitch : " << activeGimbal->absolutePitch()->cookedMinString();
             qDebug() << "maxPitch : " << activeGimbal->absolutePitch()->cookedMaxString();
             qDebug() << "minRoll : " << activeGimbal->absoluteRoll()->cookedMinString();
             qDebug() << "maxRoll : " << activeGimbal->absoluteRoll()->cookedMaxString();
             qDebug() << "minBodyYaw : " << activeGimbal->bodyYaw()->cookedMinString();
-            qDebug() << "maxBodyYaw : " << activeGimbal->bodyYaw()->cookedMaxString();
+            qDebug() << "maxBodyYaw : " << activeGimbal->bodyYaw()->cookedMaxString(); */
         }
     }
 
@@ -588,10 +588,10 @@ void QGCApplication::sendInfos(){
         if(activeCamera) {
             qDebug() << "============== camera ranges ==============";
             qDebug() << "hasZoom : " << activeCamera->hasZoom();
-            qDebug() << "minIso : " << activeCamera->iso()->cookedMinString();
+            /* qDebug() << "minIso : " << activeCamera->iso()->cookedMinString();
             qDebug() << "maxIso : " << activeCamera->iso()->cookedMaxString();
             qDebug() << "minAperture : " << activeCamera->aperture()->cookedMinString();
-            qDebug() << "maxAperture : " << activeCamera->aperture()->cookedMaxString();
+            qDebug() << "maxAperture : " << activeCamera->aperture()->cookedMaxString(); */
         }
 
     }
