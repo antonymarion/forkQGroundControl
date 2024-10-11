@@ -559,8 +559,8 @@ void QGCApplication::sendInfos(){
     QmlObjectListModel* batteries = activeVehicle->batteries();
     int res = 0;
     for (int i=0; i<batteries->count(); i++) {
-        VehicleBatteryFactGroup* group = batteries->value<VehicleBatteryFactGroup*>(i);
-        int res += group->percentRemaining()->rawValue().toInt();
+        VehicleBatteryFactGroup* group = qobject_cast<VehicleBatteryFactGroup*>(batteries->get(i));
+        res += group->percentRemaining()->rawValue().toInt();
     }
     qDebug() << "batteryPowerPercentUav : " << res/batteries->count();
 
@@ -624,6 +624,24 @@ void QGCApplication::sendInfos(){
     qDebug() << "==============  START STOP_RECORDING  ==============";
     activeVehicle->cameraManager()->currentCameraInstance()->stopVideoRecording();
     qDebug() << "==============   END STOP_RECORDING   ==============";
+
+
+
+    qDebug() << "==============   TESTING SET COMMANDS   ==============";
+
+    if(this->reset){
+        QGCApplication::resetGimbal();
+    }
+
+    if(hasGimbal) {
+        QGCApplication::moveGimbal("yaw", "10");
+    }
+
+
+
+    this->countdown -= 1;
+    if(this->countdown == 0) this->countdown = 10;
+
 }
 
 /* QGCApplication:: sendAircraftPositionInfos() {
@@ -870,6 +888,38 @@ void QGCApplication::getCamera(){
 void QGCApplication::setCamera(int i){
     Vehicule::cameraManager().setCurrentCamera(i);
 } */
+
+void QGCApplication::resetGimbal() {
+    MultiVehicleManager* vehicleManager = toolbox()->multiVehicleManager();
+    if(vehicleManager->vehicles()->count() == 0) return;
+    Vehicle* activeVehicle = vehicleManager->activeVehicle();
+    if(!activeVehicle || activeVehicle->gimbalController().gimbals().count() == 0) return;
+    Gimbal *activeGimbal = activeVehicle->gimbalController()->activeGimbal();
+    if(!activeGimbal) return;
+    activeGimbal->setAbsolutePitch(0);
+    activeGimbal->setBodyYaw(0);
+    activeGimbal->setAbsoluteRoll(0);
+}
+
+void QGCApplication::moveGimbal(QString axis, QString value) {
+    MultiVehicleManager* vehicleManager = toolbox()->multiVehicleManager();
+    if(vehicleManager->vehicles()->count() == 0) return;
+    Vehicle* activeVehicle = vehicleManager->activeVehicle();
+    if(!activeVehicle || activeVehicle->gimbalController().gimbals().count() == 0) return;
+    Gimbal *activeGimbal = activeVehicle->gimbalController()->activeGimbal();
+    if(!activeGimbal) return;
+    switch (axis) {
+        case "pitch":
+            activeGimbal->setAbsolutePitch(Float.parseFloat(value));
+            break;
+        case "yaw":
+            activeGimbal->setBodyYaw(Float.parseFloat(value));
+            break;
+        case "roll":
+            activeGimbal->setAbsoluteRoll(Float.parseFloat(value));
+            break;
+    }
+}
 
 void QGCApplication::_initForNormalAppBoot()
 {

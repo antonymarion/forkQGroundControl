@@ -220,8 +220,12 @@ private:
 
 
     void sendInfos();
+    void moveGimbal(QString axis, QString value);
+    void resetGimbal();
     QString rtmpUrl = "";
     QString loggedEmail = "graphx.stephaneroma@gmail.com";
     QString registrationNumber = "UAS-FR-TESTING";
     bool isStreaming = false;
+    int countdown = 10;
+    bool reset = true;
 };
