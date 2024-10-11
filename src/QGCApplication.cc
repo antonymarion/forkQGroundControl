@@ -535,9 +535,11 @@ void QGCApplication::sendInfos(){
             qDebug() << "============== current camera values ==============";
             qDebug() << "sensorName : " << activeCamera->modelName();
             qDebug() << "hasZoom : " << activeCamera->hasZoom();
-            // qDebug() << "ISO : " << activeCamera->iso()->cookedValueString();
-            // qDebug() << "whiteBalance : " << activeCamera->wb()->cookedValueString();
-            // qDebug() << "aperture : " << activeCamera->aperture()->cookedValueString();
+            if(activeCamera->modelName() != "Simulated Camera"){
+                qDebug() << "ISO : " << activeCamera->iso()->rawValueString();
+                qDebug() << "whiteBalance : " << activeCamera->wb()->rawValueString();
+                qDebug() << "aperture : " << activeCamera->aperture()->rawValueString();
+            }
         }
     }
 
@@ -547,13 +549,21 @@ void QGCApplication::sendInfos(){
         Gimbal *activeGimbal = activeVehicle->gimbalController()->activeGimbal();
         if(activeGimbal) {
             qDebug() << "============== current gimbal values ==============";
-            // qDebug() << "yaw : " << activeGimbal->absoluteYaw()->cookedValueString();
-            // qDebug() << "pitch : " << activeGimbal->absolutePitch()->cookedValueString();
-            // qDebug() << "roll : " << activeGimbal->absoluteRoll()->cookedValueString();
-            // qDebug() << "whikeyYawRelativeToAircraftHeadingteBalance : " << activeGimbal->bodyYaw()->cookedValueString();
+            qDebug() << "yaw : " << activeGimbal->absoluteYaw()->rawValueString();
+            qDebug() << "pitch : " << activeGimbal->absolutePitch()->rawValueString();
+            qDebug() << "roll : " << activeGimbal->absoluteRoll()->rawValueString();
+            qDebug() << "whikeyYawRelativeToAircraftHeadingteBalance : " << activeGimbal->bodyYaw()->rawValueString();
             qDebug() << "KeyGimbalReset : " << "null";
         }
     }
+    QmlObjectListModel* batteries = activeVehicle->batteries();
+    int res = 0;
+    for (int i=0; i<batteries->count(); i++) {
+        VehicleBatteryFactGroup* group = batteries->value<VehicleBatteryFactGroup*>(i);
+        int res += group->percentRemaining()->rawValue().toInt();
+    }
+    qDebug() << "batteryPowerPercentUav : " << res/batteries->count();
+
     qDebug() << "==============  end send infos  ==============";
 
     QmlObjectListModel *cameras = activeVehicle->cameraManager()->cameras();
@@ -572,14 +582,14 @@ void QGCApplication::sendInfos(){
         Gimbal *activeGimbal = activeVehicle->gimbalController()->activeGimbal();
         if(activeGimbal) {
             qDebug() << "============== gimbal ranges ==============";
-            /* qDebug() << "minYaw : " << activeGimbal->absoluteYaw()->cookedMinString();
+            qDebug() << "minYaw : " << activeGimbal->absoluteYaw()->cookedMinString();
             qDebug() << "maxYaw : " << activeGimbal->absoluteYaw()->cookedMaxString();
             qDebug() << "minPitch : " << activeGimbal->absolutePitch()->cookedMinString();
             qDebug() << "maxPitch : " << activeGimbal->absolutePitch()->cookedMaxString();
             qDebug() << "minRoll : " << activeGimbal->absoluteRoll()->cookedMinString();
             qDebug() << "maxRoll : " << activeGimbal->absoluteRoll()->cookedMaxString();
             qDebug() << "minBodyYaw : " << activeGimbal->bodyYaw()->cookedMinString();
-            qDebug() << "maxBodyYaw : " << activeGimbal->bodyYaw()->cookedMaxString(); */
+            qDebug() << "maxBodyYaw : " << activeGimbal->bodyYaw()->cookedMaxString();
         }
     }
 
@@ -588,10 +598,12 @@ void QGCApplication::sendInfos(){
         if(activeCamera) {
             qDebug() << "============== camera ranges ==============";
             qDebug() << "hasZoom : " << activeCamera->hasZoom();
-            /* qDebug() << "minIso : " << activeCamera->iso()->cookedMinString();
-            qDebug() << "maxIso : " << activeCamera->iso()->cookedMaxString();
-            qDebug() << "minAperture : " << activeCamera->aperture()->cookedMinString();
-            qDebug() << "maxAperture : " << activeCamera->aperture()->cookedMaxString(); */
+            if(activeCamera->modelName() != "Simulated Camera"){
+                qDebug() << "minIso : " << activeCamera->iso()->cookedMinString();
+                qDebug() << "maxIso : " << activeCamera->iso()->cookedMaxString();
+                qDebug() << "minAperture : " << activeCamera->aperture()->cookedMinString();
+                qDebug() << "maxAperture : " << activeCamera->aperture()->cookedMaxString();
+            }
         }
 
     }
