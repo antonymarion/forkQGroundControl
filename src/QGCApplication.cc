@@ -561,8 +561,6 @@ void QGCApplication::sendInfos(){
     int res = 0;
     for (int i=0; i<batteries->count(); i++) {
         VehicleBatteryFactGroup* battery = qobject_cast<VehicleBatteryFactGroup*>(batteries->get(i));
-        qDebug() << "battery : " << battery; // TODO remove
-        qDebug() << "battery : " << battery->percentRemaining(); // TODO remove
         res += battery->percentRemaining()->rawValue().toInt();
     }
     qDebug() << "batteryPowerPercentUav : " << res/batteries->count();
@@ -624,12 +622,14 @@ void QGCApplication::sendInfos(){
 
     qDebug() << "==============   TESTING SET COMMANDS   ==============";
 
-    if(this->reset){
-        QGCApplication::resetGimbal();
-    }
-
-    if(hasGimbal) {
-        QGCApplication::moveGimbal("yaw", "10");
+    if(this->countdown == 10){
+        if(this->reset){
+            QGCApplication::resetGimbal();
+        }
+        else if(hasGimbal) {
+            QGCApplication::moveGimbal("yaw", "20");
+        }
+        this->reset = !this->reset;
     }
 
 
@@ -898,6 +898,7 @@ void QGCApplication::stopRecording(){
 }
 
 void QGCApplication::resetGimbal() {
+    qDebug() << "==============  START RESET_GIMBAL  ==============";
     MultiVehicleManager* vehicleManager = toolbox()->multiVehicleManager();
     if(vehicleManager->vehicles()->count() == 0) return;
     Vehicle* activeVehicle = vehicleManager->activeVehicle();
@@ -907,9 +908,11 @@ void QGCApplication::resetGimbal() {
     activeGimbal->setAbsolutePitch(0);
     activeGimbal->setBodyYaw(0);
     activeGimbal->setAbsoluteRoll(0);
+    qDebug() << "==============   END RESET_GIMBAL   ==============";
 }
 
 void QGCApplication::moveGimbal(QString axis, QString value) {
+    qDebug() << "==============  START MOVE_GIMBAL  ==============";
     MultiVehicleManager* vehicleManager = toolbox()->multiVehicleManager();
     if(vehicleManager->vehicles()->count() == 0) return;
     Vehicle* activeVehicle = vehicleManager->activeVehicle();
@@ -920,15 +923,19 @@ void QGCApplication::moveGimbal(QString axis, QString value) {
     axisList << "pitch" << "yaw" << "roll";
     switch (axisList.indexOf(axis)) {
         case 0:
+            qDebug() << "==============   MOVE_GIMBAL CASE PITCH  ==============";
             activeGimbal->setAbsolutePitch(value.toFloat());
             break;
         case 1:
+            qDebug() << "==============   MOVE_GIMBAL CASE YAW   ==============";
             activeGimbal->setBodyYaw(value.toFloat());
             break;
         case 2:
+            qDebug() << "==============   MOVE_GIMBAL CASE ROLL   ==============";
             activeGimbal->setAbsoluteRoll(value.toFloat());
             break;
     }
+    qDebug() << "==============   END MOVE_GIMBAL   ==============";
 }
 
 void QGCApplication::_initForNormalAppBoot()
