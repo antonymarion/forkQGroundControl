@@ -893,7 +893,7 @@ void QGCApplication::resetGimbal() {
     MultiVehicleManager* vehicleManager = toolbox()->multiVehicleManager();
     if(vehicleManager->vehicles()->count() == 0) return;
     Vehicle* activeVehicle = vehicleManager->activeVehicle();
-    if(!activeVehicle || activeVehicle->gimbalController().gimbals().count() == 0) return;
+    if(!activeVehicle || activeVehicle->gimbalController()->gimbals()->count() == 0) return;
     Gimbal *activeGimbal = activeVehicle->gimbalController()->activeGimbal();
     if(!activeGimbal) return;
     activeGimbal->setAbsolutePitch(0);
@@ -905,18 +905,20 @@ void QGCApplication::moveGimbal(QString axis, QString value) {
     MultiVehicleManager* vehicleManager = toolbox()->multiVehicleManager();
     if(vehicleManager->vehicles()->count() == 0) return;
     Vehicle* activeVehicle = vehicleManager->activeVehicle();
-    if(!activeVehicle || activeVehicle->gimbalController().gimbals().count() == 0) return;
+    if(!activeVehicle || activeVehicle->gimbalController()->gimbals()->count() == 0) return;
     Gimbal *activeGimbal = activeVehicle->gimbalController()->activeGimbal();
     if(!activeGimbal) return;
-    switch (axis) {
+    QStringList axisList;
+    axisList << "pitch" << "yaw" << "roll";
+    switch (axisList.indexOf(axis)) {
         case "pitch":
-            activeGimbal->setAbsolutePitch(Float.parseFloat(value));
+            activeGimbal->setAbsolutePitch(value.toFloat());
             break;
         case "yaw":
-            activeGimbal->setBodyYaw(Float.parseFloat(value));
+            activeGimbal->setBodyYaw(value.toFloat());
             break;
         case "roll":
-            activeGimbal->setAbsoluteRoll(Float.parseFloat(value));
+            activeGimbal->setAbsoluteRoll(value.toFloat());
             break;
     }
 }
