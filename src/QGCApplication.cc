@@ -614,19 +614,11 @@ void QGCApplication::sendInfos(){
 
 
     
-    qDebug() << "==============  START TAKE_PHOTO  ==============";
-    activeVehicle->cameraManager()->currentCameraInstance()->setCameraModePhoto();
-    activeVehicle->cameraManager()->currentCameraInstance()->takePhoto();
-    qDebug() << "==============   END TAKE_PHOTO   ==============";
+    QGCApplication::takePhoto();
 
-    qDebug() << "==============  START START_RECORDING  ==============";
-    activeVehicle->cameraManager()->currentCameraInstance()->setCameraModeVideo();
-    activeVehicle->cameraManager()->currentCameraInstance()->startVideoRecording();
-    qDebug() << "==============   END START_RECORDING   ==============";
+    QGCApplication::startRecording();
 
-    qDebug() << "==============  START STOP_RECORDING  ==============";
-    activeVehicle->cameraManager()->currentCameraInstance()->stopVideoRecording();
-    qDebug() << "==============   END STOP_RECORDING   ==============";
+    QGCApplication::stopRecording()
 
 
 
@@ -824,35 +816,6 @@ void QGCApplication::sendInfos(){
             obj.put("error", "KO"); 
     }
 
-void QGCApplication::moveGimbal(String axis, String value) {
-    if(Vehicule::gimbalController().gimbals().count() == 0) return;
-    switch (axis) {
-        case "pitch":
-            Vehicule::gimbalController().activeGimbal().setAbsolutePitch(Float.parseFloat(value));
-            break;
-        case "yaw":
-            Vehicule::gimbalController().activeGimbal().setBodyYaw(Float.parseFloat(value));
-            break;
-        case "roll":
-            Vehicule::gimbalController().activeGimbal().setAbsoluteRoll(Float.parseFloat(value));
-            break;
-    }
-}
-
-void QGCApplication::takePhoto(){
-    Vehicule::cameraManager().currentCameraInstance().setCameraModePhoto();
-    Vehicule::cameraManager().currentCameraInstance().takePhoto();
-}
-
-void QGCApplication::startRecording(){
-    Vehicule::cameraManager().currentCameraInstance().setCameraModeVideo();
-    Vehicule::cameraManager().currentCameraInstance().startVideoRecording();
-}
-
-void QGCApplication::stopRecording(){
-    Vehicule::cameraManager().currentCameraInstance().stopVideoRecording();
-}
-
 JSONArray QGCApplication::getCameras() {
     const cameras = Vehicule::cameraManager().cameras();
     JSONArray cameraList = new JSONArray();
@@ -891,6 +854,48 @@ void QGCApplication::getCamera(){
 void QGCApplication::setCamera(int i){
     Vehicule::cameraManager().setCurrentCamera(i);
 } */
+
+Vehicle* QGCApplication::getActiveVehicle(){
+    MultiVehicleManager* vehicleManager = toolbox()->multiVehicleManager();
+    if(vehicleManager->vehicles()->count() == 0) return nullptr;
+    Vehicle* activeVehicle = vehicleManager->activeVehicle();
+    if(!activeVehicle) return nullptr;
+    return activeVehicle;
+}
+
+MavlinkCameraControl* QGCApplication::getActiveCamera(){
+    Vehicle* activeVehicle = QGCApplication::getActiveVehicle();
+    if(!activeVehicle || activeVehicle->cameraManager()->cameras()->count() =< 0) return nullptr;
+    MavlinkCameraControl *activeCamera = activeVehicle->cameraManager()->currentCameraInstance();
+    if(!activeCamera) return nullptr;
+    return activeCamera;
+}
+
+void QGCApplication::takePhoto(){
+    qDebug() << "==============  START TAKE_PHOTO  ==============";
+    MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
+    if(!activeCamera) return;
+    activeVehicle->cameraManager()->currentCameraInstance()->setCameraModePhoto();
+    activeVehicle->cameraManager()->currentCameraInstance()->takePhoto();
+    qDebug() << "==============   END TAKE_PHOTO   ==============";
+}
+
+void QGCApplication::startRecording(){
+    qDebug() << "==============  START START_RECORDING  ==============";
+    MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
+    if(!activeCamera) return;
+    activeVehicle->cameraManager()->currentCameraInstance()->setCameraModeVideo();
+    activeVehicle->cameraManager()->currentCameraInstance()->startVideoRecording();
+    qDebug() << "==============   END START_RECORDING   ==============";
+}
+
+void QGCApplication::stopRecording(){
+    qDebug() << "==============  START STOP_RECORDING  ==============";
+    MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
+    if(!activeCamera) return;
+    activeVehicle->cameraManager()->currentCameraInstance()->stopVideoRecording();
+    qDebug() << "==============   END STOP_RECORDING   ==============";
+}
 
 void QGCApplication::resetGimbal() {
     MultiVehicleManager* vehicleManager = toolbox()->multiVehicleManager();

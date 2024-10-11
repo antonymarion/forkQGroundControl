@@ -222,6 +222,11 @@ private:
     void sendInfos();
     void moveGimbal(QString axis, QString value);
     void resetGimbal();
+    void takePhoto();
+    void startRecording();
+    void stopRecording();
+    Vehicle* getActiveVehicle();
+    MavlinkCameraControl* getActiveCamera();
     QString rtmpUrl = "";
     QString loggedEmail = "graphx.stephaneroma@gmail.com";
     QString registrationNumber = "UAS-FR-TESTING";
