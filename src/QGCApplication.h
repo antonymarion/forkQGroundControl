@@ -29,6 +29,8 @@ class QGCToolbox;
 class QQuickWindow;
 class QGCImageProvider;
 class QGCApplication;
+class Vehicle;
+class MavlinkCameraControl;
 
 #if defined(qApp)
 #undef qApp
