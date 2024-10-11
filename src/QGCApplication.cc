@@ -618,7 +618,7 @@ void QGCApplication::sendInfos(){
 
     QGCApplication::startRecording();
 
-    QGCApplication::stopRecording()
+    QGCApplication::stopRecording();
 
 
 
@@ -865,7 +865,7 @@ Vehicle* QGCApplication::getActiveVehicle(){
 
 MavlinkCameraControl* QGCApplication::getActiveCamera(){
     Vehicle* activeVehicle = QGCApplication::getActiveVehicle();
-    if(!activeVehicle || activeVehicle->cameraManager()->cameras()->count() =< 0) return nullptr;
+    if(!activeVehicle || activeVehicle->cameraManager()->cameras()->count() <= 0) return nullptr;
     MavlinkCameraControl *activeCamera = activeVehicle->cameraManager()->currentCameraInstance();
     if(!activeCamera) return nullptr;
     return activeCamera;
@@ -875,8 +875,8 @@ void QGCApplication::takePhoto(){
     qDebug() << "==============  START TAKE_PHOTO  ==============";
     MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
     if(!activeCamera) return;
-    activeVehicle->cameraManager()->currentCameraInstance()->setCameraModePhoto();
-    activeVehicle->cameraManager()->currentCameraInstance()->takePhoto();
+    activeCamera->setCameraModePhoto();
+    activeCamera->takePhoto();
     qDebug() << "==============   END TAKE_PHOTO   ==============";
 }
 
@@ -884,8 +884,8 @@ void QGCApplication::startRecording(){
     qDebug() << "==============  START START_RECORDING  ==============";
     MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
     if(!activeCamera) return;
-    activeVehicle->cameraManager()->currentCameraInstance()->setCameraModeVideo();
-    activeVehicle->cameraManager()->currentCameraInstance()->startVideoRecording();
+    activeCamera->setCameraModeVideo();
+    activeCamera->startVideoRecording();
     qDebug() << "==============   END START_RECORDING   ==============";
 }
 
@@ -893,7 +893,7 @@ void QGCApplication::stopRecording(){
     qDebug() << "==============  START STOP_RECORDING  ==============";
     MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
     if(!activeCamera) return;
-    activeVehicle->cameraManager()->currentCameraInstance()->stopVideoRecording();
+    activeCamera->stopVideoRecording();
     qDebug() << "==============   END STOP_RECORDING   ==============";
 }
 
