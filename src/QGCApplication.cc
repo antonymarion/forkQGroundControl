@@ -559,8 +559,10 @@ void QGCApplication::sendInfos(){
     QmlObjectListModel* batteries = activeVehicle->batteries();
     int res = 0;
     for (int i=0; i<batteries->count(); i++) {
-        VehicleBatteryFactGroup* group = qobject_cast<VehicleBatteryFactGroup*>(batteries->get(i));
-        res += group->percentRemaining()->rawValue().toInt();
+        VehicleBatteryFactGroup* battery = qobject_cast<VehicleBatteryFactGroup*>(batteries->get(i));
+        qDebug() << "battery : " << battery; // TODO remove
+        qDebug() << "battery : " << battery->percentRemaining(); // TODO remove
+        res += battery->percentRemaining()->rawValue().toInt();
     }
     qDebug() << "batteryPowerPercentUav : " << res/batteries->count();
 
@@ -911,13 +913,13 @@ void QGCApplication::moveGimbal(QString axis, QString value) {
     QStringList axisList;
     axisList << "pitch" << "yaw" << "roll";
     switch (axisList.indexOf(axis)) {
-        case "pitch":
+        case 0:
             activeGimbal->setAbsolutePitch(value.toFloat());
             break;
-        case "yaw":
+        case 1:
             activeGimbal->setBodyYaw(value.toFloat());
             break;
-        case "roll":
+        case 2:
             activeGimbal->setAbsoluteRoll(value.toFloat());
             break;
     }
