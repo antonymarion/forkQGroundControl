@@ -100,6 +100,7 @@
 #include "AudioOutput.h"
 #include "FollowMe.h"
 #include "JsonHelper.h"
+#include "VehicleBatteryFactGroup.h"
 // #ifdef QGC_VIEWER3D
 #include "Viewer3DManager.h"
 // #endif
