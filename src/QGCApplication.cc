@@ -526,7 +526,7 @@ void QGCApplication::sendInfos(){
     qDebug() << "systemOS : " << "Android"; // TODO change to include Windows
     qDebug() << "systemVersion : " << "V1"; // TODO ???
     qDebug() << "firmwareVersionUav : " << activeVehicle->firmwarePatchVersion();
-    qDebug() << "firmwareVersionUav : " << activeVehicle->firmwarePatchVersion();
+    qDebug() << "gpsSatelliteCount : " << activeVehicle->gpsFactGroup()->count()->rawValueString();
     
     bool hasCamera = activeVehicle->cameraManager()->cameras()->count() != 0;
     qDebug() << "hasCamera : " << hasCamera;
@@ -623,11 +623,13 @@ void QGCApplication::sendInfos(){
     qDebug() << "==============   TESTING SET COMMANDS   ==============";
 
     if(this->countdown == 10){
-        if(this->reset){
-            QGCApplication::resetGimbal();
-        }
-        else if(hasGimbal) {
-            QGCApplication::moveGimbal("yaw", "20");
+        if(hasGimbal){
+            if(this->reset){
+                QGCApplication::resetGimbal();
+            }
+            else  {
+                QGCApplication::moveGimbal("yaw", "20");
+            }
         }
         this->reset = !this->reset;
     }
