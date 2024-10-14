@@ -526,7 +526,8 @@ void QGCApplication::sendInfos(){
     qDebug() << "systemOS : " << "Android"; // TODO change to include Windows
     qDebug() << "systemVersion : " << "V1"; // TODO ???
     qDebug() << "firmwareVersionUav : " << activeVehicle->firmwarePatchVersion();
-    qDebug() << "gpsSatelliteCount : " << activeVehicle->gpsFactGroup()->count()->rawValueString();
+    qDebug() << "gpsSatelliteCount : " << qobject_cast<VehicleGPSFactGroup*>(activeVehicle->gpsFactGroup())->count()->rawValueString();
+    qDebug() << "speed : " << qobject_cast<VehicleFactGroup*>(activeVehicle->vehicleFactGroup())->airSpeed()->rawValueString();
     
     bool hasCamera = activeVehicle->cameraManager()->cameras()->count() != 0;
     qDebug() << "hasCamera : " << hasCamera;
