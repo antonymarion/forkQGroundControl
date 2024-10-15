@@ -546,7 +546,7 @@ void QGCApplication::sendInfos(){
     }
 
     bool hasGimbal = activeVehicle->gimbalController()->gimbals()->count() != 0;
-    qCDebug() << "hasGimbal : " << hasGimbal;
+    qCDebug(QGCApplicationLog) << "hasGimbal : " << hasGimbal;
     if(hasGimbal) {
         Gimbal *activeGimbal = activeVehicle->gimbalController()->activeGimbal();
         if(activeGimbal) {
