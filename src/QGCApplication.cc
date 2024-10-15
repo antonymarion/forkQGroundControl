@@ -621,7 +621,7 @@ void QGCApplication::sendInfos(){
 
 
 
-    qDebug(QGCApplicationLog) << "==============   TESTING SET COMMANDS   ==============";
+    qCDebug(QGCApplicationLog) << "==============   TESTING SET COMMANDS   ==============";
 
     if(this->countdown == 10){
         if(hasGimbal){
