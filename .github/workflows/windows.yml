@@ -130,9 +130,10 @@ jobs:
           set NINJA_DIR=$QT_INSTALL_DIR/Tools/Ninja"
           git clone git://code.qt.io/qt/qtmqtt.git --branch 6.6.3
           cd qtmqtt
-          qmake
-          make
-          make install
+          mkdir build
+          cd build/
+          D:/a/_temp/Qt/6.6.3/msvc2019_64/bin/qt-configure-module ..
+          D:/a/_temp/Qt/Tools/CMake/bin/cmake --build .
 
       - name: Configure
         working-directory: ${{ runner.temp }}\shadow_build_dir
