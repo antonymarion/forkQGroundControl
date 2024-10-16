@@ -225,6 +225,7 @@ private:
     void moveGimbal(QString axis, QString value);
     void resetGimbal();
     void takePhoto();
+    void startStream();
     void startRecording();
     void stopRecording();
     Vehicle* getActiveVehicle();
