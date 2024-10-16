@@ -38,9 +38,14 @@ jobs:
 
     env:
       ARTIFACT: QGroundControl-installer.exe
-      QT_VERSION: 6.6.3
       GST_VERSION: 1.22.12
       SCCACHE_GHA_ENABLED: "true"
+      QT_VERSION: 6.6.3
+      QT_INSTALL_DIR: ""
+      CMAKE_BIN_DIR: "${QT_INSTALL_DIR}/Tools/CMake/bin"
+      QMAKE_BIN_DIR: "${QT_INSTALL_DIR}/${QT_VERSION}/win64_msvc2019_64/bin"
+      CMAKE_PREFIX_PATH: "${QT_INSTALL_DIR}/${QT_VERSION}/win64_msvc2019_64/"
+      NINJA_DIR: "${QT_INSTALL_DIR}/Tools/Ninja"
 
     steps:
       - name: Checkout repo
@@ -122,7 +127,7 @@ jobs:
 
       - name: Setup QMQTT
         run: |
-          find / -name qmake
+          qmake -query QT_INSTALL_PREFIX
           git clone git://code.qt.io/qt/qtmqtt.git --branch 6.6.3
           cd qtmqtt
           qmake
