@@ -6,6 +6,7 @@ on:
       - master
       - 'Stable*'
       - detached
+      - detached_squashed
     tags:
       - 'v*'
     paths-ignore:

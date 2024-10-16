@@ -883,6 +883,18 @@ void QGCApplication::takePhoto(){
     qCDebug(QGCApplicationLog) << "==============   END TAKE_PHOTO   ==============";
 }
 
+void QGCApplication::startStream(){
+    qCDebug(QGCApplicationLog) << "==============  START OPEN_STREAM  ==============";
+    MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
+    if(!activeCamera) return;
+    QGCVideoStreamInfo *streamInstance = activeCamera->currentStreamInstance();
+    if(!streamInstace) return;
+    qCDebug(QGCApplicationLog) << "stream name : " <<streamInstance->name();
+    qCDebug(QGCApplicationLog) << "stream uri : " <<streamInstance->uri();
+    qCDebug(QGCApplicationLog) << "stream type : " <<streamInstance->type();
+    qCDebug(QGCApplicationLog) << "==============   END OPEN_STREAM   ==============";
+}
+
 void QGCApplication::startRecording(){
     qCDebug(QGCApplicationLog) << "==============  START START_RECORDING  ==============";
     MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
