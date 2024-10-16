@@ -124,7 +124,7 @@ jobs:
         run: |
           git clone git://code.qt.io/qt/qtmqtt.git --branch 6.6.3
           cd qtmqtt
-          qmake -r -makefile
+          qmake -makefile -r
           make
           make install
 
