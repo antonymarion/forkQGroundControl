@@ -7,6 +7,7 @@ on:
       - 'Stable*'
       - detached
       - detached_squashed
+      - detached_fixed_windows
     tags:
       - 'v*'
     paths-ignore:
@@ -129,11 +130,13 @@ jobs:
           set CMAKE_PREFIX_PATH=$QT_INSTALL_DIR/$QT_VERSION/msvc2019_64/"
           set NINJA_DIR=$QT_INSTALL_DIR/Tools/Ninja"
           git clone git://code.qt.io/qt/qtmqtt.git --branch 6.6.3
-          cd qtmqtt
+          mv qtmqtt Qt6Mqtt
+          cd Qt6Mqtt
+          ls
           mkdir build
           cd build/
           D:/a/_temp/Qt/6.6.3/msvc2019_64/bin/qt-configure-module ..
-          D:/a/_temp/Qt/Tools/CMake/bin/cmake --build .
+          D:/a/_temp/Qt/Tools/CMake/bin/cmake --install .
 
       - name: Configure
         working-directory: ${{ runner.temp }}\shadow_build_dir

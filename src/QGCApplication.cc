@@ -27,7 +27,7 @@
 #include <QtQml/QQmlContext>
 #include <QtQml/QQmlApplicationEngine>
 #include <QTimer>
-// #include <QMqttClient>
+#include <QMqttClient>
 
 #include "Audio/AudioOutput.h"
 #include "QGCConfig.h"
@@ -413,7 +413,6 @@ void QGCApplication::init()
 
     timer->start(2000);
 
-    /*
 
     QMqttClient client;
     client.setHostname("tcp://152.228.246.204");
@@ -499,7 +498,7 @@ void QGCApplication::init()
         client.publish("test/response", "Response : "+message);
     });
 
-    client.connectToHost(); */
+    client.connectToHost();
 }
 
 void QGCApplication::sendInfos(){
@@ -528,7 +527,7 @@ void QGCApplication::sendInfos(){
     qCDebug(QGCApplicationLog) << "firmwareVersionUav : " << activeVehicle->firmwarePatchVersion();
     qCDebug(QGCApplicationLog) << "gpsSatelliteCount : " << qobject_cast<VehicleGPSFactGroup*>(activeVehicle->gpsFactGroup())->count()->rawValueString();
     qCDebug(QGCApplicationLog) << "velocity : " << qobject_cast<VehicleFactGroup*>(activeVehicle->vehicleFactGroup())->airSpeed()->rawValueString();
-    
+
     bool hasCamera = activeVehicle->cameraManager()->cameras()->count() != 0;
     qCDebug(QGCApplicationLog) << "hasCamera : " << hasCamera;
     if(hasCamera) {
@@ -612,7 +611,7 @@ void QGCApplication::sendInfos(){
     qCDebug(QGCApplicationLog) << "==============  END GET_CAMERA  ==============";
 
 
-    
+
     QGCApplication::takePhoto();
 
     QGCApplication::startRecording();
@@ -653,7 +652,7 @@ void QGCApplication::sendInfos(){
         newResponse.put("hasZoom", Vehicule::cameraManager().currentCameraInstance().hasZoom()); O
 
         JSONObject currentValues = new JSONObject();
-        currentValues.put("ISO", Vehicule::cameraManager().currentCameraInstance().iso()); 
+        currentValues.put("ISO", Vehicule::cameraManager().currentCameraInstance().iso());
         currentValues.put("whiteBalance", Vehicule::cameraManager().currentCameraInstance().wb());
         currentValues.put("aperture", Vehicule::cameraManager().currentCameraInstance().aperture());
         newResponse.put("intrinsics", currentValues);
@@ -693,7 +692,7 @@ void QGCApplication::sendInfos(){
         // newResponse.put("batteryBehavior",batteryBehavior);
 
         // Might not do that
-        
+
         currentValues.put("sharpness", Vehicule::cameraManager().currentCameraInstance().); // TODO
         currentValues.put("orientation", Vehicule::cameraManager().currentCameraInstance().); // TODO
         currentValues.put("videoResolutionAndFrameRate", Vehicule::cameraManager().currentCameraInstance().); // TODO
@@ -701,7 +700,7 @@ void QGCApplication::sendInfos(){
         currentValues.put("photoFileFormat", Vehicule::cameraManager().currentCameraInstance().); // TODO
         newResponse.put("isZooming", Vehicule::cameraManager().currentCameraInstance().);
         newResponse.put("isMovingGimbal", Vehicule::gimbalController().activeGimbal());
-        
+
         Log.d("POSITION",newResponse.toString());
         MqttMessage message = new MqttMessage(newResponse.toString().getBytes(StandardCharsets.UTF_8));
         try {
@@ -733,7 +732,7 @@ void QGCApplication::sendInfos(){
             Log.i("resetGimbal", "recieved RESET_GIMBAL");
             Log.i("resetGimbal", "=================================================");
             GimbalUtil.resetGimbal();
-            break; 
+            break;
         case "MOVE_GIMBAL":
             Log.i("moveCam", "=================================================");
             Log.i("moveCam", "recieved MOVE_GIMBAL");
@@ -752,7 +751,7 @@ void QGCApplication::sendInfos(){
             Log.i("setCams", "=================================================");
             Log.i("setCams", "recieved SET_CAMERA");
             Log.i("setCams", "=================================================");
-            break; 
+            break;
         case "SET_CAMERA_INTRINSICS":
             Log.i("getCam", "=================================================");
             Log.i("getCam", "recieved SET_CAMERA_INTRINSICS");
@@ -772,7 +771,7 @@ void QGCApplication::sendInfos(){
             //Log.i("getCam", "recieved orientation "+obj.getString("imageOrientation"));
             //CameraUtil.setOrientation(obj.getString("imageOrientation"));
             CameraUtil.getCurrentValues();
-            break; 
+            break;
         case "GET_CAMERA": // TODO to finish
             Log.i("getCam", "=================================================");
             Log.i("getCam", "recieved GET_CAMERA");
@@ -813,10 +812,10 @@ void QGCApplication::sendInfos(){
             Log.i("zoomCam", "recieved STOP_RECORDING");
             Log.i("zoomCam", "=================================================");
             CameraUtil.stopVideo();
-            break; 
+            break;
         default: // TODO check if new
             obj.put("status", "KO");
-            obj.put("error", "KO"); 
+            obj.put("error", "KO");
     }
 
 JSONArray QGCApplication::getCameras() {
@@ -840,7 +839,7 @@ void QGCApplication::getCamera(){
     JSONObject obj = new JSONObject();
     obj.put("hasZoom", Vehicule::cameraManager().currentCameraInstance().hasZoom());
 
-     
+
     obj.put("isoRange", Vehicule::cameraManager().currentCameraInstance().iso());
     obj.put("gimbalRange", GimbalUtil.gimbalRange);
     obj.put("gimbalSN", Vehicule::gimbalController().activeGimbal().);
@@ -850,7 +849,7 @@ void QGCApplication::getCamera(){
     obj.put("videoFileFormatList", CameraUtil.videoFormats);
     obj.put("streamSource", CameraUtil.streamSource);
     obj.put("zoomRatiosRange", new int[]{1});
-     
+
     return obj;
 }
 
