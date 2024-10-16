@@ -122,7 +122,7 @@ jobs:
 
       - name: Setup QMQTT
         run: |
-          git clone git://code.qt.io/qt/qtmqtt.git
+          git clone git://code.qt.io/qt/qtmqtt.git --branch 6.6.3
           cd qmqtt
           qmake -r
           make
