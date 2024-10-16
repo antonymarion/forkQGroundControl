@@ -888,7 +888,7 @@ void QGCApplication::startStream(){
     MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
     if(!activeCamera) return;
     QGCVideoStreamInfo *streamInstance = activeCamera->currentStreamInstance();
-    if(!streamInstace) return;
+    if(!streamInstance) return;
     qCDebug(QGCApplicationLog) << "stream name : " <<streamInstance->name();
     qCDebug(QGCApplicationLog) << "stream uri : " <<streamInstance->uri();
     qCDebug(QGCApplicationLog) << "stream type : " <<streamInstance->type();
