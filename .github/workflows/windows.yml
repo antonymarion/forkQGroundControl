@@ -41,11 +41,6 @@ jobs:
       GST_VERSION: 1.22.12
       SCCACHE_GHA_ENABLED: "true"
       QT_VERSION: 6.6.3
-      QT_INSTALL_DIR: ""
-      CMAKE_BIN_DIR: "${QT_INSTALL_DIR}/Tools/CMake/bin"
-      QMAKE_BIN_DIR: "${QT_INSTALL_DIR}/${QT_VERSION}/win64_msvc2019_64/bin"
-      CMAKE_PREFIX_PATH: "${QT_INSTALL_DIR}/${QT_VERSION}/win64_msvc2019_64/"
-      NINJA_DIR: "${QT_INSTALL_DIR}/Tools/Ninja"
 
     steps:
       - name: Checkout repo
@@ -127,7 +122,12 @@ jobs:
 
       - name: Setup QMQTT
         run: |
-          qmake -query QT_INSTALL_PREFIX
+          export QT_VERSION=6.6.3
+          export QT_INSTALL_DIR=D:/a/_temp/Qt
+          export CMAKE_BIN_DIR=$QT_INSTALL_DIR/Tools/CMake/bin"
+          export QMAKE_BIN_DIR=$QT_INSTALL_DIR/$QT_VERSION/msvc2019_64/bin"
+          export CMAKE_PREFIX_PATH=$QT_INSTALL_DIR/$QT_VERSION/msvc2019_64/"
+          export NINJA_DIR=$QT_INSTALL_DIR/Tools/Ninja"
           git clone git://code.qt.io/qt/qtmqtt.git --branch 6.6.3
           cd qtmqtt
           qmake
