@@ -7,6 +7,7 @@ on:
       - "Stable*"
       - detached
       - detached_squashed
+      - detached_fix_include
     tags:
       - "v*"
     paths-ignore:

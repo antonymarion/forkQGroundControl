@@ -8,6 +8,7 @@ on:
       - detached
       - detached_squashed
       - detached_fixed_windows
+      - detached_fix_include
     tags:
       - "v*"
     paths-ignore:
