@@ -4,25 +4,25 @@ on:
   push:
     branches:
       - master
-      - 'Stable*'
+      - "Stable*"
       - detached
       - detached_squashed
       - detached_fixed_windows
     tags:
-      - 'v*'
+      - "v*"
     paths-ignore:
-      - 'android/**'
-      - 'deploy/**'
-      - 'docs/**'
+      - "android/**"
+      - "deploy/**"
+      - "docs/**"
   pull_request:
     paths-ignore:
-      - 'android/**'
-      - 'deploy/**'
-      - 'docs/**'
-      - '.github/workflows/docs_deploy.yml'
-      - '.github/workflows/android.yml'
-      - '.github/workflows/linux.yml'
-      - '.github/workflows/macos.yml'
+      - "android/**"
+      - "deploy/**"
+      - "docs/**"
+      - ".github/workflows/docs_deploy.yml"
+      - ".github/workflows/android.yml"
+      - ".github/workflows/linux.yml"
+      - ".github/workflows/macos.yml"
 
 jobs:
   build:
@@ -135,14 +135,16 @@ jobs:
           ls
           mkdir build
           cd build/
+          cp -r /usr/local/lib/cmake/Qt6Mqtt/* $QT_INSTALL_DIR/$QT_VERSION/gcc_64/lib/cmake/Qt6Mqtt/
           D:/a/_temp/Qt/6.6.3/msvc2019_64/bin/qt-configure-module ..
           D:/a/_temp/Qt/Tools/CMake/bin/cmake --install .
 
       - name: Configure
         working-directory: ${{ runner.temp }}\shadow_build_dir
-        run: ${{ env.QT_ROOT_DIR }}/bin/qt-cmake -S ${{ github.workspace }} -B . -G Ninja ^
-              -DCMAKE_BUILD_TYPE=${{ matrix.BuildType }} ^
-              -DQGC_STABLE_BUILD=${{ github.ref_type == 'tag' || contains(github.ref, 'Stable') && 'ON' || 'OFF' }}
+        run:
+          ${{ env.QT_ROOT_DIR }}/bin/qt-cmake -S ${{ github.workspace }} -B . -G Ninja ^
+          -DCMAKE_BUILD_TYPE=${{ matrix.BuildType }} ^
+          -DQGC_STABLE_BUILD=${{ github.ref_type == 'tag' || contains(github.ref, 'Stable') && 'ON' || 'OFF' }}
 
       - name: Build
         working-directory: ${{ runner.temp }}\shadow_build_dir
@@ -159,4 +161,4 @@ jobs:
           artifact_name: ${{ env.ARTIFACT }}
           aws_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          source: ''
+          source: ""
