@@ -97,7 +97,7 @@ jobs:
 
           D:/a/_temp/Qt/Tools/CMake/bin/cmake --install . --prefix "$QT_INSTALL_DIR/$QT_VERSION/msvc2019_64"
 
-          cp -r "$QT_INSTALL_DIR/$QT_VERSION/msvc2019_64/lib/cmake/Qt6Mqtt" "$QT_INSTALL_DIR/$QT_VERSION/gcc_64/lib/cmake/"
+          cp -r  " D:/a/forkQGroundControl/forkQGroundControl/Qt6Mqtt/build"  "$QT_INSTALL_DIR/$QT_VERSION/msvc2019_64/lib/cmake/Qt6Mqtt"
       - run: mkdir ${{ runner.temp }}\shadow_build_dir
       - name: Configure
         working-directory: ${{ runner.temp }}/shadow_build_dir
