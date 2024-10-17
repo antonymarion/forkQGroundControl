@@ -101,6 +101,7 @@ jobs:
               -DQT_ANDROID_SIGN_APK=OFF
               -DQT_DEBUG_FIND_PACKAGE=ON
               -DQGC_STABLE_BUILD=${{ github.ref_type == 'tag' || contains(github.ref, 'Stable') && 'ON' || 'OFF' }}
+              --debug-find-pkg=Qt6Mqtt
 
       - name: Build
         working-directory: ${{ runner.temp }}/shadow_build_dir
