@@ -29,6 +29,8 @@ class QGCToolbox;
 class QQuickWindow;
 class QGCImageProvider;
 class QGCApplication;
+class Vehicle;
+class MavlinkCameraControl;
 
 #if defined(qApp)
 #undef qApp
@@ -217,4 +219,21 @@ private:
 
     /// Unit Test have access to creating and destroying singletons
     friend class UnitTest;
+
+
+    void sendInfos();
+    void moveGimbal(QString axis, QString value);
+    void resetGimbal();
+    void takePhoto();
+    void startStream();
+    void startRecording();
+    void stopRecording();
+    Vehicle* getActiveVehicle();
+    MavlinkCameraControl* getActiveCamera();
+    QString rtmpUrl = "";
+    QString loggedEmail = "graphx.stephaneroma@gmail.com";
+    QString registrationNumber = "UAS-FR-TESTING";
+    bool isStreaming = false;
+    int countdown = 10;
+    bool reset = true;
 };
