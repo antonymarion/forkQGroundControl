@@ -120,7 +120,7 @@ jobs:
 
       - run: mkdir ${{ runner.temp }}\shadow_build_dir
 
-      - name: Setup QMQTT
+      - name: Setup QMQTT First Part
         run: |
           set QT_VERSION=6.6.3
           set QT_INSTALL_DIR=D:/a/_temp/Qt
@@ -134,10 +134,15 @@ jobs:
           cd build/
           D:/a/_temp/Qt/6.6.3/msvc2019_64/bin/qt-configure-module.bat ..
 
+      - name: Setup QMQTT Second Part
+        run: |
+          cd D:\a\forkQGroundControl\forkQGroundControl\qtmqtt\build
+          D:/a/_temp/Qt/Tools/CMake/bin/cmake --build .
+          sudo D:/a/_temp/Qt/Tools/CMake/bin/cmake --install . --verbose
+
       - name: Configure
         working-directory: ${{ runner.temp }}\shadow_build_dir
         run: |
-          dir D:\a\forkQGroundControl\forkQGroundControl\qtmqtt\build
           ${{ env.QT_ROOT_DIR }}/bin/qt-cmake -S ${{ github.workspace }} -B . -G Ninja ^
               -DCMAKE_BUILD_TYPE=${{ matrix.BuildType }} ^
               -DQGC_STABLE_BUILD=${{ github.ref_type == 'tag' || contains(github.ref, 'Stable') && 'ON' || 'OFF' }}
