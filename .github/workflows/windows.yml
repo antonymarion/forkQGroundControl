@@ -137,6 +137,7 @@ jobs:
       - name: Setup QMQTT Second Part
         run: |
           cd D:\a\forkQGroundControl\forkQGroundControl\qtmqtt\build
+          dir D:\Qt\
           D:/a/_temp/Qt/Tools/CMake/bin/cmake --build .
           D:/a/_temp/Qt/Tools/CMake/bin/cmake --install . --verbose
 
