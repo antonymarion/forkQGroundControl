@@ -136,12 +136,13 @@ jobs:
           ls
           mkdir build
           cd build/
+
+          D:/a/_temp/Qt/6.6.3/msvc2019_64/bin/qt-configure-module ..
+          D:/a/_temp/Qt/Tools/CMake/bin/cmake --install .
           ls D:/a/_temp/Qt/6.6.3/msvc2019_64/lib/cmake/Qt6Mqtt/
           ls D:/a/_temp/Qt/6.6.3/msvc2019_64/lib/
           ls D:/a/_temp/Qt/6.6.3/msvc2019_64/include/QtMqtt/
           cp -r /usr/local/lib/cmake/Qt6Mqtt/* $QT_INSTALL_DIR/$QT_VERSION/gcc_64/lib/cmake/Qt6Mqtt/
-          D:/a/_temp/Qt/6.6.3/msvc2019_64/bin/qt-configure-module ..
-          D:/a/_temp/Qt/Tools/CMake/bin/cmake --install .
 
       - name: Configure
         working-directory: ${{ runner.temp }}\shadow_build_dir
