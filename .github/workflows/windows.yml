@@ -133,8 +133,6 @@ jobs:
           mkdir build
           cd build/
           D:/a/_temp/Qt/6.6.3/msvc2019_64/bin/qt-configure-module ..
-          D:/a/_temp/Qt/Tools/CMake/bin/cmake --build .
-          sudo D:/a/_temp/Qt/Tools/CMake/bin/cmake --install . --verbose
 
       - name: Configure
         working-directory: ${{ runner.temp }}\shadow_build_dir
