@@ -132,8 +132,8 @@ jobs:
           cd qtmqtt
           mkdir build
           cd build/
-          D:/a/_temp/Qt/6.6.3/msvc2019_64/bin/qt-configure-module.bat ..
           dir D:\a\_temp\Qt\Tools\CMake\bin
+          D:/a/_temp/Qt/6.6.3/msvc2019_64/bin/qt-configure-module.bat ..
 
       - name: Configure
         working-directory: ${{ runner.temp }}\shadow_build_dir
