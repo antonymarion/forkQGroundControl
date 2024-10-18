@@ -27,7 +27,7 @@
 #include <QtQml/QQmlContext>
 #include <QtQml/QQmlApplicationEngine>
 #include <QTimer>
-// #include <QMqttClient>
+#include <QMqttClient>
 
 #include "Audio/AudioOutput.h"
 #include "QGCConfig.h"

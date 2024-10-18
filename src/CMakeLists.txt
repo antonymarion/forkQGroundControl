@@ -3,6 +3,7 @@ find_package(Qt6
     COMPONENTS
         Core
         Core5Compat
+        Mqtt
         QuickControls2
         QuickWidgets
         Widgets
@@ -66,6 +67,7 @@ target_link_libraries(QGC
         Qt6::QuickWidgets
         Qt6::Core5Compat
         Qt6::Bluetooth
+        Qt6::Mqtt
         API
         ADSB
         AirLink
