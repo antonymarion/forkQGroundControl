@@ -416,9 +416,9 @@ void QGCApplication::init()
     timer->start(2000);
 
     // Setup MqttClient
-    QMqttClient m_client = new QMqttClient(this);
-    m_client->setHostname("tcp://152.228.246.204");
-    m_client->setPort(1883);
+    m_client = new QMqttClient(this);
+    m_client.setHostname("tcp://152.228.246.204");
+    m_client.setPort(1883);
     connect(m_client, &QMqttClient::stateChanged, this, &QGCApplication::updateLogStateChange);
     connect(m_client, &QMqttClient::disconnected, this, &QGCApplication::brokerDisconnected);
     m_client.connectToHost();
