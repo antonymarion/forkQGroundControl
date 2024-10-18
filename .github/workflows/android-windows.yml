@@ -96,6 +96,17 @@ jobs:
           D:/a/_temp/Qt/Tools/CMake/bin/cmake --build .
 
           D:/a/_temp/Qt/Tools/CMake/bin/cmake --install . --verbose
+      - name: Copy all modules Qt6Mqtt on QT6 folder
+        run: 
+          mkdir "D:/a/_temp/Qt/6.6.3/msvc2019_64/include/QtMqtt"
+
+          xcopy /s /i "D:/a/forkQGroundControl/forkQGroundControl/Qt6Mqtt/src/mqtt/*" "D:/a/_temp/Qt/6.6.3/msvc2019_64/include/QtMqtt"
+
+          xcopy /s /i "D:/a/forkQGroundControl/forkQGroundControl/Qt6Mqtt/build/lib/*" "D:/a/_temp/Qt/6.6.3/msvc2019_64/lib/"
+
+          xcopy /s /i "D:/a/forkQGroundControl/forkQGroundControl/Qt6Mqtt/build/lib/cmake/Qt6Mqtt" "D:/a/_temp/Qt/6.6.3/msvc2019_64/lib/cmake/"
+
+          xcopy /s /i "D:/a/forkQGroundControl/forkQGroundControl/Qt6Mqtt/build/mkspecs/modules/*" "D:/a/_temp/Qt/6.6.3/msvc2019_64/mkspecs/modules/"
 
       - name: Check files in build directory before copy
         run: |
