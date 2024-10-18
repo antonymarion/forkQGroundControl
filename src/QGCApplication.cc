@@ -641,6 +641,34 @@ void QGCApplication::sendInfos(){
 
 }
 
+{
+    // Sends the MAV_CMD_DO_SET_SERVO command to the vehicle.
+    // If no acknowledgment (Ack) is received, the command will be retried.
+    // If another sendMavCommand is already in progress,
+    // the current command will be queued and sent once the previous one completes.
+    
+    // @param compId : Component ID to send the command to.
+    // @param command : The MAV_CMD to send.
+    // @param showError : true to display an error if the command fails, false to suppress the error display.
+    // @param param1 to param7 : Optional parameters to send with the MAV_CMD.
+    
+    // Signals: mavCommandResult emitted on success or failure of the command.
+
+    _vehicle->sendMavCommand(
+        _vehicle->defaultComponentId(),  // compId: Default vehicle component ID
+        MAV_CMD_DO_SET_SERVO,            // command: MAV_CMD to set servo
+        true,                            // showError: Display error if command fails
+        servoId,                         // param1: Specify which servo to set (e.g., 1)
+        pwmValue,                        // param2: PWM value to set for the servo (e.g., 1500)
+        0,                               // param3: Not used (set to 0)
+        0,                               // param4: Not used (set to 0)
+        0,                               // param5: Not used (set to 0)
+        0,                               // param6: Not used (set to 0)
+        0                                // param7: Not used (set to 0)
+    );
+}
+
+
 /* QGCApplication:: sendAircraftPositionInfos() {
         if(mqttClient==null) return;
         JSONObject newResponse = new JSONObject();
