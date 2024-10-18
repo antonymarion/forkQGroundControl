@@ -181,6 +181,7 @@ find_package(Qt6
         SerialPort
     HINTS
         ${QT_LIBRARY_HINTS}
+        D:/a/_temp/Qt/6.6.3/msvc2019_64/lib/cmake/Qt6Mqtt/Qt6MqttConfig.cmake
 )
 
 # Require 6.6.3 because otherwise libQt6QuickControls2Basic.so.6 &
