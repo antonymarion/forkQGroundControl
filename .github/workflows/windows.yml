@@ -138,6 +138,7 @@ jobs:
         run: |
           cd D:\a\forkQGroundControl\forkQGroundControl\qtmqtt\build
           where cmake
+          where Ninja
           dir D:\a\_temp\Qt
           D:\a\_temp\Qt\Tools\CMake\bin\cmake --build .
           D:\a\_temp\Qt\Tools\CMake\bin\cmake --install . --verbose
