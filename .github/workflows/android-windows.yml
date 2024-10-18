@@ -76,7 +76,7 @@ jobs:
 
       - run: mkdir ${{ runner.temp }}\shadow_build_dir
 
-      - name: Setup QMQTT
+      - name: Setup QMQTT First Part
         run: |
           set QT_VERSION=6.6.3
           set QT_INSTALL_DIR=D:/a/_temp/Qt
@@ -88,10 +88,13 @@ jobs:
           cd qtmqtt
           mkdir build
           cd build/
-          D:/a/_temp/Qt/6.6.3/msvc2019_64/bin/qt-configure-module ..
-          D:/a/_temp/Qt/Tools/CMake/bin/cmake --build .
-          
-          D:/a/_temp/Qt/6.6.3/msvc2019_64/bin/qt-configure-module ..
+          D:/a/_temp/Qt/6.6.3/msvc2019_64/bin/qt-configure-module.bat ..
+
+      - name: Setup QMQTT Second Part
+        run: |
+          cd D:\a\forkQGroundControl\forkQGroundControl\qtmqtt\build
+          "C:\Program Files\CMake\bin\cmake" --build .
+          "C:\Program Files\CMake\bin\cmake" --install . --verbose
           
       - name: Configure
         working-directory: ${{ runner.temp }}/shadow_build_dir
