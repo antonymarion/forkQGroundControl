@@ -418,77 +418,77 @@ void QGCApplication::init()
     client.setPort(1883);
     QObject::connect(&client, &QMqttClient::stateChange, [](QMqttClient::ClientState state){
         if(state == QMqttClient::Connected)
-            console.log("******************************* client connected ******************************");
+            qCDebug(QGCApplicationLog) << "*******************************  client  connected  *******************************";
         else if (state == QMqttClient::Disconnected)
-            console.log("******************************* client disconnected ***************************** ");
+            qCDebug(QGCApplicationLog) << "******************************* client disconnected *******************************";
     });
     QObject::connect(&client, &QMqttClient::errorChanged, [](QMqttClient::ClientError error){
-        console.log("************* MQTT ERROR *****************");
-        console.log(error);
+        qCDebug(QGCApplicationLog) << "************* MQTT ERROR *****************";
+        qCDebug(QGCApplicationLog) << error;
     });
     QObject::connect(&client, &QMqttClient::messageReceived, [&client](const QByteArray &message, const, QMqttTopicName &topic){
-        console.log("message reçu sur le topic : "+topic.name());
-        console.log(message);
+        qCDebug(QGCApplicationLog) << "message reçu sur le topic : "+topic.name();
+        qCDebug(QGCApplicationLog) << message;
         switch ((message.getString("instruction"))){
             case "OPEN_STREAM":
-                Log.i("openStream", "=================================================");
-                Log.i("openStream", "recieved OPEN_STREAM");
-                Log.i("openStream", "=================================================");
+                qCDebug(QGCApplicationLog) << "=================================================";
+                qCDebug(QGCApplicationLog) << "recieved OPEN_STREAM";
+                qCDebug(QGCApplicationLog) << "=================================================";
                 break;
             case "STOP_STREAM":
-                Log.i("stopStream", "=================================================");
-                Log.i("stopStream", "recieved STOP_STREAM");
-                Log.i("stopStream", "=================================================");
+                qCDebug(QGCApplicationLog) << "=================================================";
+                qCDebug(QGCApplicationLog) << "recieved STOP_STREAM";
+                qCDebug(QGCApplicationLog) << "=================================================";
                 break;
             case "RESET_GIMBAL":
-                Log.i("resetGimbal", "=================================================");
-                Log.i("resetGimbal", "recieved RESET_GIMBAL");
-                Log.i("resetGimbal", "=================================================");
+                qCDebug(QGCApplicationLog) << "=================================================";
+                qCDebug(QGCApplicationLog) << "recieved RESET_GIMBAL";
+                qCDebug(QGCApplicationLog) << "=================================================";
                 break;
             case "MOVE_GIMBAL":
-                Log.i("moveCam", "=================================================");
-                Log.i("moveCam", "recieved MOVE_GIMBAL");
-                Log.i("moveCam", "=================================================");
+                qCDebug(QGCApplicationLog) << "=================================================";
+                qCDebug(QGCApplicationLog) << "recieved MOVE_GIMBAL";
+                qCDebug(QGCApplicationLog) << "=================================================";
                 break;
             case "GET_CAMERAS":
-                Log.i("getCams", "=================================================");
-                Log.i("getCams", "recieved GET_CAMERAS");
-                Log.i("getCams", "=================================================");
+                qCDebug(QGCApplicationLog) << "=================================================";
+                qCDebug(QGCApplicationLog) << "recieved GET_CAMERAS";
+                qCDebug(QGCApplicationLog) << "=================================================";
                 break;
             case "SET_CAMERA":
-                Log.i("setCams", "=================================================");
-                Log.i("setCams", "recieved SET_CAMERA");
-                Log.i("setCams", "=================================================");
+                qCDebug(QGCApplicationLog) << "=================================================";
+                qCDebug(QGCApplicationLog) << "recieved SET_CAMERA";
+                qCDebug(QGCApplicationLog) << "=================================================";
                 break;
             case "SET_CAMERA_INTRINSICS":
-                Log.i("getCam", "=================================================");
-                Log.i("getCam", "recieved SET_CAMERA_INTRINSICS");
-                Log.i("getCam", "=================================================");
+                qCDebug(QGCApplicationLog) << "=================================================";
+                qCDebug(QGCApplicationLog) << "recieved SET_CAMERA_INTRINSICS";
+                qCDebug(QGCApplicationLog) << "=================================================";
                 break;
             case "GET_CAMERA":
-                Log.i("getCam", "=================================================");
-                Log.i("getCam", "recieved GET_CAMERA");
-                Log.i("getCam", "=================================================");
+                qCDebug(QGCApplicationLog) << "=================================================";
+                qCDebug(QGCApplicationLog) << "recieved GET_CAMERA";
+                qCDebug(QGCApplicationLog) << "=================================================";
                 break;
             case "ZOOM_CAMERA":
-                Log.i("zoomCam", "=================================================");
-                Log.i("zoomCam", "recieved ZOOM_CAMERA");
-                Log.i("zoomCam", "=================================================");
+                qCDebug(QGCApplicationLog) << "=================================================";
+                qCDebug(QGCApplicationLog) << "recieved ZOOM_CAMERA";
+                qCDebug(QGCApplicationLog) << "=================================================";
                 break;
             case "TAKE_PHOTO":
-                Log.i("takePhoto", "=================================================");
-                Log.i("takePhoto", "recieved TAKE_PHOTO");
-                Log.i("takePhoto", "=================================================");
+                qCDebug(QGCApplicationLog) << "=================================================";
+                qCDebug(QGCApplicationLog) << "recieved TAKE_PHOTO";
+                qCDebug(QGCApplicationLog) << "=================================================";
                 break;
             case "START_RECORDING":
-                Log.i("zoomCam", "=================================================");
-                Log.i("zoomCam", "recieved START_RECORDING");
-                Log.i("zoomCam", "=================================================");
+                qCDebug(QGCApplicationLog) << "=================================================";
+                qCDebug(QGCApplicationLog) << "recieved START_RECORDING";
+                qCDebug(QGCApplicationLog) << "=================================================";
                 break;
             case "STOP_RECORDING":
-                Log.i("zoomCam", "=================================================");
-                Log.i("zoomCam", "recieved STOP_RECORDING");
-                Log.i("zoomCam", "=================================================");
+                qCDebug(QGCApplicationLog) << "=================================================";
+                qCDebug(QGCApplicationLog) << "recieved STOP_RECORDING";
+                qCDebug(QGCApplicationLog) << "=================================================";
                 break;
             default:
                 message.put("status", "KO");
