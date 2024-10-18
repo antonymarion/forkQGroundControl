@@ -413,8 +413,6 @@ void QGCApplication::init()
 
     timer->start(2000);
 
-    /*
-
     QMqttClient client;
     client.setHostname("tcp://152.228.246.204");
     client.setPort(1883);
@@ -457,7 +455,7 @@ void QGCApplication::init()
                 Log.i("getCams", "recieved GET_CAMERAS");
                 Log.i("getCams", "=================================================");
                 break;
-            case "SET_CAMERA": // TODO rework
+            case "SET_CAMERA":
                 Log.i("setCams", "=================================================");
                 Log.i("setCams", "recieved SET_CAMERA");
                 Log.i("setCams", "=================================================");
@@ -467,39 +465,39 @@ void QGCApplication::init()
                 Log.i("getCam", "recieved SET_CAMERA_INTRINSICS");
                 Log.i("getCam", "=================================================");
                 break;
-            case "GET_CAMERA": // TODO to finish
+            case "GET_CAMERA":
                 Log.i("getCam", "=================================================");
                 Log.i("getCam", "recieved GET_CAMERA");
                 Log.i("getCam", "=================================================");
                 break;
-            case "ZOOM_CAMERA": // TODO test and rework
+            case "ZOOM_CAMERA":
                 Log.i("zoomCam", "=================================================");
                 Log.i("zoomCam", "recieved ZOOM_CAMERA");
                 Log.i("zoomCam", "=================================================");
                 break;
-            case "TAKE_PHOTO": // TODO firmware exam
+            case "TAKE_PHOTO":
                 Log.i("takePhoto", "=================================================");
                 Log.i("takePhoto", "recieved TAKE_PHOTO");
                 Log.i("takePhoto", "=================================================");
                 break;
-            case "START_RECORDING": // TODO firmware exam
+            case "START_RECORDING":
                 Log.i("zoomCam", "=================================================");
                 Log.i("zoomCam", "recieved START_RECORDING");
                 Log.i("zoomCam", "=================================================");
                 break;
-            case "STOP_RECORDING": // TODO firmware exam
+            case "STOP_RECORDING":
                 Log.i("zoomCam", "=================================================");
                 Log.i("zoomCam", "recieved STOP_RECORDING");
                 Log.i("zoomCam", "=================================================");
                 break;
-            default: // TODO check if new
+            default:
                 message.put("status", "KO");
                 message.put("error", "KO");
         }
         client.publish("test/response", "Response : "+message);
     });
 
-    client.connectToHost(); */
+    client.connectToHost();
 }
 
 void QGCApplication::sendInfos(){
