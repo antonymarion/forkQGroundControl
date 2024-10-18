@@ -424,7 +424,7 @@ void QGCApplication::init()
     m_client->connectToHost();
 
     // Setup Subscription
-    QMqttSubscription* subscription = m_client->subscribe("REQUEST/+/" + "TESTING" + "/+", 1); // TODO regex here
+    QMqttSubscription* subscription = m_client->subscribe("REQUEST/+/TESTING/+", 1); // TODO regex here
     updateStatus(subscription->state());
     QObject::connect(subscription, &QMqttSubscription::stateChanged, this, &QGCApplication::updateStatus);
     QObject::connect(subscription, &QMqttSubscription::messageReceived, this, &QGCApplication::updateMessage);
