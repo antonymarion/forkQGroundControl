@@ -100,7 +100,7 @@ jobs:
       - name: Check files in build directory before copy
         run: |
           echo "Listing files in build directory:"
-          dir "D:/a/forkQGroundControl/forkQGroundControl/Qt6Mqtt/build"
+          dir "D:/a/_temp/Qt/6.6.3/msvc2019_64/lib/"
 
       - name: Copy files
         run: |
