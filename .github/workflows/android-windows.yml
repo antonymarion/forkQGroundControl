@@ -95,7 +95,7 @@ jobs:
 
           D:/a/_temp/Qt/Tools/CMake/bin/cmake --build .
 
-          D:/a/_temp/Qt/Tools/CMake/bin/cmake --install . --prefix "$QT_INSTALL_DIR/$QT_VERSION/msvc2019_64"
+          D:/a/_temp/Qt/Tools/CMake/bin/cmake --install . --verbose
 
       - name: Check files in build directory before copy
         run: |
