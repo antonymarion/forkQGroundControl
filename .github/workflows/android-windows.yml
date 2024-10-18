@@ -97,21 +97,15 @@ jobs:
 
           D:/a/_temp/Qt/Tools/CMake/bin/cmake --install . --prefix "$QT_INSTALL_DIR/$QT_VERSION/msvc2019_64"
 
-          cp -r  " D:/a/forkQGroundControl/forkQGroundControl/Qt6Mqtt/build"  "$QT_INSTALL_DIR/$QT_VERSION/msvc2019_64/lib/cmake/Qt6Mqtt"
-
-          - name: Check if files were copied
-
-      - name: Check files mqtt
+      - name: Check files in build directory before copy
         run: |
-          echo "Vérification des fichiers copiés dans le répertoire gcc_64..."
-          dir "$QT_INSTALL_DIR/$QT_VERSION/gcc_64/lib/cmake/Qt6Mqtt"
-          ls "$QT_INSTALL_DIR/$QT_VERSION/gcc_64/lib/cmake/Qt6Mqtt"
-          if exist "$QT_INSTALL_DIR/$QT_VERSION/gcc_64/lib/cmake/Qt6Mqtt/Qt6MqttConfig.cmake" (
-              echo "Le fichier Qt6MqttConfig.cmake a été trouvé."
-          ) else (
-              echo "Erreur : Le fichier Qt6MqttConfig.cmake est manquant."
-              exit 1
-          )
+          echo "Listing files in build directory:"
+          dir "D:/a/forkQGroundControl/forkQGroundControl/Qt6Mqtt/build"
+
+      - name: Copy files
+        run: |
+          echo "Copying files from build directory to cmake directory..."
+          robocopy "D:/a/forkQGroundControl/forkQGroundControl/Qt6Mqtt/build" "%QT_INSTALL_DIR%/%QT_VERSION%/msvc2019_64/lib/cmake/Qt6Mqtt" /E
 
       - run: mkdir ${{ runner.temp }}\shadow_build_dir
       - name: Configure
