@@ -95,7 +95,7 @@ jobs:
           cd D:\a\forkQGroundControl\forkQGroundControl\qtmqtt\build
           "C:\Program Files\CMake\bin\cmake" --build .
           "C:\Program Files\CMake\bin\cmake" --install . --verbose
-          where qmake
+          where qt-configure-module
           
       - name: Configure
         working-directory: ${{ runner.temp }}/shadow_build_dir
