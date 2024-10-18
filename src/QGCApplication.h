@@ -18,6 +18,7 @@
 #include <QtCore/QMetaMethod>
 #include <QtCore/QMetaObject>
 #include <QtCore/QTranslator>
+#include <QtMqtt/QMqttClient>
 
 // These private headers are require to implement the signal compress support below
 #include <QtCore/private/qthread_p.h>
@@ -228,6 +229,10 @@ private:
     void startStream();
     void startRecording();
     void stopRecording();
+    void updateLogStateChange();
+    void brokerDisconnected();
+    void updateMessage(const QMqttMessage &msg);
+    void updateStatus(QMqttSubscription::SubscriptionState state);
     Vehicle* getActiveVehicle();
     MavlinkCameraControl* getActiveCamera();
     QString rtmpUrl = "";
@@ -236,6 +241,5 @@ private:
     bool isStreaming = false;
     int countdown = 10;
     bool reset = true;
-    QStringList commandsList;
-    commandsList << "OPEN_STREAM" << "STOP_STREAM" << "RESET_GIMBAL" << "MOVE_GIMBAL" << "GET_CAMERAS" << "SET_CAMERA" << "SET_CAMERA_INTRINSICS" << "GET_CAMERA" << "ZOOM_CAMERA" << "TAKE_PHOTO" << "START_RECORDING" << "STOP_RECORDING";
+    QMqttClient *m_client;
 };

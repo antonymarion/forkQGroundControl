@@ -27,7 +27,7 @@
 #include <QtQml/QQmlContext>
 #include <QtQml/QQmlApplicationEngine>
 #include <QTimer>
-#include <QMqttClient>
+#include <QtMqtt/QMqttClient>
 
 #include "Audio/AudioOutput.h"
 #include "QGCConfig.h"
@@ -407,97 +407,133 @@ void QGCApplication::init()
         AudioOutput::instance()->setMuted(true);
     }
 
+    QStringList commandsList;
+    commandsList << "OPEN_STREAM" << "STOP_STREAM" << "RESET_GIMBAL" << "MOVE_GIMBAL" << "GET_CAMERAS" << "SET_CAMERA" << "SET_CAMERA_INTRINSICS" << "GET_CAMERA" << "ZOOM_CAMERA" << "TAKE_PHOTO" << "START_RECORDING" << "STOP_RECORDING";
     QTimer *timer = new QTimer(this);
 
     QObject::connect(timer, &QTimer::timeout, this, &QGCApplication::sendInfos);
 
     timer->start(2000);
 
-    QMqttClient client = new QMqttClient(this);
-    client.setHostname("tcp://152.228.246.204");
-    client.setPort(1883);
-    QObject::connect(&client, &QMqttClient::stateChange, [](QMqttClient::ClientState state){
-        if(state == QMqttClient::Connected)
-            qCDebug(QGCApplicationLog) << "*******************************  client  connected  *******************************";
-        else if (state == QMqttClient::Disconnected)
-            qCDebug(QGCApplicationLog) << "******************************* client disconnected *******************************";
-    });
-    QObject::connect(&client, &QMqttClient::errorChanged, [](QMqttClient::ClientError error){
-        qCDebug(QGCApplicationLog) << "************* MQTT ERROR *****************";
-        qCDebug(QGCApplicationLog) << error;
-    });
-    QObject::connect(&client, &QMqttClient::messageReceived, [&client](const QByteArray &message, const, QMqttTopicName &topic){
-        qCDebug(QGCApplicationLog) << "message reçu sur le topic : "+topic.name();
-        qCDebug(QGCApplicationLog) << message;
-        switch (commandsList.indexOf(message.getString("instruction"))){
-            case 0:
-                qCDebug(QGCApplicationLog) << "=================================================";
-                qCDebug(QGCApplicationLog) << "recieved OPEN_STREAM";
-                qCDebug(QGCApplicationLog) << "=================================================";
-                break;
-            case 1:
-                qCDebug(QGCApplicationLog) << "=================================================";
-                qCDebug(QGCApplicationLog) << "recieved STOP_STREAM";
-                qCDebug(QGCApplicationLog) << "=================================================";
-                break;
-            case 2:
-                qCDebug(QGCApplicationLog) << "=================================================";
-                qCDebug(QGCApplicationLog) << "recieved RESET_GIMBAL";
-                qCDebug(QGCApplicationLog) << "=================================================";
-                break;
-            case 3:
-                qCDebug(QGCApplicationLog) << "=================================================";
-                qCDebug(QGCApplicationLog) << "recieved MOVE_GIMBAL";
-                qCDebug(QGCApplicationLog) << "=================================================";
-                break;
-            case 4:
-                qCDebug(QGCApplicationLog) << "=================================================";
-                qCDebug(QGCApplicationLog) << "recieved GET_CAMERAS";
-                qCDebug(QGCApplicationLog) << "=================================================";
-                break;
-            case 5:
-                qCDebug(QGCApplicationLog) << "=================================================";
-                qCDebug(QGCApplicationLog) << "recieved SET_CAMERA";
-                qCDebug(QGCApplicationLog) << "=================================================";
-                break;
-            case 6:
-                qCDebug(QGCApplicationLog) << "=================================================";
-                qCDebug(QGCApplicationLog) << "recieved SET_CAMERA_INTRINSICS";
-                qCDebug(QGCApplicationLog) << "=================================================";
-                break;
-            case 7:
-                qCDebug(QGCApplicationLog) << "=================================================";
-                qCDebug(QGCApplicationLog) << "recieved GET_CAMERA";
-                qCDebug(QGCApplicationLog) << "=================================================";
-                break;
-            case 8:
-                qCDebug(QGCApplicationLog) << "=================================================";
-                qCDebug(QGCApplicationLog) << "recieved ZOOM_CAMERA";
-                qCDebug(QGCApplicationLog) << "=================================================";
-                break;
-            case 9:
-                qCDebug(QGCApplicationLog) << "=================================================";
-                qCDebug(QGCApplicationLog) << "recieved TAKE_PHOTO";
-                qCDebug(QGCApplicationLog) << "=================================================";
-                break;
-            case 10:
-                qCDebug(QGCApplicationLog) << "=================================================";
-                qCDebug(QGCApplicationLog) << "recieved START_RECORDING";
-                qCDebug(QGCApplicationLog) << "=================================================";
-                break;
-            case 11:
-                qCDebug(QGCApplicationLog) << "=================================================";
-                qCDebug(QGCApplicationLog) << "recieved STOP_RECORDING";
-                qCDebug(QGCApplicationLog) << "=================================================";
-                break;
-            default:
-                message.put("status", "KO");
-                message.put("error", "KO");
-        }
-        client.publish("test/response", "Response : "+message);
-    });
+    // Setup MqttClient
+    QMqttClient m_client = new QMqttClient(this);
+    m_client->setHostname("tcp://152.228.246.204");
+    m_client->setPort(1883);
+    connect(m_client, &QMqttClient::stateChanged, this, &QGCApplication::updateLogStateChange);
+    connect(m_client, &QMqttClient::disconnected, this, &QGCApplication::brokerDisconnected);
+    m_client.connectToHost();
 
-    client.connectToHost();
+    // Setup Subscription
+    auto subscription = m_client->subscribe("REQUEST/+/" + "TESTING" + "/+", 1);
+    updateStatus(m_sub->state());
+    QObject::connect(subscription, &QMqttSubscription::stateChanged, this, &QGCApplication::updateStatus);
+    QObject::connect(subscription, &QMqttSubscription::messageReceived, this, &QGCApplication::updateMessage);
+
+}
+
+void QGCApplication::updateLogStateChange()
+{
+    qCDebug(QGCApplicationLog) << "State Change : " + QString::number(m_client->state());
+}
+
+void QGCApplication::brokerDisconnected()
+{
+    qCDebug(QGCApplicationLog) << "Mqtt Disconnected";
+}
+
+void QGCApplication::updateMessage(const QMqttMessage &msg)
+{
+    qCDebug(QGCApplicationLog) << msg.payload();
+    /* switch (commandsList.indexOf(message.getString("instruction"))){
+        case 0:
+            qCDebug(QGCApplicationLog) << "=================================================";
+            qCDebug(QGCApplicationLog) << "recieved OPEN_STREAM";
+            qCDebug(QGCApplicationLog) << "=================================================";
+            break;
+        case 1:
+            qCDebug(QGCApplicationLog) << "=================================================";
+            qCDebug(QGCApplicationLog) << "recieved STOP_STREAM";
+            qCDebug(QGCApplicationLog) << "=================================================";
+            break;
+        case 2:
+            qCDebug(QGCApplicationLog) << "=================================================";
+            qCDebug(QGCApplicationLog) << "recieved RESET_GIMBAL";
+            qCDebug(QGCApplicationLog) << "=================================================";
+            break;
+        case 3:
+            qCDebug(QGCApplicationLog) << "=================================================";
+            qCDebug(QGCApplicationLog) << "recieved MOVE_GIMBAL";
+            qCDebug(QGCApplicationLog) << "=================================================";
+            break;
+        case 4:
+            qCDebug(QGCApplicationLog) << "=================================================";
+            qCDebug(QGCApplicationLog) << "recieved GET_CAMERAS";
+            qCDebug(QGCApplicationLog) << "=================================================";
+            break;
+        case 5:
+            qCDebug(QGCApplicationLog) << "=================================================";
+            qCDebug(QGCApplicationLog) << "recieved SET_CAMERA";
+            qCDebug(QGCApplicationLog) << "=================================================";
+            break;
+        case 6:
+            qCDebug(QGCApplicationLog) << "=================================================";
+            qCDebug(QGCApplicationLog) << "recieved SET_CAMERA_INTRINSICS";
+            qCDebug(QGCApplicationLog) << "=================================================";
+            break;
+        case 7:
+            qCDebug(QGCApplicationLog) << "=================================================";
+            qCDebug(QGCApplicationLog) << "recieved GET_CAMERA";
+            qCDebug(QGCApplicationLog) << "=================================================";
+            break;
+        case 8:
+            qCDebug(QGCApplicationLog) << "=================================================";
+            qCDebug(QGCApplicationLog) << "recieved ZOOM_CAMERA";
+            qCDebug(QGCApplicationLog) << "=================================================";
+            break;
+        case 9:
+            qCDebug(QGCApplicationLog) << "=================================================";
+            qCDebug(QGCApplicationLog) << "recieved TAKE_PHOTO";
+            qCDebug(QGCApplicationLog) << "=================================================";
+            break;
+        case 10:
+            qCDebug(QGCApplicationLog) << "=================================================";
+            qCDebug(QGCApplicationLog) << "recieved START_RECORDING";
+            qCDebug(QGCApplicationLog) << "=================================================";
+            break;
+        case 11:
+            qCDebug(QGCApplicationLog) << "=================================================";
+            qCDebug(QGCApplicationLog) << "recieved STOP_RECORDING";
+            qCDebug(QGCApplicationLog) << "=================================================";
+            break;
+        default:
+            message.put("status", "KO");
+            message.put("error", "KO");
+    }
+    client.publish("test/response", "Response : "+message); */
+}
+
+void QGCApplication::updateStatus(QMqttSubscription::SubscriptionState state)
+{
+    switch (state) {
+    case QMqttSubscription::Unsubscribed:
+        qCDebug(QGCApplicationLog) << "Unsubscribed";
+        break;
+    case QMqttSubscription::SubscriptionPending:
+        qCDebug(QGCApplicationLog) << "Pending";
+        break;
+    case QMqttSubscription::Subscribed:
+        qCDebug(QGCApplicationLog) << "Subscribed";
+        break;
+    case QMqttSubscription::Error:
+        qCDebug(QGCApplicationLog) << "Error";
+        break;
+    case QMqttSubscription::UnsubscriptionPending:
+        qCDebug(QGCApplicationLog) << "Pending Unsubscription";
+        break;
+    default:
+        qCDebug(QGCApplicationLog) << "--Unknown--";
+        break;
+    }
 }
 
 void QGCApplication::sendInfos(){
