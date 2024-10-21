@@ -466,7 +466,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
     QString message = QString(msg.payload());
     QJsonDocument d = QJsonDocument::fromJson(message.toUtf8());
     QJsonObject jsonValues = d.object();
-    switch (this->commandsList.indexOf(jsonValues["instruction"])){
+    switch (this->commandsList.indexOf(jsonValues["instruction"].toString())){
         case 0:
             qCDebug(QGCApplicationLog) << "=================================================";
             qCDebug(QGCApplicationLog) << "recieved OPEN_STREAM";
