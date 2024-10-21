@@ -471,9 +471,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qCDebug(QGCApplicationLog) << "=================================================";
             qCDebug(QGCApplicationLog) << "recieved MOVE_GIMBAL";
             qCDebug(QGCApplicationLog) << "=================================================";
-            QString axis = message["axis"].toString();
-            QString value = message["value"].toString();
-            QGCApplication::moveGimbal(axis, value);
+            QGCApplication::moveGimbal(message["axis"].toString(), message["value"].toString());
             break;
         case 4:
             qCDebug(QGCApplicationLog) << "=================================================";
