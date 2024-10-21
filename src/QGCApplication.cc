@@ -431,8 +431,8 @@ void QGCApplication::init()
     QObject::connect(subscription, &QMqttSubscription::stateChanged, this, &QGCApplication::updateStatus);
     QObject::connect(subscription, &QMqttSubscription::messageReceived, this, &QGCApplication::updateMessage);
 
-    val =  
-    '  {
+    QJsonObject val =
+    '{
         "appDesc": {
             "description": "SomeDescription",
             "message": "SomeMessage"
@@ -442,7 +442,7 @@ void QGCApplication::init()
             "message": "Welcome",
             "imp":["awesome","best","good"]
         }
-        }';
+    }';
     qWarning() << val;
     QJsonDocument d = QJsonDocument::fromJson(val.toUtf8());
     QJsonObject sett2 = d.object();
