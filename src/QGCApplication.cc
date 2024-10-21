@@ -464,8 +464,10 @@ void QGCApplication::brokerDisconnected()
 
 void QGCApplication::updateMessage(const QMqttMessage &msg)
 {
-    qCDebug(QGCApplicationLog) << msg.payload();
-    /* switch (commandsList.indexOf(message.getString("instruction"))){
+    QString message = QString(msg.payload());
+    QJsonDocument d = QJsonDocument::fromJson(message.toUtf8());
+    QJsonObject jsonValues = d.object();
+    switch (commandsList.indexOf(jsonValues["instruction"])){
         case 0:
             qCDebug(QGCApplicationLog) << "=================================================";
             qCDebug(QGCApplicationLog) << "recieved OPEN_STREAM";
@@ -527,10 +529,10 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qCDebug(QGCApplicationLog) << "=================================================";
             break;
         default:
-            message.put("status", "KO");
-            message.put("error", "KO");
+            /* message.put("status", "KO");
+            message.put("error", "KO"); */
     }
-    client.publish("test/response", "Response : "+message); */
+    // client.publish("test/response", "Response : "+message);
 }
 
 void QGCApplication::updateStatus(QMqttSubscription::SubscriptionState state)
