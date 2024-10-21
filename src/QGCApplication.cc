@@ -840,15 +840,13 @@ QJsonArray QGCApplication::getCameras() {
     QJsonArray cameraList;
     Vehicle* activeVehicle = QGCApplication::getActiveVehicle();
     if(!activeVehicle || activeVehicle->cameraManager()->cameras()->count() <= 0) return cameraList;
-    const cameras = activeVehicle->cameraManager().cameras();
-    if (cameras.count() != 0) {
-        for (int i = 0; i < cameras.count(); i++) {
-            MavlinkCameraControl *camera = qobject_cast<MavlinkCameraControl*>(cameras->get(i));
-            QJsonObject thisCamera;
-            thisCamera.insert("index",i);
-            thisCamera.insert("name",camera->modelName());
-            cameraList.append(thisCamera);
-        }
+    QmlObjectListModel *cameras = activeVehicle->cameraManager()->cameras();
+    for (int i = 0; i < cameras->count(); i++) {
+        MavlinkCameraControl *camera = qobject_cast<MavlinkCameraControl*>(cameras->get(i));
+        QJsonObject thisCamera;
+        thisCamera.insert("index",i);
+        thisCamera.insert("name",camera->modelName());
+        cameraList.append(thisCamera);
     }
     return cameraList;
 }
