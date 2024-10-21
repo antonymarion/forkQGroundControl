@@ -838,9 +838,11 @@ MavlinkCameraControl* QGCApplication::getActiveCamera(){
     return activeCamera;
 }
 
-QJsonObject QGCApplication::getCameras() {
-    const cameras = Vehicule::cameraManager().cameras();
+QJsonArray QGCApplication::getCameras() {
     QJsonArray cameraList;
+    Vehicle* activeVehicle = QGCApplication::getActiveVehicle();
+    if(!activeVehicle || activeVehicle->cameraManager()->cameras()->count() <= 0) return cameraList;
+    const cameras = activeVehicle->cameraManager().cameras();
     if (cameras.count() != 0) {
         for (int i = 0; i < cameras.count(); i++) {
             MavlinkCameraControl *camera = qobject_cast<MavlinkCameraControl*>(cameras->get(i));

@@ -226,7 +226,7 @@ private:
     void sendInfos();
     void moveGimbal(QString axis, QString value);
     void resetGimbal();
-    QJsonObject getCameras();
+    QJsonArray getCameras();
     void takePhoto();
     void startStream();
     void startRecording();
