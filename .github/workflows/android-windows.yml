@@ -76,15 +76,23 @@ jobs:
 
       - run: mkdir ${{ runner.temp }}\shadow_build_dir
 
+      - name: Where Where
+        run: |
+          where cmake
+          where qmake
+          where qt-configure-module
+          dir D:\a\_temp\Qt
+
       - name: Setup QMQTT First Part
         run: |
           set QT_VERSION=6.6.3
           set QT_INSTALL_DIR=D:/a/_temp/Qt
           set QT_HOST_PATH=D:/a/_temp/Qt
-          set CMAKE_BIN_DIR=$QT_INSTALL_DIR/Tools/CMake/bin"
-          set QMAKE_BIN_DIR=$QT_INSTALL_DIR/$QT_VERSION/android_arm64_v8a/bin"
-          set CMAKE_PREFIX_PATH=$QT_INSTALL_DIR/$QT_VERSION/msvc2019_64/"
-          set NINJA_DIR=$QT_INSTALL_DIR/Tools/Ninja"
+          set CMAKE_BIN_DIR=$QT_INSTALL_DIR/Tools/CMake/bin
+          set QT_HOST_PATH_CMAKE_DIR=$QT_HOST_PATH/Tools/CMake/bin
+          set QMAKE_BIN_DIR=$QT_INSTALL_DIR/$QT_VERSION/android_arm64_v8a/bin
+          set CMAKE_PREFIX_PATH=$QT_INSTALL_DIR/$QT_VERSION/msvc2019_64/
+          set NINJA_DIR=$QT_INSTALL_DIR/Tools/Ninja
           git clone git://code.qt.io/qt/qtmqtt.git --branch 6.6.3
           cd qtmqtt
           mkdir build
