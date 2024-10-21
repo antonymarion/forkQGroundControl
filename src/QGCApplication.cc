@@ -408,8 +408,7 @@ void QGCApplication::init()
         AudioOutput::instance()->setMuted(true);
     }
 
-    QStringList commandsList;
-    commandsList << "OPEN_STREAM" << "STOP_STREAM" << "RESET_GIMBAL" << "MOVE_GIMBAL" << "GET_CAMERAS" << "SET_CAMERA" << "SET_CAMERA_INTRINSICS" << "GET_CAMERA" << "ZOOM_CAMERA" << "TAKE_PHOTO" << "START_RECORDING" << "STOP_RECORDING";
+    this.commandsList << "OPEN_STREAM" << "STOP_STREAM" << "RESET_GIMBAL" << "MOVE_GIMBAL" << "GET_CAMERAS" << "SET_CAMERA" << "SET_CAMERA_INTRINSICS" << "GET_CAMERA" << "ZOOM_CAMERA" << "TAKE_PHOTO" << "START_RECORDING" << "STOP_RECORDING";
     QTimer *timer = new QTimer(this);
 
     QObject::connect(timer, &QTimer::timeout, this, &QGCApplication::sendInfos);
@@ -529,6 +528,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qCDebug(QGCApplicationLog) << "=================================================";
             break;
         default:
+            qCDebug(QGCApplicationLog) << "default";
             /* message.put("status", "KO");
             message.put("error", "KO"); */
     }

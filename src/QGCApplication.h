@@ -242,4 +242,5 @@ private:
     int countdown = 10;
     bool reset = true;
     QMqttClient *m_client;
+    QStringList commandsList;
 };
