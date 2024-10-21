@@ -89,7 +89,7 @@ jobs:
           set QT_INSTALL_DIR=D:/a/_temp/Qt
           set QT_HOST_PATH=D:/a/_temp/Qt
           set CMAKE_BIN_DIR=$QT_INSTALL_DIR/Tools/CMake/bin
-          set QT_HOST_PATH_CMAKE_DIR=C:/Program Files/CMake/bin
+          set QT_HOST_PATH_CMAKE_DIR="C:/Program Files/CMake/bin"
           set QMAKE_BIN_DIR=$QT_INSTALL_DIR/$QT_VERSION/android_arm64_v8a/bin
           set CMAKE_PREFIX_PATH=$QT_INSTALL_DIR/$QT_VERSION/msvc2019_64/
           set NINJA_DIR=$QT_INSTALL_DIR/Tools/Ninja
