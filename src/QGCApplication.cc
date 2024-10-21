@@ -408,7 +408,7 @@ void QGCApplication::init()
         AudioOutput::instance()->setMuted(true);
     }
 
-    this.commandsList << "OPEN_STREAM" << "STOP_STREAM" << "RESET_GIMBAL" << "MOVE_GIMBAL" << "GET_CAMERAS" << "SET_CAMERA" << "SET_CAMERA_INTRINSICS" << "GET_CAMERA" << "ZOOM_CAMERA" << "TAKE_PHOTO" << "START_RECORDING" << "STOP_RECORDING";
+    this->commandsList << "OPEN_STREAM" << "STOP_STREAM" << "RESET_GIMBAL" << "MOVE_GIMBAL" << "GET_CAMERAS" << "SET_CAMERA" << "SET_CAMERA_INTRINSICS" << "GET_CAMERA" << "ZOOM_CAMERA" << "TAKE_PHOTO" << "START_RECORDING" << "STOP_RECORDING";
     QTimer *timer = new QTimer(this);
 
     QObject::connect(timer, &QTimer::timeout, this, &QGCApplication::sendInfos);
@@ -466,7 +466,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
     QString message = QString(msg.payload());
     QJsonDocument d = QJsonDocument::fromJson(message.toUtf8());
     QJsonObject jsonValues = d.object();
-    switch (commandsList.indexOf(jsonValues["instruction"])){
+    switch (this.commandsList.indexOf(jsonValues["instruction"])){
         case 0:
             qCDebug(QGCApplicationLog) << "=================================================";
             qCDebug(QGCApplicationLog) << "recieved OPEN_STREAM";
