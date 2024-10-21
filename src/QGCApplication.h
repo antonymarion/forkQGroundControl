@@ -19,6 +19,7 @@
 #include <QtCore/QMetaObject>
 #include <QtCore/QTranslator>
 #include <QtMqtt/QMqttClient>
+#include <QJsonObject>
 
 // These private headers are require to implement the signal compress support below
 #include <QtCore/private/qthread_p.h>
@@ -225,6 +226,7 @@ private:
     void sendInfos();
     void moveGimbal(QString axis, QString value);
     void resetGimbal();
+    QJsonObject getCameras();
     void takePhoto();
     void startStream();
     void startRecording();

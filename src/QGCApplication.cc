@@ -409,11 +409,7 @@ void QGCApplication::init()
     }
 
     this->commandsList << "OPEN_STREAM" << "STOP_STREAM" << "RESET_GIMBAL" << "MOVE_GIMBAL" << "GET_CAMERAS" << "SET_CAMERA" << "SET_CAMERA_INTRINSICS" << "GET_CAMERA" << "ZOOM_CAMERA" << "TAKE_PHOTO" << "START_RECORDING" << "STOP_RECORDING";
-    QTimer *timer = new QTimer(this);
-
-    QObject::connect(timer, &QTimer::timeout, this, &QGCApplication::sendInfos);
-
-    timer->start(2000);
+    
 
     // Setup MqttClient
     m_client = new QMqttClient(this);
@@ -430,24 +426,12 @@ void QGCApplication::init()
     QObject::connect(subscription, &QMqttSubscription::stateChanged, this, &QGCApplication::updateStatus);
     QObject::connect(subscription, &QMqttSubscription::messageReceived, this, &QGCApplication::updateMessage);
 
-    QString val = "{ 'appDesc': { 'description': 'SomeDescription', 'message': 'SomeMessage' }, 'appName': { 'description': 'Home', 'message': 'Welcome', 'imp':['awesome','best','good'] } }";
-    qWarning() << val;
-    QJsonDocument d = QJsonDocument::fromJson(val.toUtf8());
-    QJsonObject sett2 = d.object();
-    QJsonValue value = sett2.value(QString("appName"));
-    qWarning() << value;
-    QJsonObject item = value.toObject();
-    qWarning() << tr("QJsonObject of description: ") << item;
+    // Setup Position & Remote Pilote TIMER
+    QTimer *timer = new QTimer(this);
 
-    /* in case of string value get value and convert into string*/
-    qWarning() << tr("QJsonObject[appName] of description: ") << item["description"];
-    QJsonValue subobj = item["description"];
-    qWarning() << subobj.toString();
+    QObject::connect(timer, &QTimer::timeout, this, &QGCApplication::sendInfos);
 
-    /* in case of array get array and convert into string*/
-    qWarning() << tr("QJsonObject[appName] of value: ") << item["imp"];
-    QJsonArray test = item["imp"].toArray();
-    qWarning() << test[1].toString();
+    timer->start(2000);
 
 }
 
@@ -463,10 +447,10 @@ void QGCApplication::brokerDisconnected()
 
 void QGCApplication::updateMessage(const QMqttMessage &msg)
 {
-    QString message = QString(msg.payload());
-    QJsonDocument d = QJsonDocument::fromJson(message.toUtf8());
-    QJsonObject jsonValues = d.object();
-    switch (this->commandsList.indexOf(jsonValues["instruction"].toString())){
+    QString payload = QString(msg.payload());
+    QJsonDocument d = QJsonDocument::fromJson(payload.toUtf8());
+    QJsonObject message = d.object();
+    switch (this->commandsList.indexOf(message["instruction"].toString())){
         case 0:
             qCDebug(QGCApplicationLog) << "=================================================";
             qCDebug(QGCApplicationLog) << "recieved OPEN_STREAM";
@@ -481,16 +465,21 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qCDebug(QGCApplicationLog) << "=================================================";
             qCDebug(QGCApplicationLog) << "recieved RESET_GIMBAL";
             qCDebug(QGCApplicationLog) << "=================================================";
+            QGCApplication::resetGimbal();
             break;
         case 3:
             qCDebug(QGCApplicationLog) << "=================================================";
             qCDebug(QGCApplicationLog) << "recieved MOVE_GIMBAL";
             qCDebug(QGCApplicationLog) << "=================================================";
+            QString axis = message["axis"].toString();
+            QString value = message["value"].toString();
+            QGCApplication::moveGimbal(axis, value);
             break;
         case 4:
             qCDebug(QGCApplicationLog) << "=================================================";
             qCDebug(QGCApplicationLog) << "recieved GET_CAMERAS";
             qCDebug(QGCApplicationLog) << "=================================================";
+            message.insert("availableCameraListData", QGCApplication::getCameras());
             break;
         case 5:
             qCDebug(QGCApplicationLog) << "=================================================";
@@ -516,21 +505,23 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qCDebug(QGCApplicationLog) << "=================================================";
             qCDebug(QGCApplicationLog) << "recieved TAKE_PHOTO";
             qCDebug(QGCApplicationLog) << "=================================================";
+            QGCApplication::takePhoto();
             break;
         case 10:
             qCDebug(QGCApplicationLog) << "=================================================";
             qCDebug(QGCApplicationLog) << "recieved START_RECORDING";
             qCDebug(QGCApplicationLog) << "=================================================";
+            QGCApplication::startRecording();
             break;
         case 11:
             qCDebug(QGCApplicationLog) << "=================================================";
             qCDebug(QGCApplicationLog) << "recieved STOP_RECORDING";
             qCDebug(QGCApplicationLog) << "=================================================";
+            QGCApplication::stopRecording();
             break;
         default:
-            qCDebug(QGCApplicationLog) << "default";
-            /* message.put("status", "KO");
-            message.put("error", "KO"); */
+            message.insert("status","KO");
+            message.insert("error","KO");
     }
     // client.publish("test/response", "Response : "+message);
 }
@@ -667,36 +658,6 @@ void QGCApplication::sendInfos(){
 
     }
     qCDebug(QGCApplicationLog) << "==============  END GET_CAMERA  ==============";
-
-
-    
-    QGCApplication::takePhoto();
-
-    QGCApplication::startRecording();
-
-    QGCApplication::stopRecording();
-
-
-
-    qCDebug(QGCApplicationLog) << "==============   TESTING SET COMMANDS   ==============";
-
-    if(this->countdown == 10){
-        if(hasGimbal){
-            if(this->reset){
-                QGCApplication::resetGimbal();
-            }
-            else  {
-                QGCApplication::moveGimbal("yaw", "20");
-            }
-        }
-        this->reset = !this->reset;
-    }
-
-
-
-    this->countdown -= 1;
-    if(this->countdown == 0) this->countdown = 10;
-
 }
 
 /* QGCApplication:: sendAircraftPositionInfos() {
@@ -785,26 +746,6 @@ void QGCApplication::sendInfos(){
             stopLiveShow();
             obj.put("url", "null");
             break;
-        case "RESET_GIMBAL":
-            Log.i("resetGimbal", "=================================================");
-            Log.i("resetGimbal", "recieved RESET_GIMBAL");
-            Log.i("resetGimbal", "=================================================");
-            GimbalUtil.resetGimbal();
-            break; 
-        case "MOVE_GIMBAL":
-            Log.i("moveCam", "=================================================");
-            Log.i("moveCam", "recieved MOVE_GIMBAL");
-            Log.i("moveCam", "=================================================");
-            String axis = obj.get("axis").toString();
-            String value = obj.get("value").toString();
-            QGCApplication::moveGimbal(axis, value);
-            break;
-        case "GET_CAMERAS":
-            Log.i("getCams", "=================================================");
-            Log.i("getCams", "recieved GET_CAMERAS");
-            Log.i("getCams", "=================================================");
-            obj.put("availableCameraListData", CameraUtil.getCameras());
-            break;
         case "SET_CAMERA": // TODO rework
             Log.i("setCams", "=================================================");
             Log.i("setCams", "recieved SET_CAMERA");
@@ -853,41 +794,7 @@ void QGCApplication::sendInfos(){
             String zoomValue = obj.getString("zoomValue");
             CameraUtil.zoomCamera(zoomValue);
             break;
-        case "TAKE_PHOTO": // TODO firmware exam
-            Log.i("takePhoto", "=================================================");
-            Log.i("takePhoto", "recieved TAKE_PHOTO");
-            Log.i("takePhoto", "=================================================");
-            CameraUtil.takePhoto();
-            break;
-        case "START_RECORDING": // TODO firmware exam
-            Log.i("zoomCam", "=================================================");
-            Log.i("zoomCam", "recieved START_RECORDING");
-            Log.i("zoomCam", "=================================================");
-            CameraUtil.startVideo();
-            break;
-        case "STOP_RECORDING": // TODO firmware exam
-            Log.i("zoomCam", "=================================================");
-            Log.i("zoomCam", "recieved STOP_RECORDING");
-            Log.i("zoomCam", "=================================================");
-            CameraUtil.stopVideo();
-            break; 
-        default: // TODO check if new
-            obj.put("status", "KO");
-            obj.put("error", "KO"); 
     }
-
-JSONArray QGCApplication::getCameras() {
-    const cameras = Vehicule::cameraManager().cameras();
-    JSONArray cameraList = new JSONArray();
-    if (cameras.count() != 0) {
-        for (int i = 0; i < cameras.count(); i++) {
-            JSONObject newResponse = new JSONObject();
-            newResponse.put("index", i);
-            newResponse.put("name", cameras.get(i).modelName());
-            cameraList.put(newResponse);
-        }
-    }
-}
 
 void QGCApplication::setZoom(float value){
     Vehicule::cameraManager().currentCameraInstance().setZoomLevel(qreal level);
@@ -929,6 +836,21 @@ MavlinkCameraControl* QGCApplication::getActiveCamera(){
     MavlinkCameraControl *activeCamera = activeVehicle->cameraManager()->currentCameraInstance();
     if(!activeCamera) return nullptr;
     return activeCamera;
+}
+
+QJsonObject QGCApplication::getCameras() {
+    const cameras = Vehicule::cameraManager().cameras();
+    QJsonArray cameraList;
+    if (cameras.count() != 0) {
+        for (int i = 0; i < cameras.count(); i++) {
+            MavlinkCameraControl *camera = qobject_cast<MavlinkCameraControl*>(cameras->get(i));
+            QJsonObject thisCamera;
+            thisCamera.insert("index",i);
+            thisCamera.insert("name",camera->modelName());
+            cameraList.append(thisCamera);
+        }
+    }
+    return cameraList;
 }
 
 void QGCApplication::takePhoto(){
