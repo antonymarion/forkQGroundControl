@@ -28,6 +28,7 @@
 #include <QtQml/QQmlApplicationEngine>
 #include <QTimer>
 #include <QtMqtt/QMqttClient>
+#include <QJsonObject>
 
 #include "Audio/AudioOutput.h"
 #include "QGCConfig.h"
@@ -429,6 +430,36 @@ void QGCApplication::init()
     updateStatus(subscription->state());
     QObject::connect(subscription, &QMqttSubscription::stateChanged, this, &QGCApplication::updateStatus);
     QObject::connect(subscription, &QMqttSubscription::messageReceived, this, &QGCApplication::updateMessage);
+
+    val =  
+    '  {
+        "appDesc": {
+            "description": "SomeDescription",
+            "message": "SomeMessage"
+        },
+        "appName": {
+            "description": "Home",
+            "message": "Welcome",
+            "imp":["awesome","best","good"]
+        }
+        }';
+    qWarning() << val;
+    QJsonDocument d = QJsonDocument::fromJson(val.toUtf8());
+    QJsonObject sett2 = d.object();
+    QJsonValue value = sett2.value(QString("appName"));
+    qWarning() << value;
+    QJsonObject item = value.toObject();
+    qWarning() << tr("QJsonObject of description: ") << item;
+
+    /* in case of string value get value and convert into string*/
+    qWarning() << tr("QJsonObject[appName] of description: ") << item["description"];
+    QJsonValue subobj = item["description"];
+    qWarning() << subobj.toString();
+
+    /* in case of array get array and convert into string*/
+    qWarning() << tr("QJsonObject[appName] of value: ") << item["imp"];
+    QJsonArray test = item["imp"].toArray();
+    qWarning() << test[1].toString();
 
 }
 
