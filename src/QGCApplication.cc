@@ -425,7 +425,7 @@ void QGCApplication::init()
     QMqttSubscription* subscription = m_client->subscribe(topic, 1); // TODO regex here
     // updateStatus(subscription->state());
     // QObject::connect(subscription, &QMqttSubscription::stateChanged, this, &QGCApplication::updateStatus);
-    // QObject::connect(subscription, &QMqttSubscription::messageReceived, this, &QGCApplication::updateMessage);
+    QObject::connect(subscription, &QMqttSubscription::messageReceived, this, &QGCApplication::updateMessage);
 
     // Setup Position & Remote Pilote TIMER
     QTimer *timer = new QTimer(this);
@@ -445,7 +445,7 @@ void QGCApplication::brokerDisconnected()
 {
     qCWarning(QGCApplicationLog) << "Mqtt Disconnected";
 }
-/* 
+
 void QGCApplication::updateMessage(const QMqttMessage &msg)
 {
     QString payload = QString(msg.payload());
@@ -552,7 +552,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
     // Set the qos to 1 (important!)
     m_client->publish(responseTopic, properties, responseMessage.toUtf8(), 1, false);
 }
- */
+
 void QGCApplication::updateStatus(QMqttSubscription::SubscriptionState state)
 {
     switch (state) {
@@ -581,10 +581,10 @@ void QGCApplication::sendInfos(){
 
     qCWarning(QGCApplicationLog) << "============== start send infos ==============";
 
-    /* if(!m_client) {
+    if(!m_client) {
         qCWarning(QGCApplicationLog) << "*****   Mqtt not available   *****";
         return;
-    } */
+    }
 
     QGCApplication::sendAircraftPositionInfos();
     QGCApplication::sendRemotePilote();
