@@ -413,7 +413,7 @@ void QGCApplication::init()
     this->commandsList << "OPEN_STREAM" << "STOP_STREAM" << "RESET_GIMBAL" << "MOVE_GIMBAL" << "GET_CAMERAS" << "SET_CAMERA" << "SET_CAMERA_INTRINSICS" << "GET_CAMERA" << "ZOOM_CAMERA" << "TAKE_PHOTO" << "START_RECORDING" << "STOP_RECORDING";
     
 
-    // Setup MqttClient
+    /* // Setup MqttClient
     m_client = new QMqttClient(this);
     m_client->setHostname("tcp://152.228.246.204");
     m_client->setPort(1883);
@@ -426,7 +426,7 @@ void QGCApplication::init()
     QMqttSubscription* subscription = m_client->subscribe(topic, 1); // TODO regex here
     updateStatus(subscription->state());
     QObject::connect(subscription, &QMqttSubscription::stateChanged, this, &QGCApplication::updateStatus);
-    QObject::connect(subscription, &QMqttSubscription::messageReceived, this, &QGCApplication::updateMessage);
+    QObject::connect(subscription, &QMqttSubscription::messageReceived, this, &QGCApplication::updateMessage); */
 
     // Setup Position & Remote Pilote TIMER
     QTimer *timer = new QTimer(this);
@@ -542,7 +542,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             message.insert("error","KO");
     }
 
-    QJsonDocument doc(message);
+    /* QJsonDocument doc(message);
     QString responseMessage(doc.toJson(QJsonDocument::Compact));
 
     QString responseTopic = msg.publishProperties().responseTopic();
@@ -551,7 +551,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
     properties.setCorrelationData(msg.publishProperties().correlationData());
     
     // Set the qos to 1 (important!)
-    m_client->publish(responseTopic, properties, responseMessage.toUtf8(), 1, false);
+    m_client->publish(responseTopic, properties, responseMessage.toUtf8(), 1, false); */
 }
 
 void QGCApplication::updateStatus(QMqttSubscription::SubscriptionState state)
@@ -582,10 +582,10 @@ void QGCApplication::sendInfos(){
 
     qCWarning(QGCApplicationLog) << "============== start send infos ==============";
 
-    if(!m_client) {
+    /* if(!m_client) {
         qCWarning(QGCApplicationLog) << "*****   Mqtt not available   *****";
         return;
-    }
+    } */
 
     QGCApplication::sendAircraftPositionInfos();
     QGCApplication::sendRemotePilote();
@@ -598,9 +598,9 @@ void QGCApplication:: sendRemotePilote() {
     newResponse.insert("email", this->loggedEmail);
     newResponse.insert("registrationNumber", this->registrationNumber);
 
-    QJsonDocument doc(newResponse);
+    /* QJsonDocument doc(newResponse);
     QString responseMessage(doc.toJson(QJsonDocument::Compact));
-    m_client->publish("REMOTE_PILOT/"+this->uavSn, responseMessage.toUtf8());
+    m_client->publish("REMOTE_PILOT/"+this->uavSn, responseMessage.toUtf8()); */
 }
 
 void QGCApplication:: sendAircraftPositionInfos() {
@@ -675,9 +675,9 @@ void QGCApplication:: sendAircraftPositionInfos() {
     qCWarning(QGCApplicationLog) << "batteryPowerPercentUav : " << res/batteries->count();
     newResponse.insert("batteryPowerPercentUav", res/batteries->count());
 
-    QJsonDocument doc(newResponse);
+    /* QJsonDocument doc(newResponse);
     QString responseMessage(doc.toJson(QJsonDocument::Compact));
-    m_client->publish("REMOTE_PILOT/"+this->uavSn, responseMessage.toUtf8());
+    m_client->publish("REMOTE_PILOT/"+this->uavSn, responseMessage.toUtf8()); */
 
 
     // Might not do that
