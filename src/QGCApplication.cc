@@ -411,17 +411,15 @@ void QGCApplication::init()
     // Setup switch/case lists
     axisList << "pitch" << "yaw" << "roll";
     this->commandsList << "OPEN_STREAM" << "STOP_STREAM" << "RESET_GIMBAL" << "MOVE_GIMBAL" << "GET_CAMERAS" << "SET_CAMERA" << "SET_CAMERA_INTRINSICS" << "GET_CAMERA" << "ZOOM_CAMERA" << "TAKE_PHOTO" << "START_RECORDING" << "STOP_RECORDING";
-    
-    m_client = new QMqttClient(this);
-/* 
+
     // Setup MqttClient
     m_client = new QMqttClient(this);
     m_client->setHostname("tcp://152.228.246.204");
     m_client->setPort(1883);
-    connect(m_client, &QMqttClient::stateChanged, this, &QGCApplication::updateLogStateChange);
-    connect(m_client, &QMqttClient::disconnected, this, &QGCApplication::brokerDisconnected);
-    m_client->connectToHost();
-
+    //connect(m_client, &QMqttClient::stateChanged, this, &QGCApplication::updateLogStateChange);
+    //connect(m_client, &QMqttClient::disconnected, this, &QGCApplication::brokerDisconnected);
+    //m_client->connectToHost();
+/* 
     // Setup Subscription
     QString topic = "REQUEST/*";
     QMqttSubscription* subscription = m_client->subscribe(topic, 1); // TODO regex here
