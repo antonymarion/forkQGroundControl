@@ -452,6 +452,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
     QString payload = QString(msg.payload());
     QJsonDocument d = QJsonDocument::fromJson(payload.toUtf8());
     QJsonObject message = d.object();
+    MavlinkCameraControl *activeCamera;
     switch (this->commandsList.indexOf(message["instruction"].toString())){
         case 0:
             qCWarning(QGCApplicationLog) << "=================================================";
@@ -496,7 +497,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qCWarning(QGCApplicationLog) << "recieved GET_CAMERA";
             qCWarning(QGCApplicationLog) << "=================================================";
             message.insert("gimbalRange", QGCApplication::getGimbalCapabilities());
-            MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
+            activeCamera = QGCApplication::getActiveCamera();
             if(!activeCamera) {
                 qCWarning(QGCApplicationLog) << "============== camera ranges ==============";
                 message.insert("hasZoom", activeCamera->hasZoom());
