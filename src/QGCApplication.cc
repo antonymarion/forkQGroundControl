@@ -27,7 +27,7 @@
 #include <QtQml/QQmlContext>
 #include <QtQml/QQmlApplicationEngine>
 #include <QTimer>
-#include <QtMqtt/QMqttClient>
+#include <QtMqtt/QtMqtt>
 #include <QJsonObject>
 
 #include "Audio/AudioOutput.h"
