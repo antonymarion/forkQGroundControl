@@ -419,13 +419,13 @@ void QGCApplication::init()
     connect(m_client, &QMqttClient::stateChanged, this, &QGCApplication::updateLogStateChange);
     connect(m_client, &QMqttClient::disconnected, this, &QGCApplication::brokerDisconnected);
     m_client->connectToHost();
-/* 
+
     // Setup Subscription
     QString topic = "REQUEST/*";
     QMqttSubscription* subscription = m_client->subscribe(topic, 1); // TODO regex here
     updateStatus(subscription->state());
     QObject::connect(subscription, &QMqttSubscription::stateChanged, this, &QGCApplication::updateStatus);
-    QObject::connect(subscription, &QMqttSubscription::messageReceived, this, &QGCApplication::updateMessage); */
+    // QObject::connect(subscription, &QMqttSubscription::messageReceived, this, &QGCApplication::updateMessage);
 
     // Setup Position & Remote Pilote TIMER
     QTimer *timer = new QTimer(this);
@@ -552,7 +552,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
     // Set the qos to 1 (important!)
     m_client->publish(responseTopic, properties, responseMessage.toUtf8(), 1, false);
 }
-
+ */
 void QGCApplication::updateStatus(QMqttSubscription::SubscriptionState state)
 {
     switch (state) {
@@ -576,7 +576,7 @@ void QGCApplication::updateStatus(QMqttSubscription::SubscriptionState state)
         break;
     }
 }
- */
+
 void QGCApplication::sendInfos(){
 
     qCWarning(QGCApplicationLog) << "============== start send infos ==============";
@@ -597,9 +597,9 @@ void QGCApplication:: sendRemotePilote() {
     newResponse.insert("email", this->loggedEmail);
     newResponse.insert("registrationNumber", this->registrationNumber);
 
-    QJsonDocument doc(newResponse);
+    /* QJsonDocument doc(newResponse);
     QString responseMessage(doc.toJson(QJsonDocument::Compact));
-    m_client->publish("REMOTE_PILOT/"+this->uavSn, responseMessage.toUtf8());
+    m_client->publish("REMOTE_PILOT/"+this->uavSn, responseMessage.toUtf8()); */
 }
 
 void QGCApplication:: sendAircraftPositionInfos() {
