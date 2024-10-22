@@ -436,7 +436,7 @@ void QGCApplication::init()
     timer->start(2000);
 
 }
-
+/* 
 void QGCApplication::updateLogStateChange()
 {
     qCWarning(QGCApplicationLog) << "State Change : " + QString::number(m_client->state());
@@ -551,7 +551,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
     properties.setCorrelationData(msg.publishProperties().correlationData());
     
     // Set the qos to 1 (important!)
-    m_client->publish(responseTopic, properties, responseMessage.toUtf8(), 1, false); */
+    m_client->publish(responseTopic, properties, responseMessage.toUtf8(), 1, false);
 }
 
 void QGCApplication::updateStatus(QMqttSubscription::SubscriptionState state)
@@ -577,7 +577,7 @@ void QGCApplication::updateStatus(QMqttSubscription::SubscriptionState state)
         break;
     }
 }
-
+ */
 void QGCApplication::sendInfos(){
 
     qCWarning(QGCApplicationLog) << "============== start send infos ==============";
