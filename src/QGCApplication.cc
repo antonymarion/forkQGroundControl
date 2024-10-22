@@ -418,7 +418,7 @@ void QGCApplication::init()
     m_client->setPort(1883);
     connect(m_client, &QMqttClient::stateChanged, this, &QGCApplication::updateLogStateChange);
     connect(m_client, &QMqttClient::disconnected, this, &QGCApplication::brokerDisconnected);
-    m_client->connectToHost();
+    // m_client->connectToHost();
 /* 
     // Setup Subscription
     QString topic = "REQUEST/*";
