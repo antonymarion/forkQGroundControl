@@ -500,7 +500,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qCWarning(QGCApplicationLog) << "=================================================";
             qCWarning(QGCApplicationLog) << "recieved ZOOM_CAMERA";
             qCWarning(QGCApplicationLog) << "=================================================";
-            QGCApplication::setZoom(message["zoomValue"].toFloat());
+            QGCApplication::setZoom(message["zoomValue"].toDouble());
             break;
         case 9:
             qCWarning(QGCApplicationLog) << "=================================================";
@@ -525,13 +525,16 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             message.insert("error","KO");
     }
 
-    QString responseTopic = msg->publishProperties()->getResponseTopic();
+    QJsonDocument doc(message);
+    QString responseMessage = strJson(doc.toJson(QJsonDocument::Compact));
 
-    QMqttPublishProperties properties = new QMqttPublishProperties();
-    properties.setCorrelationData(msg->publishProperties()->correlationData());
+    QString responseTopic = msg.publishProperties().getResponseTopic();
+
+    QMqttPublishProperties properties;
+    properties.setCorrelationData(msg.publishProperties().correlationData());
     
     // Set the qos to 1 (important!)
-    m_client->publish(responseTopic, properties, message.toString().toUtf8(), 1, false);
+    m_client->publish(responseTopic, properties, responseMessage.toUtf8(), 1, false);
 }
 
 void QGCApplication::updateStatus(QMqttSubscription::SubscriptionState state)
