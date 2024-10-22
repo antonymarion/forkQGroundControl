@@ -412,6 +412,7 @@ void QGCApplication::init()
     axisList << "pitch" << "yaw" << "roll";
     this->commandsList << "OPEN_STREAM" << "STOP_STREAM" << "RESET_GIMBAL" << "MOVE_GIMBAL" << "GET_CAMERAS" << "SET_CAMERA" << "SET_CAMERA_INTRINSICS" << "GET_CAMERA" << "ZOOM_CAMERA" << "TAKE_PHOTO" << "START_RECORDING" << "STOP_RECORDING";
     
+    m_client = new QMqttClient(this);
 /* 
     // Setup MqttClient
     m_client = new QMqttClient(this);
