@@ -435,7 +435,7 @@ void QGCApplication::init()
     timer->start(2000);
 
 }
-/* 
+
 void QGCApplication::updateLogStateChange()
 {
     qCWarning(QGCApplicationLog) << "State Change : " + QString::number(m_client->state());
@@ -445,7 +445,7 @@ void QGCApplication::brokerDisconnected()
 {
     qCWarning(QGCApplicationLog) << "Mqtt Disconnected";
 }
-
+/* 
 void QGCApplication::updateMessage(const QMqttMessage &msg)
 {
     QString payload = QString(msg.payload());
