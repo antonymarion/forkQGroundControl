@@ -674,9 +674,9 @@ void QGCApplication:: sendAircraftPositionInfos() {
     qCWarning(QGCApplicationLog) << "batteryPowerPercentUav : " << res/batteries->count();
     newResponse.insert("batteryPowerPercentUav", res/batteries->count());
 
-    /* QJsonDocument doc(newResponse);
+    QJsonDocument doc(newResponse);
     QString responseMessage(doc.toJson(QJsonDocument::Compact));
-    m_client->publish("REMOTE_PILOT/"+this->uavSn, responseMessage.toUtf8()); */
+    m_client->publish("REMOTE_PILOT/"+this->uavSn, responseMessage.toUtf8());
 
 
     // Might not do that
