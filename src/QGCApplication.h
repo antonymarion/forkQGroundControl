@@ -224,6 +224,8 @@ private:
 
 
     void sendInfos();
+    void sendRemotePilote();
+    void sendAircraftPositionInfos();
     void moveGimbal(QString axis, QString value);
     void resetGimbal();
     QJsonArray getCameras();
@@ -238,9 +240,11 @@ private:
     void updateStatus(QMqttSubscription::SubscriptionState state);
     Vehicle* getActiveVehicle();
     MavlinkCameraControl* getActiveCamera();
+    Gimbal* getActiveGimbal();
     QString rtmpUrl = "";
     QString loggedEmail = "graphx.stephaneroma@gmail.com";
     QString registrationNumber = "UAS-FR-TESTING";
+    QString uavSn = "TESTING";
     bool isStreaming = false;
     int countdown = 10;
     bool reset = true;

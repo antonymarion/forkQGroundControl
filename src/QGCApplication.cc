@@ -526,9 +526,9 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
     }
 
     QJsonDocument doc(message);
-    QString responseMessage = strJson(doc.toJson(QJsonDocument::Compact));
+    QString responseMessage(doc.toJson(QJsonDocument::Compact));
 
-    QString responseTopic = msg.publishProperties().getResponseTopic();
+    QString responseTopic = msg.publishProperties().responseTopic();
 
     QMqttPublishProperties properties;
     properties.setCorrelationData(msg.publishProperties().correlationData());
@@ -562,69 +562,28 @@ void QGCApplication::updateStatus(QMqttSubscription::SubscriptionState state)
 }
 
 void QGCApplication::sendInfos(){
+
+    qCWarning(QGCApplicationLog) << "============== start send infos ==============";
+
+    if(!m_client) {
+        qCWarning(QGCApplicationLog) << "*****   Mqtt not available   *****";
+        return;
+    }
+
+    QGCApplication::sendAircraftPositionInfos();
+    QGCApplication::sendRemotePilote();
+    
+    qCWarning(QGCApplicationLog) << "==============  end send infos  ==============";
+
+
+
     qCWarning(QGCApplicationLog) << "sendInfos init =================================================";
     MultiVehicleManager* vehicleManager = toolbox()->multiVehicleManager();
     if(vehicleManager->vehicles()->count() == 0) return;
+
     qCWarning(QGCApplicationLog) << "sendInfos vehicle found ========================================";
     Vehicle* activeVehicle = vehicleManager->activeVehicle();
     if(!activeVehicle) return;
-    qCWarning(QGCApplicationLog) << "============== start send infos ==============";
-    qCWarning(QGCApplicationLog) << "loggedEmail : " << this->loggedEmail;
-    qCWarning(QGCApplicationLog) << "registrationNumber : " << this->registrationNumber;
-    qCWarning(QGCApplicationLog) << "isStreaming : " << this->isStreaming;
-    qCWarning(QGCApplicationLog) << "rtmpUrl : " << this->rtmpUrl;
-    qCWarning(QGCApplicationLog) << "System : " << activeVehicle->firmwareTypeString();
-    qCWarning(QGCApplicationLog) << "productType : " << activeVehicle->vehicleTypeString();
-    qCWarning(QGCApplicationLog) << "latitude : " << activeVehicle->coordinate().latitude();
-    qCWarning(QGCApplicationLog) << "longitude : " << activeVehicle->coordinate().longitude();
-    qCWarning(QGCApplicationLog) << "altitude : " << activeVehicle->coordinate().altitude();
-    qCWarning(QGCApplicationLog) << "isFlying : " << activeVehicle->flying();
-    qCWarning(QGCApplicationLog) << "firmwareVersionUav : " << activeVehicle->firmwarePatchVersion();
-    qCWarning(QGCApplicationLog) << "firmwareVersion : " << this->_buildVersion;
-    qCWarning(QGCApplicationLog) << "simulated : " << false;
-    qCWarning(QGCApplicationLog) << "systemOS : " << "Android"; // TODO change to include Windows
-    qCWarning(QGCApplicationLog) << "systemVersion : " << "V1"; // TODO ???
-    qCWarning(QGCApplicationLog) << "firmwareVersionUav : " << activeVehicle->firmwarePatchVersion();
-    qCWarning(QGCApplicationLog) << "gpsSatelliteCount : " << qobject_cast<VehicleGPSFactGroup*>(activeVehicle->gpsFactGroup())->count()->rawValueString();
-    qCWarning(QGCApplicationLog) << "velocity : " << qobject_cast<VehicleFactGroup*>(activeVehicle->vehicleFactGroup())->airSpeed()->rawValueString();
-    
-    bool hasCamera = activeVehicle->cameraManager()->cameras()->count() != 0;
-    qCWarning(QGCApplicationLog) << "hasCamera : " << hasCamera;
-    if(hasCamera) {
-        MavlinkCameraControl *activeCamera = activeVehicle->cameraManager()->currentCameraInstance();
-        if(activeCamera) {
-            qCWarning(QGCApplicationLog) << "============== current camera values ==============";
-            qCWarning(QGCApplicationLog) << "sensorName : " << activeCamera->modelName();
-            qCWarning(QGCApplicationLog) << "hasZoom : " << activeCamera->hasZoom();
-            if(activeCamera->modelName() != "Simulated Camera"){
-                qCWarning(QGCApplicationLog) << "ISO : " << activeCamera->iso()->rawValueString();
-                qCWarning(QGCApplicationLog) << "whiteBalance : " << activeCamera->wb()->rawValueString();
-                qCWarning(QGCApplicationLog) << "aperture : " << activeCamera->aperture()->rawValueString();
-            }
-        }
-    }
-
-    bool hasGimbal = activeVehicle->gimbalController()->gimbals()->count() != 0;
-    qCWarning(QGCApplicationLog) << "hasGimbal : " << hasGimbal;
-    if(hasGimbal) {
-        Gimbal *activeGimbal = activeVehicle->gimbalController()->activeGimbal();
-        if(activeGimbal) {
-            qCWarning(QGCApplicationLog) << "============== current gimbal values ==============";
-            qCWarning(QGCApplicationLog) << "yaw : " << activeGimbal->absoluteYaw()->rawValueString();
-            qCWarning(QGCApplicationLog) << "pitch : " << activeGimbal->absolutePitch()->rawValueString();
-            qCWarning(QGCApplicationLog) << "roll : " << activeGimbal->absoluteRoll()->rawValueString();
-            qCWarning(QGCApplicationLog) << "whikeyYawRelativeToAircraftHeadingteBalance : " << activeGimbal->bodyYaw()->rawValueString();
-            qCWarning(QGCApplicationLog) << "KeyGimbalReset : " << "null";
-        }
-    }
-    QmlObjectListModel* batteries = activeVehicle->batteries();
-    int res = 0;
-    for (int i=0; i<batteries->count(); i++) {
-        VehicleBatteryFactGroup* battery = qobject_cast<VehicleBatteryFactGroup*>(batteries->get(i));
-        res += battery->percentRemaining()->rawValue().toInt();
-    }
-    qCWarning(QGCApplicationLog) << "batteryPowerPercentUav : " << res/batteries->count();
-    qCWarning(QGCApplicationLog) << "==============  end send infos  ==============";
 
     QmlObjectListModel *cameras = activeVehicle->cameraManager()->cameras();
     if (hasCamera) {
@@ -670,66 +629,106 @@ void QGCApplication::sendInfos(){
     qCWarning(QGCApplicationLog) << "==============  END GET_CAMERA  ==============";
 }
 
-/* QGCApplication:: sendAircraftPositionInfos() {
-        if(mqttClient==null) return;
-        JSONObject newResponse = new JSONObject();
-        newResponse.put("registrationNumber", this.registrationNumber);
-        newResponse.put("emailRemotePilot", this.loggedEmail);
-        newResponse.put("isStreaming", this.isStreaming);
-        newResponse.put("hasCamera", Vehicule::cameraManager().cameras().count() != 0); O
-        newResponse.put("sensorName", Vehicule::cameraManager().currentCameraInstance().modelName()); O
-        newResponse.put("hasZoom", Vehicule::cameraManager().currentCameraInstance().hasZoom()); O
+void QGCApplication:: sendRemotePilote() {
+    QJsonObject newResponse;
+    newResponse.put("email", this->loggedEmail);
+    newResponse.put("registrationNumber", this->registrationNumber);
 
-        JSONObject currentValues = new JSONObject();
-        currentValues.put("ISO", Vehicule::cameraManager().currentCameraInstance().iso()); 
-        currentValues.put("whiteBalance", Vehicule::cameraManager().currentCameraInstance().wb());
-        currentValues.put("aperture", Vehicule::cameraManager().currentCameraInstance().aperture());
-        newResponse.put("intrinsics", currentValues);
+    QJsonDocument doc(newResponse);
+    QString responseMessage(doc.toJson(QJsonDocument::Compact));
+    m_client->publish("REMOTE_PILOT/"+this->uavSn, responseMessage.toUtf8());
+}
 
-        newResponse.put("hasGimbal", Vehicule::gimbalController().gimbals().count() != 0);
+void QGCApplication:: sendAircraftPositionInfos() {
+    qCWarning(QGCApplicationLog) << "============== start send position ==============";
+    Vehicle* activeVehicle = QGCApplication::getActiveVehicle();
+    if(!activeVehicle) {
+        qCWarning(QGCApplicationLog) << "*****   No vehicle available   *****";
+        return;
+    };
 
-        JSONObject currentState = new JSONObject();
-        JSONObject attitude = new JSONObject();
-        attitude.put("yaw", Vehicule::gimbalController().activeGimbal().absoluteYaw());
-        attitude.put("pitch", Vehicule::gimbalController().activeGimbal().absolutePitch());
-        attitude.put("roll", Vehicule::gimbalController().activeGimbal().absoluteRoll());
-        currentState.put("KeyGimbalReset", "null");
-        currentState.put("attitude", attitude);
-        currentState.put("keyYawRelativeToAircraftHeading", Vehicule::gimbalController().activeGimbal().bodyYaw());
-        newResponse.put("gimbal", currentState);
+    QJsonObject newResponse;
+    newResponse.insert("registrationNumber", this->registrationNumber);
+    newResponse.insert("emailRemotePilot", this->loggedEmail);
+    newResponse.insert("isStreaming", this->isStreaming);
+    newResponse.insert("system", activeVehicle->firmwareTypeString());
+    newResponse.insert("systemVersion", "V1"); // TODO ???
+    newResponse.insert("simulated", false);
+    newResponse.insert("systemOS", "Android"); // TODO change to include Windows
+    newResponse.insert("productType", activeVehicle->vehicleTypeString());
+    newResponse.insert("rtmpUrl", this->rtmpUrl);
+    newResponse.insert("latitude", activeVehicle->coordinate().latitude());
+    newResponse.insert("longitude", activeVehicle->coordinate().longitude());
+    newResponse.insert("altitude", activeVehicle->coordinate().altitude());
+    newResponse.insert("isFlying", activeVehicle->flying());
+    newResponse.insert("gpsSatelliteCount", qobject_cast<VehicleGPSFactGroup*>(activeVehicle->gpsFactGroup())->count()->rawValueString());
+    newResponse.insert("firmwareVersionUav", activeVehicle->firmwarePatchVersion());
+    newResponse.insert("firmwareVersion", this->_buildVersion);
+    newResponse.insert("velocity", qobject_cast<VehicleFactGroup*>(activeVehicle->vehicleFactGroup())->airSpeed()->rawValueString());
+    
+    
+    bool hasCamera = activeVehicle->cameraManager()->cameras()->count() != 0;
+    newResponse.insert("hasCamera", hasCamera);
+    if(hasCamera) {
+        MavlinkCameraControl *activeCamera = activeVehicle->cameraManager()->currentCameraInstance();
+        if(activeCamera) {
+            qCWarning(QGCApplicationLog) << "============== current camera values ==============";
+            newResponse.insert("sensorName", activeCamera->modelName());
+            newResponse.insert("hasZoom", activeCamera->hasZoom());
+            if(activeCamera->modelName() != "Simulated Camera"){
+                QJsonObject currentValues;
+                currentValues.insert("ISO", activeCamera->iso()->rawValueString());
+                currentValues.insert("whiteBalance", activeCamera->wb()->rawValueString());
+                currentValues.insert("aperture", activeCamera->aperture()->rawValueString());
+                newResponse.insert("intrinsics", currentValues);
+            }
+        }
+    }
 
-        newResponse.put("system", Vehicle::firmwareTypeString());
-        newResponse.put("systemVersion", "V1"); // TODO ???
-        newResponse.put("simulated", false);
-        newResponse.put("systemOS", "Android"); // TODO change to include Windows
-        newResponse.put("productType", Vehicle::vehicleTypeString());
-        newResponse.put("rtmpUrl", this.rtmpUrl);
-        newResponse.put("latitude", Vehicle::coordinate().latitude());
-        newResponse.put("longitude", Vehicle::coordinate().longitude());
-        newResponse.put("altitude", Vehicle::coordinate().altitude());
-        newResponse.put("isFlying", Vehicle::flying());
-        newResponse.put("gpsSatelliteCount", satellite_info_s::count);
-        newResponse.put("firmwareVersionUav", Vehicle::firmwarePatchVersion());
-        newResponse.put("firmwareVersion", this._buildVersion);
-        // newResponse.put("velocity",velocity);
-        // newResponse.put("batteryPowerPercentRC", batteryRCLevel);
-        // int res = 0;
-        // for (int j : batteryLevelAircraft) {
-        //     res += j;
-        // }
-        // newResponse.put("batteryPowerPercentUav", res/batteryLevelAircraft.length);
-        // newResponse.put("batteryBehavior",batteryBehavior);
+    bool hasGimbal = activeVehicle->gimbalController()->gimbals()->count() != 0;
+    newResponse.insert("hasGimbal", hasGimbal);
+    if(hasGimbal) {
+        Gimbal *activeGimbal = activeVehicle->gimbalController()->activeGimbal();
+        if(activeGimbal) {
+            qCWarning(QGCApplicationLog) << "============== current gimbal values ==============";
+            QJsonObject currentState;
+            QJsonObject attitude;
+            attitude.insert("yaw", activeGimbal->absoluteYaw()->rawValueString());
+            attitude.insert("pitch", activeGimbal->absolutePitch()->rawValueString());
+            attitude.insert("roll", activeGimbal->absoluteRoll()->rawValueString());
+            currentState.insert("KeyGimbalReset", "null");
+            currentState.insert("attitude", attitude);
+            currentState.insert("keyYawRelativeToAircraftHeading", activeGimbal->bodyYaw()->rawValueString()); // TODO
+            newResponse.insert("gimbal", currentState);
+        }
+    }
+    QmlObjectListModel* batteries = activeVehicle->batteries();
+    int res = 0;
+    for (int i=0; i<batteries->count(); i++) {
+        VehicleBatteryFactGroup* battery = qobject_cast<VehicleBatteryFactGroup*>(batteries->get(i));
+        res += battery->percentRemaining()->rawValue().toInt();
+    }
+    qCWarning(QGCApplicationLog) << "batteryPowerPercentUav : " << res/batteries->count();
+    newResponse.insert("batteryPowerPercentUav", res/batteries->count());
 
-        // Might not do that
-        
-        currentValues.put("sharpness", Vehicule::cameraManager().currentCameraInstance().); // TODO
-        currentValues.put("orientation", Vehicule::cameraManager().currentCameraInstance().); // TODO
-        currentValues.put("videoResolutionAndFrameRate", Vehicule::cameraManager().currentCameraInstance().); // TODO
-        currentValues.put("videoFileFormat", Vehicule::cameraManager().currentCameraInstance().); // TODO
-        currentValues.put("photoFileFormat", Vehicule::cameraManager().currentCameraInstance().); // TODO
-        newResponse.put("isZooming", Vehicule::cameraManager().currentCameraInstance().);
-        newResponse.put("isMovingGimbal", Vehicule::gimbalController().activeGimbal());
-        
+    QJsonDocument doc(newResponse);
+    QString responseMessage(doc.toJson(QJsonDocument::Compact));
+    m_client->publish("REMOTE_PILOT/"+this->uavSn, responseMessage.toUtf8());
+
+
+    // Might not do that
+    
+    /* newResponse.insert("batteryPowerPercentRC", batteryRCLevel); // TODO
+    newResponse.insert("batteryBehavior",batteryBehavior); // TODO
+    currentValues.insert("sharpness", Vehicule::cameraManager().currentCameraInstance().); // TODO
+    currentValues.insert("orientation", Vehicule::cameraManager().currentCameraInstance().); // TODO
+    currentValues.insert("videoResolutionAndFrameRate", Vehicule::cameraManager().currentCameraInstance().); // TODO
+    currentValues.insert("videoFileFormat", Vehicule::cameraManager().currentCameraInstance().); // TODO
+    currentValues.insert("photoFileFormat", Vehicule::cameraManager().currentCameraInstance().); // TODO
+    newResponse.insert("isZooming", Vehicule::cameraManager().currentCameraInstance().); // TODO
+    newResponse.insert("isMovingGimbal", Vehicule::gimbalController().activeGimbal()); // TODO */
+}
+        /* 
         Log.d("POSITION",newResponse.toString());
         MqttMessage message = new MqttMessage(newResponse.toString().getBytes(StandardCharsets.UTF_8));
         try {
@@ -850,6 +849,20 @@ MavlinkCameraControl* QGCApplication::getActiveCamera(){
     return activeCamera;
 }
 
+Gimbal* QGCApplication::getActiveGimbal(){
+    Vehicle* activeVehicle = QGCApplication::getActiveVehicle();
+    if(!activeVehicle || activeVehicle->gimbalController()->gimbals()->count() <= 0) {
+        qCWarning(QGCApplicationLog) << "*****   No gimbal available   *****";
+        return nullptr;
+    }
+    Gimbal *activeGimbal = activeVehicle->gimbalController()->activeGimbal();
+    if(!activeGimbal) {
+        qCWarning(QGCApplicationLog) << "*****   No active gimbal   *****";
+        return nullptr;
+    }
+    return activeGimbal;
+}
+
 QJsonArray QGCApplication::getCameras() {
     QJsonArray cameraList;
     Vehicle* activeVehicle = QGCApplication::getActiveVehicle();
@@ -928,21 +941,9 @@ void QGCApplication::stopRecording(){
 
 void QGCApplication::resetGimbal() {
     qCWarning(QGCApplicationLog) << "==============  START RESET_GIMBAL  ==============";
-    MultiVehicleManager* vehicleManager = toolbox()->multiVehicleManager();
-    if(vehicleManager->vehicles()->count() == 0) {
-        qCWarning(QGCApplicationLog) << "*****   No vehicle found   *****";
-        return;
-    }
-    Vehicle* activeVehicle = vehicleManager->activeVehicle();
-    if(!activeVehicle || activeVehicle->gimbalController()->gimbals()->count() == 0) {
-        qCWarning(QGCApplicationLog) << "*****   No gimbal available   *****";
-        return;
-    }
-    Gimbal *activeGimbal = activeVehicle->gimbalController()->activeGimbal();
-    if(!activeGimbal) {
-        qCWarning(QGCApplicationLog) << "*****   No active gimbal   *****";
-        return;
-    }
+    Gimbal* activeGimbal = QGCApplication::getActiveGimbal();
+    if(!activeGimbal) return;
+
     activeGimbal->setAbsolutePitch(0);
     activeGimbal->setBodyYaw(0);
     activeGimbal->setAbsoluteRoll(0);
@@ -951,21 +952,9 @@ void QGCApplication::resetGimbal() {
 
 void QGCApplication::moveGimbal(QString axis, QString value) {
     qCWarning(QGCApplicationLog) << "==============  START MOVE_GIMBAL  ==============";
-    MultiVehicleManager* vehicleManager = toolbox()->multiVehicleManager();
-    if(vehicleManager->vehicles()->count() == 0) {
-        qCWarning(QGCApplicationLog) << "*****   No vehicle found   *****";
-        return;
-    }
-    Vehicle* activeVehicle = vehicleManager->activeVehicle();
-    if(!activeVehicle || activeVehicle->gimbalController()->gimbals()->count() == 0) {
-        qCWarning(QGCApplicationLog) << "*****   No gimbal available   *****";
-        return;
-    }
-    Gimbal *activeGimbal = activeVehicle->gimbalController()->activeGimbal();
-    if(!activeGimbal) {
-        qCWarning(QGCApplicationLog) << "*****   No active gimbal   *****";
-        return;
-    }
+    Gimbal* activeGimbal = QGCApplication::getActiveGimbal();
+    if(!activeGimbal) return;
+
     switch (axisList.indexOf(axis)) {
         case 0:
             qCWarning(QGCApplicationLog) << "==============   MOVE_GIMBAL CASE PITCH  ==============";
