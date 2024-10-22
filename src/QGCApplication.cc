@@ -423,8 +423,8 @@ void QGCApplication::init()
     // Setup Subscription
     QString topic = "REQUEST/*";
     QMqttSubscription* subscription = m_client->subscribe(topic, 1); // TODO regex here
-    updateStatus(subscription->state());
-    QObject::connect(subscription, &QMqttSubscription::stateChanged, this, &QGCApplication::updateStatus);
+    // updateStatus(subscription->state());
+    // QObject::connect(subscription, &QMqttSubscription::stateChanged, this, &QGCApplication::updateStatus);
     // QObject::connect(subscription, &QMqttSubscription::messageReceived, this, &QGCApplication::updateMessage);
 
     // Setup Position & Remote Pilote TIMER
@@ -597,9 +597,9 @@ void QGCApplication:: sendRemotePilote() {
     newResponse.insert("email", this->loggedEmail);
     newResponse.insert("registrationNumber", this->registrationNumber);
 
-    /* QJsonDocument doc(newResponse);
+    QJsonDocument doc(newResponse);
     QString responseMessage(doc.toJson(QJsonDocument::Compact));
-    m_client->publish("REMOTE_PILOT/"+this->uavSn, responseMessage.toUtf8()); */
+    m_client->publish("REMOTE_PILOT/"+this->uavSn, responseMessage.toUtf8());
 }
 
 void QGCApplication:: sendAircraftPositionInfos() {
