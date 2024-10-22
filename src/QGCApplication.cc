@@ -574,59 +574,6 @@ void QGCApplication::sendInfos(){
     QGCApplication::sendRemotePilote();
     
     qCWarning(QGCApplicationLog) << "==============  end send infos  ==============";
-
-
-
-    qCWarning(QGCApplicationLog) << "sendInfos init =================================================";
-    MultiVehicleManager* vehicleManager = toolbox()->multiVehicleManager();
-    if(vehicleManager->vehicles()->count() == 0) return;
-
-    qCWarning(QGCApplicationLog) << "sendInfos vehicle found ========================================";
-    Vehicle* activeVehicle = vehicleManager->activeVehicle();
-    if(!activeVehicle) return;
-
-    QmlObjectListModel *cameras = activeVehicle->cameraManager()->cameras();
-    if (hasCamera) {
-        for (int i = 0; i < cameras->count(); i++) {
-            MavlinkCameraControl *camera = qobject_cast<MavlinkCameraControl*>(cameras->get(i));
-            qCWarning(QGCApplicationLog) << "============== START GET_CAMERAS ==============";
-            qCWarning(QGCApplicationLog) << "index : " << i;
-            qCWarning(QGCApplicationLog) << "name : " << camera->modelName();
-            qCWarning(QGCApplicationLog) << "==============  END GET_CAMERAS  ==============";
-        }
-    }
-
-    qCWarning(QGCApplicationLog) << "============== START GET_CAMERA ==============";
-    if(hasGimbal) {
-        Gimbal *activeGimbal = activeVehicle->gimbalController()->activeGimbal();
-        if(activeGimbal) {
-            qCWarning(QGCApplicationLog) << "============== gimbal ranges ==============";
-            qCWarning(QGCApplicationLog) << "minYaw : " << activeGimbal->absoluteYaw()->cookedMinString();
-            qCWarning(QGCApplicationLog) << "maxYaw : " << activeGimbal->absoluteYaw()->cookedMaxString();
-            qCWarning(QGCApplicationLog) << "minPitch : " << activeGimbal->absolutePitch()->cookedMinString();
-            qCWarning(QGCApplicationLog) << "maxPitch : " << activeGimbal->absolutePitch()->cookedMaxString();
-            qCWarning(QGCApplicationLog) << "minRoll : " << activeGimbal->absoluteRoll()->cookedMinString();
-            qCWarning(QGCApplicationLog) << "maxRoll : " << activeGimbal->absoluteRoll()->cookedMaxString();
-            qCWarning(QGCApplicationLog) << "minBodyYaw : " << activeGimbal->bodyYaw()->cookedMinString();
-            qCWarning(QGCApplicationLog) << "maxBodyYaw : " << activeGimbal->bodyYaw()->cookedMaxString();
-        }
-    }
-
-    if(hasCamera) {
-        MavlinkCameraControl *activeCamera = activeVehicle->cameraManager()->currentCameraInstance();
-        if(activeCamera) {
-            qCWarning(QGCApplicationLog) << "============== camera ranges ==============";
-            qCWarning(QGCApplicationLog) << "hasZoom : " << activeCamera->hasZoom();
-            if(activeCamera->modelName() != "Simulated Camera"){
-                qCWarning(QGCApplicationLog) << "minIso : " << activeCamera->iso()->cookedMinString();
-                qCWarning(QGCApplicationLog) << "maxIso : " << activeCamera->iso()->cookedMaxString();
-                qCWarning(QGCApplicationLog) << "minAperture : " << activeCamera->aperture()->cookedMinString();
-                qCWarning(QGCApplicationLog) << "maxAperture : " << activeCamera->aperture()->cookedMaxString();
-            }
-        }
-
-    }
-    qCWarning(QGCApplicationLog) << "==============  END GET_CAMERA  ==============";
 }
 
 void QGCApplication:: sendRemotePilote() {
@@ -798,28 +745,57 @@ void QGCApplication:: sendAircraftPositionInfos() {
             break;
     }
 
+void QGCApplication::setCamera(int i){
+    Vehicule::cameraManager().setCurrentCamera(i);
+} */
 
-void QGCApplication::getCamera(){
-    JSONObject obj = new JSONObject();
-    obj.put("hasZoom", Vehicule::cameraManager().currentCameraInstance().hasZoom());
+
+QJsonObject QGCApplication::getCamera(){
+
+    QJsonObject camera;
+    Gimbal* activeGimbal = QGCApplication::getActiveGimbal();
+    if(activeGimbal) {
+        qCWarning(QGCApplicationLog) << "============== gimbal ranges ==============";
+        qCWarning(QGCApplicationLog) << "minYaw : " << activeGimbal->absoluteYaw()->cookedMinString();
+        qCWarning(QGCApplicationLog) << "maxYaw : " << activeGimbal->absoluteYaw()->cookedMaxString();
+        qCWarning(QGCApplicationLog) << "minPitch : " << activeGimbal->absolutePitch()->cookedMinString();
+        qCWarning(QGCApplicationLog) << "maxPitch : " << activeGimbal->absolutePitch()->cookedMaxString();
+        qCWarning(QGCApplicationLog) << "minRoll : " << activeGimbal->absoluteRoll()->cookedMinString();
+        qCWarning(QGCApplicationLog) << "maxRoll : " << activeGimbal->absoluteRoll()->cookedMaxString();
+        qCWarning(QGCApplicationLog) << "minBodyYaw : " << activeGimbal->bodyYaw()->cookedMinString();
+        qCWarning(QGCApplicationLog) << "maxBodyYaw : " << activeGimbal->bodyYaw()->cookedMaxString();
+    }
+
+    MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
+    if(!activeCamera) {
+        qCWarning(QGCApplicationLog) << "============== camera ranges ==============";
+        qCWarning(QGCApplicationLog) << "hasZoom : " << activeCamera->hasZoom();
+        if(activeCamera->modelName() != "Simulated Camera"){
+            qCWarning(QGCApplicationLog) << "minIso : " << activeCamera->iso()->cookedMinString();
+            qCWarning(QGCApplicationLog) << "maxIso : " << activeCamera->iso()->cookedMaxString();
+            qCWarning(QGCApplicationLog) << "minAperture : " << activeCamera->aperture()->cookedMinString();
+            qCWarning(QGCApplicationLog) << "maxAperture : " << activeCamera->aperture()->cookedMaxString();
+        }
+    }
+
+    return camera;
+
+
+    /* obj.put("hasZoom", Vehicule::cameraManager().currentCameraInstance().hasZoom());
 
      
     obj.put("isoRange", Vehicule::cameraManager().currentCameraInstance().iso());
-    obj.put("gimbalRange", GimbalUtil.gimbalRange);
-    obj.put("gimbalSN", Vehicule::gimbalController().activeGimbal().);
-    obj.put("hasLens", CameraUtil.hasLens);
     obj.put("aperture", CameraUtil.aperture);
+    obj.put("gimbalRange", GimbalUtil.gimbalRange);
+    // obj.put("gimbalSN", Vehicule::gimbalController().activeGimbal().);
+    // obj.put("hasLens", CameraUtil.hasLens);
     obj.put("photoFileFormatList", CameraUtil.photoFormats);
     obj.put("videoFileFormatList", CameraUtil.videoFormats);
     obj.put("streamSource", CameraUtil.streamSource);
     obj.put("zoomRatiosRange", new int[]{1});
      
-    return obj;
+    return obj; */
 }
-
-void QGCApplication::setCamera(int i){
-    Vehicule::cameraManager().setCurrentCamera(i);
-} */
 
 Vehicle* QGCApplication::getActiveVehicle(){
     MultiVehicleManager* vehicleManager = toolbox()->multiVehicleManager();
@@ -904,10 +880,7 @@ void QGCApplication::setZoom(float value){
 void QGCApplication::startStream(){
     qCWarning(QGCApplicationLog) << "==============  START OPEN_STREAM  ==============";
     MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
-    if(!activeCamera) {
-        qCWarning(QGCApplicationLog) << "*****   No active camera   *****";
-        return;
-    }
+    if(!activeCamera) return;
     QGCVideoStreamInfo *streamInstance = activeCamera->currentStreamInstance();
     if(!streamInstance) return;
     qCWarning(QGCApplicationLog) << "stream name : " <<streamInstance->name();
@@ -931,10 +904,7 @@ void QGCApplication::startRecording(){
 void QGCApplication::stopRecording(){
     qCWarning(QGCApplicationLog) << "==============  START STOP_RECORDING  ==============";
     MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
-    if(!activeCamera) {
-        qCWarning(QGCApplicationLog) << "*****   No active camera   *****";
-        return;
-    }
+    if(!activeCamera) return;
     activeCamera->stopVideoRecording();
     qCWarning(QGCApplicationLog) << "==============   END STOP_RECORDING   ==============";
 }

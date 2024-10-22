@@ -33,6 +33,7 @@ class QGCImageProvider;
 class QGCApplication;
 class Vehicle;
 class MavlinkCameraControl;
+class Gimbal;
 
 #if defined(qApp)
 #undef qApp
@@ -228,6 +229,7 @@ private:
     void sendAircraftPositionInfos();
     void moveGimbal(QString axis, QString value);
     void resetGimbal();
+    QJsonObject getCamera();
     QJsonArray getCameras();
     void takePhoto();
     void setZoom(float value);
