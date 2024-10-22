@@ -229,7 +229,7 @@ private:
     void sendAircraftPositionInfos();
     void moveGimbal(QString axis, QString value);
     void resetGimbal();
-    QJsonObject getCamera();
+    QJsonObject getGimbalCapabilities();
     QJsonArray getCameras();
     void takePhoto();
     void setZoom(float value);
