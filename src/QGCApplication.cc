@@ -412,21 +412,21 @@ void QGCApplication::init()
     axisList << "pitch" << "yaw" << "roll";
     this->commandsList << "OPEN_STREAM" << "STOP_STREAM" << "RESET_GIMBAL" << "MOVE_GIMBAL" << "GET_CAMERAS" << "SET_CAMERA" << "SET_CAMERA_INTRINSICS" << "GET_CAMERA" << "ZOOM_CAMERA" << "TAKE_PHOTO" << "START_RECORDING" << "STOP_RECORDING";
     
-
+/* 
     // Setup MqttClient
     m_client = new QMqttClient(this);
     m_client->setHostname("tcp://152.228.246.204");
     m_client->setPort(1883);
     connect(m_client, &QMqttClient::stateChanged, this, &QGCApplication::updateLogStateChange);
     connect(m_client, &QMqttClient::disconnected, this, &QGCApplication::brokerDisconnected);
-    // m_client->connectToHost();
+    m_client->connectToHost();
 
     // Setup Subscription
     QString topic = "REQUEST/*";
     QMqttSubscription* subscription = m_client->subscribe(topic, 1); // TODO regex here
     updateStatus(subscription->state());
     QObject::connect(subscription, &QMqttSubscription::stateChanged, this, &QGCApplication::updateStatus);
-    QObject::connect(subscription, &QMqttSubscription::messageReceived, this, &QGCApplication::updateMessage);
+    QObject::connect(subscription, &QMqttSubscription::messageReceived, this, &QGCApplication::updateMessage); */
 
     // Setup Position & Remote Pilote TIMER
     QTimer *timer = new QTimer(this);
@@ -436,7 +436,7 @@ void QGCApplication::init()
     timer->start(2000);
 
 }
-
+/* 
 void QGCApplication::updateLogStateChange()
 {
     qCWarning(QGCApplicationLog) << "State Change : " + QString::number(m_client->state());
@@ -577,15 +577,15 @@ void QGCApplication::updateStatus(QMqttSubscription::SubscriptionState state)
         break;
     }
 }
-
+ */
 void QGCApplication::sendInfos(){
 
     qCWarning(QGCApplicationLog) << "============== start send infos ==============";
 
-    if(!m_client) {
+    /* if(!m_client) {
         qCWarning(QGCApplicationLog) << "*****   Mqtt not available   *****";
         return;
-    }
+    } */
 
     QGCApplication::sendAircraftPositionInfos();
     QGCApplication::sendRemotePilote();
@@ -598,9 +598,9 @@ void QGCApplication:: sendRemotePilote() {
     newResponse.insert("email", this->loggedEmail);
     newResponse.insert("registrationNumber", this->registrationNumber);
 
-    QJsonDocument doc(newResponse);
+    /* QJsonDocument doc(newResponse);
     QString responseMessage(doc.toJson(QJsonDocument::Compact));
-    m_client->publish("REMOTE_PILOT/"+this->uavSn, responseMessage.toUtf8());
+    m_client->publish("REMOTE_PILOT/"+this->uavSn, responseMessage.toUtf8()); */
 }
 
 void QGCApplication:: sendAircraftPositionInfos() {
@@ -675,9 +675,9 @@ void QGCApplication:: sendAircraftPositionInfos() {
     qCWarning(QGCApplicationLog) << "batteryPowerPercentUav : " << res/batteries->count();
     newResponse.insert("batteryPowerPercentUav", res/batteries->count());
 
-    QJsonDocument doc(newResponse);
+    /* QJsonDocument doc(newResponse);
     QString responseMessage(doc.toJson(QJsonDocument::Compact));
-    m_client->publish("REMOTE_PILOT/"+this->uavSn, responseMessage.toUtf8());
+    m_client->publish("REMOTE_PILOT/"+this->uavSn, responseMessage.toUtf8()); */
 
 
     // Might not do that

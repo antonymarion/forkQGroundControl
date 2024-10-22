@@ -250,7 +250,7 @@ private:
     bool isStreaming = false;
     int countdown = 10;
     bool reset = true;
-    QMqttClient *m_client;
+    QMqttClient *m_client = nullptr;
     QStringList commandsList;
     QStringList axisList;
 };
