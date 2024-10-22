@@ -408,6 +408,8 @@ void QGCApplication::init()
         AudioOutput::instance()->setMuted(true);
     }
 
+    // Setup switch/case lists
+    axisList << "pitch" << "yaw" << "roll";
     this->commandsList << "OPEN_STREAM" << "STOP_STREAM" << "RESET_GIMBAL" << "MOVE_GIMBAL" << "GET_CAMERAS" << "SET_CAMERA" << "SET_CAMERA_INTRINSICS" << "GET_CAMERA" << "ZOOM_CAMERA" << "TAKE_PHOTO" << "START_RECORDING" << "STOP_RECORDING";
     
 
@@ -437,12 +439,12 @@ void QGCApplication::init()
 
 void QGCApplication::updateLogStateChange()
 {
-    qCDebug(QGCApplicationLog) << "State Change : " + QString::number(m_client->state());
+    qCWarning(QGCApplicationLog) << "State Change : " + QString::number(m_client->state());
 }
 
 void QGCApplication::brokerDisconnected()
 {
-    qCDebug(QGCApplicationLog) << "Mqtt Disconnected";
+    qCWarning(QGCApplicationLog) << "Mqtt Disconnected";
 }
 
 void QGCApplication::updateMessage(const QMqttMessage &msg)
@@ -452,76 +454,84 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
     QJsonObject message = d.object();
     switch (this->commandsList.indexOf(message["instruction"].toString())){
         case 0:
-            qCDebug(QGCApplicationLog) << "=================================================";
-            qCDebug(QGCApplicationLog) << "recieved OPEN_STREAM";
-            qCDebug(QGCApplicationLog) << "=================================================";
+            qCWarning(QGCApplicationLog) << "=================================================";
+            qCWarning(QGCApplicationLog) << "recieved OPEN_STREAM";
+            qCWarning(QGCApplicationLog) << "=================================================";
             break;
         case 1:
-            qCDebug(QGCApplicationLog) << "=================================================";
-            qCDebug(QGCApplicationLog) << "recieved STOP_STREAM";
-            qCDebug(QGCApplicationLog) << "=================================================";
+            qCWarning(QGCApplicationLog) << "=================================================";
+            qCWarning(QGCApplicationLog) << "recieved STOP_STREAM";
+            qCWarning(QGCApplicationLog) << "=================================================";
             break;
         case 2:
-            qCDebug(QGCApplicationLog) << "=================================================";
-            qCDebug(QGCApplicationLog) << "recieved RESET_GIMBAL";
-            qCDebug(QGCApplicationLog) << "=================================================";
+            qCWarning(QGCApplicationLog) << "=================================================";
+            qCWarning(QGCApplicationLog) << "recieved RESET_GIMBAL";
+            qCWarning(QGCApplicationLog) << "=================================================";
             QGCApplication::resetGimbal();
             break;
         case 3:
-            qCDebug(QGCApplicationLog) << "=================================================";
-            qCDebug(QGCApplicationLog) << "recieved MOVE_GIMBAL";
-            qCDebug(QGCApplicationLog) << "=================================================";
+            qCWarning(QGCApplicationLog) << "=================================================";
+            qCWarning(QGCApplicationLog) << "recieved MOVE_GIMBAL";
+            qCWarning(QGCApplicationLog) << "=================================================";
             QGCApplication::moveGimbal(message["axis"].toString(), message["value"].toString());
             break;
         case 4:
-            qCDebug(QGCApplicationLog) << "=================================================";
-            qCDebug(QGCApplicationLog) << "recieved GET_CAMERAS";
-            qCDebug(QGCApplicationLog) << "=================================================";
+            qCWarning(QGCApplicationLog) << "=================================================";
+            qCWarning(QGCApplicationLog) << "recieved GET_CAMERAS";
+            qCWarning(QGCApplicationLog) << "=================================================";
             message.insert("availableCameraListData", QGCApplication::getCameras());
             break;
         case 5:
-            qCDebug(QGCApplicationLog) << "=================================================";
-            qCDebug(QGCApplicationLog) << "recieved SET_CAMERA";
-            qCDebug(QGCApplicationLog) << "=================================================";
+            qCWarning(QGCApplicationLog) << "=================================================";
+            qCWarning(QGCApplicationLog) << "recieved SET_CAMERA";
+            qCWarning(QGCApplicationLog) << "=================================================";
             break;
         case 6:
-            qCDebug(QGCApplicationLog) << "=================================================";
-            qCDebug(QGCApplicationLog) << "recieved SET_CAMERA_INTRINSICS";
-            qCDebug(QGCApplicationLog) << "=================================================";
+            qCWarning(QGCApplicationLog) << "=================================================";
+            qCWarning(QGCApplicationLog) << "recieved SET_CAMERA_INTRINSICS";
+            qCWarning(QGCApplicationLog) << "=================================================";
             break;
         case 7:
-            qCDebug(QGCApplicationLog) << "=================================================";
-            qCDebug(QGCApplicationLog) << "recieved GET_CAMERA";
-            qCDebug(QGCApplicationLog) << "=================================================";
+            qCWarning(QGCApplicationLog) << "=================================================";
+            qCWarning(QGCApplicationLog) << "recieved GET_CAMERA";
+            qCWarning(QGCApplicationLog) << "=================================================";
             break;
         case 8:
-            qCDebug(QGCApplicationLog) << "=================================================";
-            qCDebug(QGCApplicationLog) << "recieved ZOOM_CAMERA";
-            qCDebug(QGCApplicationLog) << "=================================================";
+            qCWarning(QGCApplicationLog) << "=================================================";
+            qCWarning(QGCApplicationLog) << "recieved ZOOM_CAMERA";
+            qCWarning(QGCApplicationLog) << "=================================================";
+            QGCApplication::setZoom(message["zoomValue"].toFloat());
             break;
         case 9:
-            qCDebug(QGCApplicationLog) << "=================================================";
-            qCDebug(QGCApplicationLog) << "recieved TAKE_PHOTO";
-            qCDebug(QGCApplicationLog) << "=================================================";
+            qCWarning(QGCApplicationLog) << "=================================================";
+            qCWarning(QGCApplicationLog) << "recieved TAKE_PHOTO";
+            qCWarning(QGCApplicationLog) << "=================================================";
             QGCApplication::takePhoto();
             break;
         case 10:
-            qCDebug(QGCApplicationLog) << "=================================================";
-            qCDebug(QGCApplicationLog) << "recieved START_RECORDING";
-            qCDebug(QGCApplicationLog) << "=================================================";
+            qCWarning(QGCApplicationLog) << "=================================================";
+            qCWarning(QGCApplicationLog) << "recieved START_RECORDING";
+            qCWarning(QGCApplicationLog) << "=================================================";
             QGCApplication::startRecording();
             break;
         case 11:
-            qCDebug(QGCApplicationLog) << "=================================================";
-            qCDebug(QGCApplicationLog) << "recieved STOP_RECORDING";
-            qCDebug(QGCApplicationLog) << "=================================================";
+            qCWarning(QGCApplicationLog) << "=================================================";
+            qCWarning(QGCApplicationLog) << "recieved STOP_RECORDING";
+            qCWarning(QGCApplicationLog) << "=================================================";
             QGCApplication::stopRecording();
             break;
         default:
             message.insert("status","KO");
             message.insert("error","KO");
     }
-    // client.publish("test/response", "Response : "+message);
+
+    QString responseTopic = msg->publishProperties()->getResponseTopic();
+
+    QMqttPublishProperties properties = new QMqttPublishProperties();
+    properties.setCorrelationData(msg->publishProperties()->correlationData());
+    
+    // Set the qos to 1 (important!)
+    m_client->publish(responseTopic, properties, message.toString().toUtf8(), 1, false);
 }
 
 void QGCApplication::updateStatus(QMqttSubscription::SubscriptionState state)
@@ -549,59 +559,59 @@ void QGCApplication::updateStatus(QMqttSubscription::SubscriptionState state)
 }
 
 void QGCApplication::sendInfos(){
-    qCDebug(QGCApplicationLog) << "sendInfos init =================================================";
+    qCWarning(QGCApplicationLog) << "sendInfos init =================================================";
     MultiVehicleManager* vehicleManager = toolbox()->multiVehicleManager();
     if(vehicleManager->vehicles()->count() == 0) return;
-    qCDebug(QGCApplicationLog) << "sendInfos vehicle found ========================================";
+    qCWarning(QGCApplicationLog) << "sendInfos vehicle found ========================================";
     Vehicle* activeVehicle = vehicleManager->activeVehicle();
     if(!activeVehicle) return;
-    qCDebug(QGCApplicationLog) << "============== start send infos ==============";
-    qCDebug(QGCApplicationLog) << "loggedEmail : " << this->loggedEmail;
-    qCDebug(QGCApplicationLog) << "registrationNumber : " << this->registrationNumber;
-    qCDebug(QGCApplicationLog) << "isStreaming : " << this->isStreaming;
-    qCDebug(QGCApplicationLog) << "rtmpUrl : " << this->rtmpUrl;
-    qCDebug(QGCApplicationLog) << "System : " << activeVehicle->firmwareTypeString();
-    qCDebug(QGCApplicationLog) << "productType : " << activeVehicle->vehicleTypeString();
-    qCDebug(QGCApplicationLog) << "latitude : " << activeVehicle->coordinate().latitude();
-    qCDebug(QGCApplicationLog) << "longitude : " << activeVehicle->coordinate().longitude();
-    qCDebug(QGCApplicationLog) << "altitude : " << activeVehicle->coordinate().altitude();
-    qCDebug(QGCApplicationLog) << "isFlying : " << activeVehicle->flying();
-    qCDebug(QGCApplicationLog) << "firmwareVersionUav : " << activeVehicle->firmwarePatchVersion();
-    qCDebug(QGCApplicationLog) << "firmwareVersion : " << this->_buildVersion;
-    qCDebug(QGCApplicationLog) << "simulated : " << false;
-    qCDebug(QGCApplicationLog) << "systemOS : " << "Android"; // TODO change to include Windows
-    qCDebug(QGCApplicationLog) << "systemVersion : " << "V1"; // TODO ???
-    qCDebug(QGCApplicationLog) << "firmwareVersionUav : " << activeVehicle->firmwarePatchVersion();
-    qCDebug(QGCApplicationLog) << "gpsSatelliteCount : " << qobject_cast<VehicleGPSFactGroup*>(activeVehicle->gpsFactGroup())->count()->rawValueString();
-    qCDebug(QGCApplicationLog) << "velocity : " << qobject_cast<VehicleFactGroup*>(activeVehicle->vehicleFactGroup())->airSpeed()->rawValueString();
+    qCWarning(QGCApplicationLog) << "============== start send infos ==============";
+    qCWarning(QGCApplicationLog) << "loggedEmail : " << this->loggedEmail;
+    qCWarning(QGCApplicationLog) << "registrationNumber : " << this->registrationNumber;
+    qCWarning(QGCApplicationLog) << "isStreaming : " << this->isStreaming;
+    qCWarning(QGCApplicationLog) << "rtmpUrl : " << this->rtmpUrl;
+    qCWarning(QGCApplicationLog) << "System : " << activeVehicle->firmwareTypeString();
+    qCWarning(QGCApplicationLog) << "productType : " << activeVehicle->vehicleTypeString();
+    qCWarning(QGCApplicationLog) << "latitude : " << activeVehicle->coordinate().latitude();
+    qCWarning(QGCApplicationLog) << "longitude : " << activeVehicle->coordinate().longitude();
+    qCWarning(QGCApplicationLog) << "altitude : " << activeVehicle->coordinate().altitude();
+    qCWarning(QGCApplicationLog) << "isFlying : " << activeVehicle->flying();
+    qCWarning(QGCApplicationLog) << "firmwareVersionUav : " << activeVehicle->firmwarePatchVersion();
+    qCWarning(QGCApplicationLog) << "firmwareVersion : " << this->_buildVersion;
+    qCWarning(QGCApplicationLog) << "simulated : " << false;
+    qCWarning(QGCApplicationLog) << "systemOS : " << "Android"; // TODO change to include Windows
+    qCWarning(QGCApplicationLog) << "systemVersion : " << "V1"; // TODO ???
+    qCWarning(QGCApplicationLog) << "firmwareVersionUav : " << activeVehicle->firmwarePatchVersion();
+    qCWarning(QGCApplicationLog) << "gpsSatelliteCount : " << qobject_cast<VehicleGPSFactGroup*>(activeVehicle->gpsFactGroup())->count()->rawValueString();
+    qCWarning(QGCApplicationLog) << "velocity : " << qobject_cast<VehicleFactGroup*>(activeVehicle->vehicleFactGroup())->airSpeed()->rawValueString();
     
     bool hasCamera = activeVehicle->cameraManager()->cameras()->count() != 0;
-    qCDebug(QGCApplicationLog) << "hasCamera : " << hasCamera;
+    qCWarning(QGCApplicationLog) << "hasCamera : " << hasCamera;
     if(hasCamera) {
         MavlinkCameraControl *activeCamera = activeVehicle->cameraManager()->currentCameraInstance();
         if(activeCamera) {
-            qCDebug(QGCApplicationLog) << "============== current camera values ==============";
-            qCDebug(QGCApplicationLog) << "sensorName : " << activeCamera->modelName();
-            qCDebug(QGCApplicationLog) << "hasZoom : " << activeCamera->hasZoom();
+            qCWarning(QGCApplicationLog) << "============== current camera values ==============";
+            qCWarning(QGCApplicationLog) << "sensorName : " << activeCamera->modelName();
+            qCWarning(QGCApplicationLog) << "hasZoom : " << activeCamera->hasZoom();
             if(activeCamera->modelName() != "Simulated Camera"){
-                qCDebug(QGCApplicationLog) << "ISO : " << activeCamera->iso()->rawValueString();
-                qCDebug(QGCApplicationLog) << "whiteBalance : " << activeCamera->wb()->rawValueString();
-                qCDebug(QGCApplicationLog) << "aperture : " << activeCamera->aperture()->rawValueString();
+                qCWarning(QGCApplicationLog) << "ISO : " << activeCamera->iso()->rawValueString();
+                qCWarning(QGCApplicationLog) << "whiteBalance : " << activeCamera->wb()->rawValueString();
+                qCWarning(QGCApplicationLog) << "aperture : " << activeCamera->aperture()->rawValueString();
             }
         }
     }
 
     bool hasGimbal = activeVehicle->gimbalController()->gimbals()->count() != 0;
-    qCDebug(QGCApplicationLog) << "hasGimbal : " << hasGimbal;
+    qCWarning(QGCApplicationLog) << "hasGimbal : " << hasGimbal;
     if(hasGimbal) {
         Gimbal *activeGimbal = activeVehicle->gimbalController()->activeGimbal();
         if(activeGimbal) {
-            qCDebug(QGCApplicationLog) << "============== current gimbal values ==============";
-            qCDebug(QGCApplicationLog) << "yaw : " << activeGimbal->absoluteYaw()->rawValueString();
-            qCDebug(QGCApplicationLog) << "pitch : " << activeGimbal->absolutePitch()->rawValueString();
-            qCDebug(QGCApplicationLog) << "roll : " << activeGimbal->absoluteRoll()->rawValueString();
-            qCDebug(QGCApplicationLog) << "whikeyYawRelativeToAircraftHeadingteBalance : " << activeGimbal->bodyYaw()->rawValueString();
-            qCDebug(QGCApplicationLog) << "KeyGimbalReset : " << "null";
+            qCWarning(QGCApplicationLog) << "============== current gimbal values ==============";
+            qCWarning(QGCApplicationLog) << "yaw : " << activeGimbal->absoluteYaw()->rawValueString();
+            qCWarning(QGCApplicationLog) << "pitch : " << activeGimbal->absolutePitch()->rawValueString();
+            qCWarning(QGCApplicationLog) << "roll : " << activeGimbal->absoluteRoll()->rawValueString();
+            qCWarning(QGCApplicationLog) << "whikeyYawRelativeToAircraftHeadingteBalance : " << activeGimbal->bodyYaw()->rawValueString();
+            qCWarning(QGCApplicationLog) << "KeyGimbalReset : " << "null";
         }
     }
     QmlObjectListModel* batteries = activeVehicle->batteries();
@@ -610,52 +620,51 @@ void QGCApplication::sendInfos(){
         VehicleBatteryFactGroup* battery = qobject_cast<VehicleBatteryFactGroup*>(batteries->get(i));
         res += battery->percentRemaining()->rawValue().toInt();
     }
-    qCDebug(QGCApplicationLog) << "batteryPowerPercentUav : " << res/batteries->count();
-
-    qCDebug(QGCApplicationLog) << "==============  end send infos  ==============";
+    qCWarning(QGCApplicationLog) << "batteryPowerPercentUav : " << res/batteries->count();
+    qCWarning(QGCApplicationLog) << "==============  end send infos  ==============";
 
     QmlObjectListModel *cameras = activeVehicle->cameraManager()->cameras();
     if (hasCamera) {
         for (int i = 0; i < cameras->count(); i++) {
             MavlinkCameraControl *camera = qobject_cast<MavlinkCameraControl*>(cameras->get(i));
-            qCDebug(QGCApplicationLog) << "============== START GET_CAMERAS ==============";
-            qCDebug(QGCApplicationLog) << "index : " << i;
-            qCDebug(QGCApplicationLog) << "name : " << camera->modelName();
-            qCDebug(QGCApplicationLog) << "==============  END GET_CAMERAS  ==============";
+            qCWarning(QGCApplicationLog) << "============== START GET_CAMERAS ==============";
+            qCWarning(QGCApplicationLog) << "index : " << i;
+            qCWarning(QGCApplicationLog) << "name : " << camera->modelName();
+            qCWarning(QGCApplicationLog) << "==============  END GET_CAMERAS  ==============";
         }
     }
 
-    qCDebug(QGCApplicationLog) << "============== START GET_CAMERA ==============";
+    qCWarning(QGCApplicationLog) << "============== START GET_CAMERA ==============";
     if(hasGimbal) {
         Gimbal *activeGimbal = activeVehicle->gimbalController()->activeGimbal();
         if(activeGimbal) {
-            qCDebug(QGCApplicationLog) << "============== gimbal ranges ==============";
-            qCDebug(QGCApplicationLog) << "minYaw : " << activeGimbal->absoluteYaw()->cookedMinString();
-            qCDebug(QGCApplicationLog) << "maxYaw : " << activeGimbal->absoluteYaw()->cookedMaxString();
-            qCDebug(QGCApplicationLog) << "minPitch : " << activeGimbal->absolutePitch()->cookedMinString();
-            qCDebug(QGCApplicationLog) << "maxPitch : " << activeGimbal->absolutePitch()->cookedMaxString();
-            qCDebug(QGCApplicationLog) << "minRoll : " << activeGimbal->absoluteRoll()->cookedMinString();
-            qCDebug(QGCApplicationLog) << "maxRoll : " << activeGimbal->absoluteRoll()->cookedMaxString();
-            qCDebug(QGCApplicationLog) << "minBodyYaw : " << activeGimbal->bodyYaw()->cookedMinString();
-            qCDebug(QGCApplicationLog) << "maxBodyYaw : " << activeGimbal->bodyYaw()->cookedMaxString();
+            qCWarning(QGCApplicationLog) << "============== gimbal ranges ==============";
+            qCWarning(QGCApplicationLog) << "minYaw : " << activeGimbal->absoluteYaw()->cookedMinString();
+            qCWarning(QGCApplicationLog) << "maxYaw : " << activeGimbal->absoluteYaw()->cookedMaxString();
+            qCWarning(QGCApplicationLog) << "minPitch : " << activeGimbal->absolutePitch()->cookedMinString();
+            qCWarning(QGCApplicationLog) << "maxPitch : " << activeGimbal->absolutePitch()->cookedMaxString();
+            qCWarning(QGCApplicationLog) << "minRoll : " << activeGimbal->absoluteRoll()->cookedMinString();
+            qCWarning(QGCApplicationLog) << "maxRoll : " << activeGimbal->absoluteRoll()->cookedMaxString();
+            qCWarning(QGCApplicationLog) << "minBodyYaw : " << activeGimbal->bodyYaw()->cookedMinString();
+            qCWarning(QGCApplicationLog) << "maxBodyYaw : " << activeGimbal->bodyYaw()->cookedMaxString();
         }
     }
 
     if(hasCamera) {
         MavlinkCameraControl *activeCamera = activeVehicle->cameraManager()->currentCameraInstance();
         if(activeCamera) {
-            qCDebug(QGCApplicationLog) << "============== camera ranges ==============";
-            qCDebug(QGCApplicationLog) << "hasZoom : " << activeCamera->hasZoom();
+            qCWarning(QGCApplicationLog) << "============== camera ranges ==============";
+            qCWarning(QGCApplicationLog) << "hasZoom : " << activeCamera->hasZoom();
             if(activeCamera->modelName() != "Simulated Camera"){
-                qCDebug(QGCApplicationLog) << "minIso : " << activeCamera->iso()->cookedMinString();
-                qCDebug(QGCApplicationLog) << "maxIso : " << activeCamera->iso()->cookedMaxString();
-                qCDebug(QGCApplicationLog) << "minAperture : " << activeCamera->aperture()->cookedMinString();
-                qCDebug(QGCApplicationLog) << "maxAperture : " << activeCamera->aperture()->cookedMaxString();
+                qCWarning(QGCApplicationLog) << "minIso : " << activeCamera->iso()->cookedMinString();
+                qCWarning(QGCApplicationLog) << "maxIso : " << activeCamera->iso()->cookedMaxString();
+                qCWarning(QGCApplicationLog) << "minAperture : " << activeCamera->aperture()->cookedMinString();
+                qCWarning(QGCApplicationLog) << "maxAperture : " << activeCamera->aperture()->cookedMaxString();
             }
         }
 
     }
-    qCDebug(QGCApplicationLog) << "==============  END GET_CAMERA  ==============";
+    qCWarning(QGCApplicationLog) << "==============  END GET_CAMERA  ==============";
 }
 
 /* QGCApplication:: sendAircraftPositionInfos() {
@@ -785,18 +794,8 @@ void QGCApplication::sendInfos(){
             obj.put("zoomRatiosRange", new int[]{1});
             Log.d("GET_CAMERA", "end");
             break;
-        case "ZOOM_CAMERA": // TODO test and rework
-            Log.i("zoomCam", "=================================================");
-            Log.i("zoomCam", "recieved ZOOM_CAMERA");
-            Log.i("zoomCam", "=================================================");
-            String zoomValue = obj.getString("zoomValue");
-            CameraUtil.zoomCamera(zoomValue);
-            break;
     }
 
-void QGCApplication::setZoom(float value){
-    Vehicule::cameraManager().currentCameraInstance().setZoomLevel(qreal level);
-}
 
 void QGCApplication::getCamera(){
     JSONObject obj = new JSONObject();
@@ -822,17 +821,29 @@ void QGCApplication::setCamera(int i){
 
 Vehicle* QGCApplication::getActiveVehicle(){
     MultiVehicleManager* vehicleManager = toolbox()->multiVehicleManager();
-    if(vehicleManager->vehicles()->count() == 0) return nullptr;
+    if(vehicleManager->vehicles()->count() == 0)  {
+        qCWarning(QGCApplicationLog) << "*****   No vehicle found   *****";
+        return nullptr;
+    }
     Vehicle* activeVehicle = vehicleManager->activeVehicle();
-    if(!activeVehicle) return nullptr;
+    if(!activeVehicle) {
+        qCWarning(QGCApplicationLog) << "*****   No active vehicle   *****";
+        return nullptr;
+    }
     return activeVehicle;
 }
 
 MavlinkCameraControl* QGCApplication::getActiveCamera(){
     Vehicle* activeVehicle = QGCApplication::getActiveVehicle();
-    if(!activeVehicle || activeVehicle->cameraManager()->cameras()->count() <= 0) return nullptr;
+    if(!activeVehicle || activeVehicle->cameraManager()->cameras()->count() <= 0) {
+        qCWarning(QGCApplicationLog) << "*****   No camera available   *****";
+        return nullptr;
+    }
     MavlinkCameraControl *activeCamera = activeVehicle->cameraManager()->currentCameraInstance();
-    if(!activeCamera) return nullptr;
+    if(!activeCamera) {
+        qCWarning(QGCApplicationLog) << "*****   No active camera   *****";
+        return nullptr;
+    }
     return activeCamera;
 }
 
@@ -852,82 +863,121 @@ QJsonArray QGCApplication::getCameras() {
 }
 
 void QGCApplication::takePhoto(){
-    qCDebug(QGCApplicationLog) << "==============  START TAKE_PHOTO  ==============";
+    qCWarning(QGCApplicationLog) << "==============  START TAKE_PHOTO  ==============";
     MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
-    if(!activeCamera) return;
+    if(!activeCamera) {
+        qCWarning(QGCApplicationLog) << "*****   No active camera   *****";
+        return;
+    }
     activeCamera->setCameraModePhoto();
     activeCamera->takePhoto();
-    qCDebug(QGCApplicationLog) << "==============   END TAKE_PHOTO   ==============";
+    qCWarning(QGCApplicationLog) << "==============   END TAKE_PHOTO   ==============";
+}
+
+void QGCApplication::setZoom(float value){
+    qCWarning(QGCApplicationLog) << "==============  START TAKE_PHOTO  ==============";
+    MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
+    if(!activeCamera) {
+        qCWarning(QGCApplicationLog) << "*****   No active camera   *****";
+        return;
+    }
+    activeCamera->setZoomLevel(value);
+    qCWarning(QGCApplicationLog) << "==============  END TAKE_PHOTO  ==============";
 }
 
 void QGCApplication::startStream(){
-    qCDebug(QGCApplicationLog) << "==============  START OPEN_STREAM  ==============";
+    qCWarning(QGCApplicationLog) << "==============  START OPEN_STREAM  ==============";
     MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
-    if(!activeCamera) return;
+    if(!activeCamera) {
+        qCWarning(QGCApplicationLog) << "*****   No active camera   *****";
+        return;
+    }
     QGCVideoStreamInfo *streamInstance = activeCamera->currentStreamInstance();
     if(!streamInstance) return;
-    qCDebug(QGCApplicationLog) << "stream name : " <<streamInstance->name();
-    qCDebug(QGCApplicationLog) << "stream uri : " <<streamInstance->uri();
-    qCDebug(QGCApplicationLog) << "stream type : " <<streamInstance->type();
-    qCDebug(QGCApplicationLog) << "==============   END OPEN_STREAM   ==============";
+    qCWarning(QGCApplicationLog) << "stream name : " <<streamInstance->name();
+    qCWarning(QGCApplicationLog) << "stream uri : " <<streamInstance->uri();
+    qCWarning(QGCApplicationLog) << "stream type : " <<streamInstance->type();
+    qCWarning(QGCApplicationLog) << "==============   END OPEN_STREAM   ==============";
 }
 
 void QGCApplication::startRecording(){
-    qCDebug(QGCApplicationLog) << "==============  START START_RECORDING  ==============";
+    qCWarning(QGCApplicationLog) << "==============  START START_RECORDING  ==============";
     MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
-    if(!activeCamera) return;
+    if(!activeCamera) {
+        qCWarning(QGCApplicationLog) << "*****   No active camera   *****";
+        return;
+    }
     activeCamera->setCameraModeVideo();
     activeCamera->startVideoRecording();
-    qCDebug(QGCApplicationLog) << "==============   END START_RECORDING   ==============";
+    qCWarning(QGCApplicationLog) << "==============   END START_RECORDING   ==============";
 }
 
 void QGCApplication::stopRecording(){
-    qCDebug(QGCApplicationLog) << "==============  START STOP_RECORDING  ==============";
+    qCWarning(QGCApplicationLog) << "==============  START STOP_RECORDING  ==============";
     MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
-    if(!activeCamera) return;
+    if(!activeCamera) {
+        qCWarning(QGCApplicationLog) << "*****   No active camera   *****";
+        return;
+    }
     activeCamera->stopVideoRecording();
-    qCDebug(QGCApplicationLog) << "==============   END STOP_RECORDING   ==============";
+    qCWarning(QGCApplicationLog) << "==============   END STOP_RECORDING   ==============";
 }
 
 void QGCApplication::resetGimbal() {
-    qCDebug(QGCApplicationLog) << "==============  START RESET_GIMBAL  ==============";
+    qCWarning(QGCApplicationLog) << "==============  START RESET_GIMBAL  ==============";
     MultiVehicleManager* vehicleManager = toolbox()->multiVehicleManager();
-    if(vehicleManager->vehicles()->count() == 0) return;
+    if(vehicleManager->vehicles()->count() == 0) {
+        qCWarning(QGCApplicationLog) << "*****   No vehicle found   *****";
+        return;
+    }
     Vehicle* activeVehicle = vehicleManager->activeVehicle();
-    if(!activeVehicle || activeVehicle->gimbalController()->gimbals()->count() == 0) return;
+    if(!activeVehicle || activeVehicle->gimbalController()->gimbals()->count() == 0) {
+        qCWarning(QGCApplicationLog) << "*****   No gimbal available   *****";
+        return;
+    }
     Gimbal *activeGimbal = activeVehicle->gimbalController()->activeGimbal();
-    if(!activeGimbal) return;
+    if(!activeGimbal) {
+        qCWarning(QGCApplicationLog) << "*****   No active gimbal   *****";
+        return;
+    }
     activeGimbal->setAbsolutePitch(0);
     activeGimbal->setBodyYaw(0);
     activeGimbal->setAbsoluteRoll(0);
-    qCDebug(QGCApplicationLog) << "==============   END RESET_GIMBAL   ==============";
+    qCWarning(QGCApplicationLog) << "==============   END RESET_GIMBAL   ==============";
 }
 
 void QGCApplication::moveGimbal(QString axis, QString value) {
-    qCDebug(QGCApplicationLog) << "==============  START MOVE_GIMBAL  ==============";
+    qCWarning(QGCApplicationLog) << "==============  START MOVE_GIMBAL  ==============";
     MultiVehicleManager* vehicleManager = toolbox()->multiVehicleManager();
-    if(vehicleManager->vehicles()->count() == 0) return;
+    if(vehicleManager->vehicles()->count() == 0) {
+        qCWarning(QGCApplicationLog) << "*****   No vehicle found   *****";
+        return;
+    }
     Vehicle* activeVehicle = vehicleManager->activeVehicle();
-    if(!activeVehicle || activeVehicle->gimbalController()->gimbals()->count() == 0) return;
+    if(!activeVehicle || activeVehicle->gimbalController()->gimbals()->count() == 0) {
+        qCWarning(QGCApplicationLog) << "*****   No gimbal available   *****";
+        return;
+    }
     Gimbal *activeGimbal = activeVehicle->gimbalController()->activeGimbal();
-    if(!activeGimbal) return;
-    QStringList axisList;
-    axisList << "pitch" << "yaw" << "roll";
+    if(!activeGimbal) {
+        qCWarning(QGCApplicationLog) << "*****   No active gimbal   *****";
+        return;
+    }
     switch (axisList.indexOf(axis)) {
         case 0:
-            qCDebug(QGCApplicationLog) << "==============   MOVE_GIMBAL CASE PITCH  ==============";
+            qCWarning(QGCApplicationLog) << "==============   MOVE_GIMBAL CASE PITCH  ==============";
             activeGimbal->setAbsolutePitch(value.toFloat());
             break;
         case 1:
-            qCDebug(QGCApplicationLog) << "==============   MOVE_GIMBAL CASE YAW   ==============";
+            qCWarning(QGCApplicationLog) << "==============   MOVE_GIMBAL CASE YAW   ==============";
             activeGimbal->setBodyYaw(value.toFloat());
             break;
         case 2:
-            qCDebug(QGCApplicationLog) << "==============   MOVE_GIMBAL CASE ROLL   ==============";
+            qCWarning(QGCApplicationLog) << "==============   MOVE_GIMBAL CASE ROLL   ==============";
             activeGimbal->setAbsoluteRoll(value.toFloat());
             break;
     }
-    qCDebug(QGCApplicationLog) << "==============   END MOVE_GIMBAL   ==============";
+    qCWarning(QGCApplicationLog) << "==============   END MOVE_GIMBAL   ==============";
 }
 
 void QGCApplication::_initForNormalAppBoot()

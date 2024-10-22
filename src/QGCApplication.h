@@ -228,6 +228,7 @@ private:
     void resetGimbal();
     QJsonArray getCameras();
     void takePhoto();
+    void setZoom(float value);
     void startStream();
     void startRecording();
     void stopRecording();
@@ -245,4 +246,5 @@ private:
     bool reset = true;
     QMqttClient *m_client;
     QStringList commandsList;
+    QStringList axisList;
 };
