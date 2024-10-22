@@ -597,9 +597,9 @@ void QGCApplication:: sendRemotePilote() {
     newResponse.insert("email", this->loggedEmail);
     newResponse.insert("registrationNumber", this->registrationNumber);
 
-    /* QJsonDocument doc(newResponse);
+    QJsonDocument doc(newResponse);
     QString responseMessage(doc.toJson(QJsonDocument::Compact));
-    m_client->publish("REMOTE_PILOT/"+this->uavSn, responseMessage.toUtf8()); */
+    m_client->publish("REMOTE_PILOT/"+this->uavSn, responseMessage.toUtf8());
 }
 
 void QGCApplication:: sendAircraftPositionInfos() {
