@@ -151,7 +151,7 @@ if(ANDROID)
         set(Qt6LinguistTools_DIR ${QT_HOST_PATH}/lib/cmake/Qt6LinguistTools)
     endif()
     if(NOT Qt6Mqtt_DIR)
-        set(Qt6Mqtt_DIR D:/a/_temp/Qt/6.6.3/msvc2019_64/lib/cmake)
+        set(Qt6Mqtt_DIR D:/a/_temp/Qt/6.6.3/msvc2019_64/lib/cmake/)
     endif()
 endif()
 
