@@ -425,7 +425,7 @@ void QGCApplication::init()
     m_client->connectToHost();
 
     // Setup Subscription
-    QString topic = "REQUEST/+/" + this.uavSn + "/+";
+    QString topic = "REQUEST/+/" + this->uavSn + "/+";
     /* QMqttSubscription* subscription = m_client->subscribe(topic, 1); // TODO regex here
     updateStatus(subscription->state());
     QObject::connect(subscription, &QMqttSubscription::stateChanged, this, &QGCApplication::updateStatus);
