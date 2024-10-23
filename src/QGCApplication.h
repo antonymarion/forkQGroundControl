@@ -18,7 +18,10 @@
 #include <QtCore/QMetaMethod>
 #include <QtCore/QMetaObject>
 #include <QtCore/QTranslator>
+#include <QtMqtt/QtMqtt>
 #include <QtMqtt/QMqttClient>
+#include <QtMqtt/QMqttMessage>
+#include <QtMqtt/QMqttSubscription>
 #include <QJsonObject>
 
 // These private headers are require to implement the signal compress support below

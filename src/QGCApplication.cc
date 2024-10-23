@@ -28,6 +28,9 @@
 #include <QtQml/QQmlApplicationEngine>
 #include <QTimer>
 #include <QtMqtt/QtMqtt>
+#include <QtMqtt/QMqttClient>
+#include <QtMqtt/QMqttMessage>
+#include <QtMqtt/QMqttSubscription>
 #include <QJsonObject>
 
 #include "Audio/AudioOutput.h"
@@ -421,11 +424,11 @@ void QGCApplication::init()
     m_client->connectToHost();
 
     // Setup Subscription
-    QString topic = "REQUEST/*";
-    // QMqttSubscription* subscription = m_client->subscribe(topic, 1); // TODO regex here
+    QString topic = "REQUEST/+/" + this.uavSn + "/+";
+    QMqttSubscription* subscription = m_client->subscribe(topic, 1); // TODO regex here
     // updateStatus(subscription->state());
     // QObject::connect(subscription, &QMqttSubscription::stateChanged, this, &QGCApplication::updateStatus);
-    // QObject::connect(subscription, &QMqttSubscription::messageReceived, this, &QGCApplication::updateMessage);
+    QObject::connect(subscription, &QMqttSubscription::messageReceived, this, &QGCApplication::updateMessage);
 
     // Setup Position & Remote Pilote TIMER
     QTimer *timer = new QTimer(this);
