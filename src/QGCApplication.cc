@@ -586,7 +586,7 @@ void QGCApplication::sendInfos(){
         return;
     }
 
-    QGCApplication::sendAircraftPositionInfos();
+    // QGCApplication::sendAircraftPositionInfos();
     QGCApplication::sendRemotePilote();
     
     qCWarning(QGCApplicationLog) << "==============  end send infos  ==============";
