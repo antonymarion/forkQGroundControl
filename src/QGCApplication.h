@@ -241,6 +241,7 @@ private:
     void stopRecording();
     void updateLogStateChange();
     void brokerDisconnected();
+    void brokerConnected();
     void updateMessage(const QMqttMessage &msg);
     void updateStatus(QMqttSubscription::SubscriptionState state);
     Vehicle* getActiveVehicle();
