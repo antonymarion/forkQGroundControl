@@ -456,7 +456,7 @@ void QGCApplication::brokerConnected()
 
 void QGCApplication::brokerDisconnected()
 {
-    qCWarning(QGCApplicationLog) << m_client.error();
+    qCWarning(QGCApplicationLog) << m_client->error();
     qCWarning(QGCApplicationLog) << "Mqtt Disconnected";
 }
 
