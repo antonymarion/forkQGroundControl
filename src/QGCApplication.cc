@@ -453,7 +453,6 @@ void QGCApplication::brokerConnected()
 void QGCApplication::brokerDisconnected()
 {
     qCWarning(QGCApplicationLog) << "Mqtt Disconnected";
-    m_client->connectToHost();
 }
 
 void QGCApplication::updateMessage(const QMqttMessage &msg)
