@@ -27,7 +27,7 @@
 #include <QtQml/QQmlContext>
 #include <QtQml/QQmlApplicationEngine>
 #include <QTimer>
-#include <QtMqtt/QMqtt>
+#include <QtMqtt/QtMqtt>
 #include <QtMqtt/QMqttClient>
 #include <QtMqtt/QMqttMessage>
 #include <QtMqtt/QMqttSubscription>
