@@ -98,7 +98,7 @@ jobs:
           cd qtmqtt
           mkdir build
           cd build/
-          D:/a/_temp/Qt/6.6.3/msvc2019_64/bin/qt-configure-module.bat D:/a/_temp/Qt/6.6.3/android_arm64_v8a/bin
+          D:/a/_temp/Qt/6.6.3/msvc2019_64/bin/qt-configure-module.bat .. -help
 
       - name: Setup QMQTT Second Part
         run: |
