@@ -421,14 +421,15 @@ void QGCApplication::init()
     m_client->setPort(1883);
     connect(m_client, &QMqttClient::stateChanged, this, &QGCApplication::updateLogStateChange);
     connect(m_client, &QMqttClient::disconnected, this, &QGCApplication::brokerDisconnected);
+    connect(m_client, &QMqttClient::connected, this, &QGCApplication::brokerConnected);
     m_client->connectToHost();
 
     // Setup Subscription
     QString topic = "REQUEST/+/" + this.uavSn + "/+";
-    QMqttSubscription* subscription = m_client->subscribe(topic, 1); // TODO regex here
+    /* QMqttSubscription* subscription = m_client->subscribe(topic, 1); // TODO regex here
     updateStatus(subscription->state());
     QObject::connect(subscription, &QMqttSubscription::stateChanged, this, &QGCApplication::updateStatus);
-    QObject::connect(subscription, &QMqttSubscription::messageReceived, this, &QGCApplication::updateMessage);
+    QObject::connect(subscription, &QMqttSubscription::messageReceived, this, &QGCApplication::updateMessage); */
 
     // Setup Position & Remote Pilote TIMER
     QTimer *timer = new QTimer(this);
@@ -442,6 +443,11 @@ void QGCApplication::init()
 void QGCApplication::updateLogStateChange()
 {
     qCWarning(QGCApplicationLog) << "State Change : " + QString::number(m_client->state());
+}
+
+void QGCApplication::brokerConnected()
+{
+    qCWarning(QGCApplicationLog) << "Mqtt Connected";
 }
 
 void QGCApplication::brokerDisconnected()
