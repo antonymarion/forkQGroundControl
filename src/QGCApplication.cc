@@ -424,16 +424,6 @@ void QGCApplication::init()
     connect(m_client, &QMqttClient::connected, this, &QGCApplication::brokerConnected);
     m_client->connectToHost();
 
-    // Setup Subscription
-    QString topic = "REQUEST/+/" + this->uavSn + "/+";
-    QMqttSubscription *subscription = m_client->subscribe(topic, 1); // TODO regex here
-    if(!subscription) {
-        qCWarning(QGCApplicationLog) << "============== here ==============";
-    }
-    // updateStatus(subscription->state());
-    // QObject::connect(subscription, &QMqttSubscription::stateChanged, this, &QGCApplication::updateStatus);
-    QObject::connect(subscription, &QMqttSubscription::messageReceived, this, &QGCApplication::updateMessage);
-
     // Setup Position & Remote Pilote TIMER
     QTimer *timer = new QTimer(this);
 
@@ -450,11 +440,23 @@ void QGCApplication::updateLogStateChange()
 
 void QGCApplication::brokerConnected()
 {
+
+    // Setup Subscription
+    QString topic = "REQUEST/+/" + this->uavSn + "/+";
+    QMqttSubscription *subscription = m_client->subscribe(topic, 1); // TODO regex here
+    if(!subscription) {
+        qCWarning(QGCApplicationLog) << "============== here ==============";
+    }
+    // updateStatus(subscription->state());
+    // QObject::connect(subscription, &QMqttSubscription::stateChanged, this, &QGCApplication::updateStatus);
+    QObject::connect(subscription, &QMqttSubscription::messageReceived, this, &QGCApplication::updateMessage);
+
     qCWarning(QGCApplicationLog) << "Mqtt Connected";
 }
 
 void QGCApplication::brokerDisconnected()
 {
+    qCWarning(QGCApplicationLog) << m_client.error();
     qCWarning(QGCApplicationLog) << "Mqtt Disconnected";
 }
 
