@@ -128,6 +128,7 @@ if(ANDROID)
             Qt6::CorePrivate
         PUBLIC
             Qt6::Core
+            Qt6::Mqtt
             Comms
             Joystick
     )

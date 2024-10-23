@@ -18,6 +18,7 @@
 #include <QtCore/QMetaMethod>
 #include <QtCore/QMetaObject>
 #include <QtCore/QTranslator>
+#include <QtMqtt/QMqtt>
 #include <QtMqtt/QMqttClient>
 #include <QtMqtt/QMqttMessage>
 #include <QtMqtt/QMqttSubscription>
