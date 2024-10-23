@@ -423,7 +423,6 @@ void QGCApplication::init()
     m_client->setCleanSession(false);
     m_client->setAutoKeepAlive(true);
     m_client->setKeepAlive(60);
-    m_client->setUsername(true);
     connect(m_client, &QMqttClient::stateChanged, this, &QGCApplication::updateLogStateChange);
     connect(m_client, &QMqttClient::disconnected, this, &QGCApplication::brokerDisconnected);
     connect(m_client, &QMqttClient::connected, this, &QGCApplication::brokerConnected);
