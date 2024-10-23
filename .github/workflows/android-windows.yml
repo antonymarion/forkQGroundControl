@@ -82,6 +82,7 @@ jobs:
           where qmake
           where qt-configure-module
           dir D:\a\_temp\Qt
+          C:\hostedtoolcache\windows\Python\3.11.9\x64\python.exe -m aqt list-qt windows android --modules 6.6.3 android_arm64_v8a
 
       - name: Setup QMQTT First Part
         run: |
