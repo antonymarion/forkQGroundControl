@@ -91,8 +91,8 @@ jobs:
           set CMAKE_BIN_DIR=C:\Program Files\CMake\bin
           set QT_HOST_PATH_CMAKE_DIR=C:\Program Files\CMake\bin
           echo %QT_HOST_PATH_CMAKE_DIR%
-          set QMAKE_BIN_DIR=$QT_INSTALL_DIR/$QT_VERSION/android_arm64_v8a/bin
-          set CMAKE_PREFIX_PATH=D:/a/_temp/Qt/6.6.3/android_arm64_v8a/
+          set QMAKE_BIN_DIR=$QT_INSTALL_DIR/$QT_VERSION/msvc2019_64/bin
+          set CMAKE_PREFIX_PATH=D:/a/_temp/Qt/6.6.3/msvc2019_64/
           set NINJA_DIR=$QT_INSTALL_DIR/Tools/Ninja
           git clone git://code.qt.io/qt/qtmqtt.git --branch 6.6.3
           cd qtmqtt
