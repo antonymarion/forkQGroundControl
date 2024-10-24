@@ -4,24 +4,25 @@ on:
   push:
     branches:
       - master
-      - 'Stable*'
+      - "Stable*"
       - detached
       - detached_squashed
+      - fork_detached_squashed
     tags:
-      - 'v*'
+      - "v*"
     paths-ignore:
-      - 'android/**'
-      - 'deploy/**'
-      - 'docs/**'
+      - "android/**"
+      - "deploy/**"
+      - "docs/**"
   pull_request:
     paths-ignore:
-      - 'android/**'
-      - 'deploy/**'
-      - 'docs/**'
-      - '.github/workflows/docs_deploy.yml'
-      - '.github/workflows/android.yml'
-      - '.github/workflows/linux.yml'
-      - '.github/workflows/macos.yml'
+      - "android/**"
+      - "deploy/**"
+      - "docs/**"
+      - ".github/workflows/docs_deploy.yml"
+      - ".github/workflows/android.yml"
+      - ".github/workflows/linux.yml"
+      - ".github/workflows/macos.yml"
 
 jobs:
   build:
@@ -163,4 +164,4 @@ jobs:
           artifact_name: ${{ env.ARTIFACT }}
           aws_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          source: ''
+          source: ""
