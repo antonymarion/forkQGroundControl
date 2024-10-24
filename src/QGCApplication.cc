@@ -693,9 +693,9 @@ void QGCApplication:: sendAircraftPositionInfos() {
     for (int i=0; i<batteries->count(); i++) {
         VehicleBatteryFactGroup* battery = qobject_cast<VehicleBatteryFactGroup*>(batteries->get(i));
         res += battery->percentRemaining()->rawValue().toInt();
-    } */
+    }
     qCWarning(QGCApplicationLog) << "batteryPowerPercentUav : " << res/batteries->count();
-    newResponse.insert("batteryPowerPercentUav", res/batteries->count());
+    newResponse.insert("batteryPowerPercentUav", res/batteries->count()); */
 
     QJsonDocument doc(newResponse);
     QString responseMessage(doc.toJson(QJsonDocument::Compact));
