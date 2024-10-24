@@ -669,7 +669,7 @@ void QGCApplication:: sendAircraftPositionInfos() {
                 newResponse.insert("intrinsics", currentValues);
             }
         }
-    }
+    } */
 
     bool hasGimbal = activeVehicle->gimbalController()->gimbals()->count() != 0;
     newResponse.insert("hasGimbal", hasGimbal);
@@ -687,7 +687,7 @@ void QGCApplication:: sendAircraftPositionInfos() {
             currentState.insert("keyYawRelativeToAircraftHeading", activeGimbal->bodyYaw()->rawValueString()); // TODO
             newResponse.insert("gimbal", currentState);
         }
-    } */
+    }
     QmlObjectListModel* batteries = activeVehicle->batteries();
     int res = 0;
     for (int i=0; i<batteries->count(); i++) {
