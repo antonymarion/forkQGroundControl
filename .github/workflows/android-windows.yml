@@ -59,9 +59,6 @@ jobs:
           choco install --no-progress ninja pkgconfiglite -y
           choco install --no-progress cmake --installargs 'ADD_CMAKE_TO_PATH=System' --apply-install-arguments-to-dependencies
 
-      # - name: Set Up sccache
-      #   uses: mozilla-actions/sccache-action@v0.0.5
-
       - name: Install Qt for Android
         uses: ./.github/actions/qt-android
         with:
@@ -84,43 +81,39 @@ jobs:
           where qt-configure-module
           dir D:\a\_temp\Qt
 
-      - name: Setup QMQTT First Part
+      - name: Setup QMQTT for Android
         run: |
-          set QT_VERSION=6.6.3
           set QT_INSTALL_DIR=D:/a/_temp/Qt
-          set CMAKE_BIN_DIR=$QT_INSTALL_DIR/Tools/CMake/bin"
-          set QMAKE_BIN_DIR=$QT_INSTALL_DIR/$QT_VERSION/android_arm64_v8a/bin"
-          set CMAKE_PREFIX_PATH=$QT_INSTALL_DIR/$QT_VERSION/msvc2019_64/"
-          set NINJA_DIR=$QT_INSTALL_DIR/Tools/Ninja"
+          set QT_VERSION=6.6.3
+          set ANDROID_ABI=arm64-v8a
           git clone git://code.qt.io/qt/qtmqtt.git --branch 6.6.3
           cd qtmqtt
           mkdir build
           cd build/
-          D:/a/_temp/Qt/6.6.3/msvc2019_64/bin/qt-configure-module.bat ..
 
-      - name: Setup QMQTT Second Part
-        run: |
-          cd D:\a\forkQGroundControl\forkQGroundControl\qtmqtt\build
-          "C:\Program Files\CMake\bin\cmake" --build .
-          "C:\Program Files\CMake\bin\cmake" --install . --verbose
-          where qt-configure-module
+          rem Use cmake to configure QMQTT for Android
+          cmake -DCMAKE_TOOLCHAIN_FILE=%QT_INSTALL_DIR%/%QT_VERSION%/android_arm64_v8a/android.toolchain.cmake -DANDROID_ABI=%ANDROID_ABI% -DQt6Mqtt_DIR=%QT_INSTALL_DIR%/%QT_VERSION%/lib/cmake/Qt6Mqtt ..
 
-      - name: Configure
+          rem Build QMQTT
+          cmake --build . --config Debug
+
+      - name: Configure QGroundControl
         working-directory: ${{ runner.temp }}/shadow_build_dir
-        run:
-          ${{ env.QT_ROOT_DIR }}/bin/qt-cmake -S ${{ github.workspace }} -B . -G Ninja
-          -DCMAKE_BUILD_TYPE=${{ matrix.BuildType }}
-          -DQT_ANDROID_ABIS="${{ env.QT_ANDROID_ABIS }}"
-          -DQT_ANDROID_BUILD_ALL_ABIS=OFF
-          -DQT_HOST_PATH="${{ env.QT_ROOT_DIR }}/../msvc2019_64"
-          -DQT_ANDROID_SIGN_APK=OFF
-          -DQT_DEBUG_FIND_PACKAGE=ON
-          -DQGC_STABLE_BUILD=${{ github.ref_type == 'tag' || contains(github.ref, 'Stable') && 'ON' || 'OFF' }}
+        run: |
+          cmake -S ${{ github.workspace }} -B . -G Ninja ^
+          -DCMAKE_BUILD_TYPE=${{ matrix.BuildType }} ^
+          -DQT_ANDROID_ABIS="${{ env.QT_ANDROID_ABIS }}" ^
+          -DQT_ANDROID_BUILD_ALL_ABIS=OFF ^
+          -DQT_HOST_PATH="${{ env.QT_ROOT_DIR }}/../msvc2019_64" ^
+          -DQT_ANDROID_SIGN_APK=OFF ^
+          -DQT_DEBUG_FIND_PACKAGE=ON ^
+          -DQt6Mqtt_DIR="${{ runner.temp }}/qtmqtt/build" ^ 
           --debug-find-pkg=Qt6Mqtt
 
       - name: Check Files installed
         run: dir D:\a\_temp\Qt\6.6.3\msvc2019_64\bin\
-      - name: Build
+
+      - name: Build QGroundControl
         working-directory: ${{ runner.temp }}/shadow_build_dir
         run: cmake --build . --target all --config ${{ matrix.BuildType }}
 
