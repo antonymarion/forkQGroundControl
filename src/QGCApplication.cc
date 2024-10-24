@@ -23,7 +23,6 @@
 #include <QtQuick/QQuickWindow>
 #include <QtQuick/QQuickImageProvider>
 #include <QtQuickControls2/QQuickStyle>
-#include <QNetworkProxy>
 #include <QtNetwork/QNetworkProxyFactory>
 #include <QtQml/QQmlContext>
 #include <QtQml/QQmlApplicationEngine>
