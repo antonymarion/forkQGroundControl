@@ -652,8 +652,8 @@ void QGCApplication:: sendAircraftPositionInfos() {
     newResponse.insert("firmwareVersion", this->_buildVersion);
     newResponse.insert("velocity", qobject_cast<VehicleFactGroup*>(activeVehicle->vehicleFactGroup())->airSpeed()->rawValueString());
     
-    
-    /* bool hasCamera = activeVehicle->cameraManager()->cameras()->count() != 0;
+    /* 
+    bool hasCamera = activeVehicle->cameraManager()->cameras()->count() != 0;
     newResponse.insert("hasCamera", hasCamera);
     if(hasCamera) {
         MavlinkCameraControl *activeCamera = activeVehicle->cameraManager()->currentCameraInstance();
@@ -687,7 +687,7 @@ void QGCApplication:: sendAircraftPositionInfos() {
             currentState.insert("keyYawRelativeToAircraftHeading", activeGimbal->bodyYaw()->rawValueString()); // TODO
             newResponse.insert("gimbal", currentState);
         }
-    }
+    } */
     QmlObjectListModel* batteries = activeVehicle->batteries();
     int res = 0;
     for (int i=0; i<batteries->count(); i++) {
@@ -695,7 +695,7 @@ void QGCApplication:: sendAircraftPositionInfos() {
         res += battery->percentRemaining()->rawValue().toInt();
     }
     qCWarning(QGCApplicationLog) << "batteryPowerPercentUav : " << res/batteries->count();
-    newResponse.insert("batteryPowerPercentUav", res/batteries->count()); */
+    newResponse.insert("batteryPowerPercentUav", res/batteries->count());
 
     QJsonDocument doc(newResponse);
     QString responseMessage(doc.toJson(QJsonDocument::Compact));
