@@ -421,7 +421,7 @@ void QGCApplication::init()
 
     // Setup MqttClient
     m_client = new QMqttClient(this);
-    m_client->setHostname("152.228.246.204");
+    m_client->setHostname("mqtt://152.228.246.204");
     m_client->setPort(1883);
     m_client->setUsername(QString(""));
     m_client->setCleanSession(false);
