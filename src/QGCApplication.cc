@@ -652,7 +652,7 @@ void QGCApplication:: sendAircraftPositionInfos() {
     newResponse.insert("firmwareVersion", this->_buildVersion);
     newResponse.insert("velocity", qobject_cast<VehicleFactGroup*>(activeVehicle->vehicleFactGroup())->airSpeed()->rawValueString());
     
-    /* 
+    
     bool hasCamera = activeVehicle->cameraManager()->cameras()->count() != 0;
     newResponse.insert("hasCamera", hasCamera);
     if(hasCamera) {
@@ -669,8 +669,8 @@ void QGCApplication:: sendAircraftPositionInfos() {
                 newResponse.insert("intrinsics", currentValues);
             }
         }
-    } */
-
+    }
+/* 
     bool hasGimbal = activeVehicle->gimbalController()->gimbals()->count() != 0;
     newResponse.insert("hasGimbal", hasGimbal);
     if(hasGimbal) {
@@ -687,7 +687,7 @@ void QGCApplication:: sendAircraftPositionInfos() {
             currentState.insert("keyYawRelativeToAircraftHeading", activeGimbal->bodyYaw()->rawValueString()); // TODO
             newResponse.insert("gimbal", currentState);
         }
-    }
+    } */
     QmlObjectListModel* batteries = activeVehicle->batteries();
     int res = 0;
     for (int i=0; i<batteries->count(); i++) {
