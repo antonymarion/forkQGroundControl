@@ -82,7 +82,6 @@ jobs:
           where qmake
           where qt-configure-module
           dir D:\a\_temp\Qt
-          C:\hostedtoolcache\windows\Python\3.11.9\x64\python.exe -m aqt list-qt windows android --modules 6.6.3 android_arm64_v8a
 
       - name: Setup QMQTT First Part
         run: |
@@ -94,9 +93,16 @@ jobs:
           set NINJA_DIR=$QT_INSTALL_DIR/Tools/Ninja"
           git clone git://code.qt.io/qt/qtmqtt.git --branch 6.6.3
           cd qtmqtt
-          D:\a\_temp\Qt\6.6.3\android_arm64_v8a\bin\qmake
-          make
-          make install
+          mkdir build
+          cd build/
+          D:/a/_temp/Qt/6.6.3/msvc2019_64/bin/qt-configure-module.bat ..
+
+      - name: Setup QMQTT Second Part
+        run: |
+          cd D:\a\forkQGroundControl\forkQGroundControl\qtmqtt\build
+          "C:\Program Files\CMake\bin\cmake" --build .
+          "C:\Program Files\CMake\bin\cmake" --install . --verbose
+          where qt-configure-module
           
       - name: Configure
         working-directory: ${{ runner.temp }}/shadow_build_dir

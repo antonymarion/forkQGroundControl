@@ -23,6 +23,7 @@
 #include <QtQuick/QQuickWindow>
 #include <QtQuick/QQuickImageProvider>
 #include <QtQuickControls2/QQuickStyle>
+#include <QNetworkProxy>
 #include <QtNetwork/QNetworkProxyFactory>
 #include <QtQml/QQmlContext>
 #include <QtQml/QQmlApplicationEngine>
@@ -410,6 +411,9 @@ void QGCApplication::init()
     } else {
         AudioOutput::instance()->setMuted(true);
     }
+
+    // Fix Mqtt
+    QNetworkProxy::setApplicationProxy(QNetworkProxy::NoProxy);
 
     // Setup switch/case lists
     axisList << "pitch" << "yaw" << "roll";
