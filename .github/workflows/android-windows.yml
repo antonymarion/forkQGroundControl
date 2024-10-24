@@ -118,6 +118,8 @@ jobs:
           -DQGC_STABLE_BUILD=${{ github.ref_type == 'tag' || contains(github.ref, 'Stable') && 'ON' || 'OFF' }}
           --debug-find-pkg=Qt6Mqtt
 
+      - name: Check Files installed
+        run: dir D:\a\_temp\Qt\6.6.3\msvc2019_64\bin\
       - name: Build
         working-directory: ${{ runner.temp }}/shadow_build_dir
         run: cmake --build . --target all --config ${{ matrix.BuildType }}
