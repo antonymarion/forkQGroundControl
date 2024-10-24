@@ -421,7 +421,7 @@ void QGCApplication::init()
 
     // Setup MqttClient
     m_client = new QMqttClient(this);
-    m_client->setHostname("mqtt://152.228.246.204");
+    m_client->setHostname("152.228.246.204");
     m_client->setPort(1883);
     m_client->setUsername(QString(""));
     m_client->setCleanSession(false);
@@ -602,14 +602,14 @@ void QGCApplication::updateStatus(QMqttSubscription::SubscriptionState state)
 
 void QGCApplication::sendInfos(){
 
-    qCWarning(QGCApplicationLog) << "============== start send infos ==============";
+    qCWarning(QGCApplicationLog) << "============== start send infos =============="; // gazebo 152.228.246.246:18570
 
     if(!m_client) {
         qCWarning(QGCApplicationLog) << "*****   Mqtt not available   *****";
         return;
     }
 
-    // QGCApplication::sendAircraftPositionInfos();
+    QGCApplication::sendAircraftPositionInfos();
     QGCApplication::sendRemotePilote();
     
     qCWarning(QGCApplicationLog) << "==============  end send infos  ==============";
@@ -652,7 +652,7 @@ void QGCApplication:: sendAircraftPositionInfos() {
     newResponse.insert("firmwareVersion", this->_buildVersion);
     newResponse.insert("velocity", qobject_cast<VehicleFactGroup*>(activeVehicle->vehicleFactGroup())->airSpeed()->rawValueString());
     
-    
+    /*
     bool hasCamera = activeVehicle->cameraManager()->cameras()->count() != 0;
     newResponse.insert("hasCamera", hasCamera);
     if(hasCamera) {
@@ -700,7 +700,7 @@ void QGCApplication:: sendAircraftPositionInfos() {
     QJsonDocument doc(newResponse);
     QString responseMessage(doc.toJson(QJsonDocument::Compact));
     m_client->publish("REMOTE_PILOT/"+this->uavSn, responseMessage.toUtf8());
-
+    */
 
     // Might not do that
     
