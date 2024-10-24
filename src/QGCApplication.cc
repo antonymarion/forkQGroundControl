@@ -451,7 +451,7 @@ void QGCApplication::brokerConnected()
 
     // Setup Subscription
     QString topic = "REQUEST/+/" + this->uavSn + "/+";
-    QMqttSubscription *subscription = m_client->subscribe(topic, 1); // TODO regex here
+    QMqttSubscription *subscription = m_client->subscribe(topic, 1);
     if(!subscription) {
         qCWarning(QGCApplicationLog) << "============== here ==============";
     }
@@ -602,7 +602,7 @@ void QGCApplication::updateStatus(QMqttSubscription::SubscriptionState state)
 
 void QGCApplication::sendInfos(){
 
-    qCWarning(QGCApplicationLog) << "============== start send infos =============="; // gazebo 152.228.246.246:18570
+    qCWarning(QGCApplicationLog) << "============== start send infos ==============";
 
     if(!m_client) {
         qCWarning(QGCApplicationLog) << "*****   Mqtt not available   *****";
@@ -670,7 +670,7 @@ void QGCApplication:: sendAircraftPositionInfos() {
             }
         }
     }
-/* 
+
     bool hasGimbal = activeVehicle->gimbalController()->gimbals()->count() != 0;
     newResponse.insert("hasGimbal", hasGimbal);
     if(hasGimbal) {
@@ -687,7 +687,7 @@ void QGCApplication:: sendAircraftPositionInfos() {
             currentState.insert("keyYawRelativeToAircraftHeading", activeGimbal->bodyYaw()->rawValueString()); // TODO
             newResponse.insert("gimbal", currentState);
         }
-    } */
+    }
     QmlObjectListModel* batteries = activeVehicle->batteries();
     int res = 0;
     for (int i=0; i<batteries->count(); i++) {
@@ -699,7 +699,7 @@ void QGCApplication:: sendAircraftPositionInfos() {
 
     QJsonDocument doc(newResponse);
     QString responseMessage(doc.toJson(QJsonDocument::Compact));
-    m_client->publish("REMOTE_PILOT/"+this->uavSn, responseMessage.toUtf8());
+    m_client->publish("POSITION/"+this->uavSn, responseMessage.toUtf8());
    
 
     // Might not do that
@@ -715,16 +715,6 @@ void QGCApplication:: sendAircraftPositionInfos() {
     newResponse.insert("isMovingGimbal", Vehicule::gimbalController().activeGimbal()); // TODO */
 }
         /* 
-        Log.d("POSITION",newResponse.toString());
-        MqttMessage message = new MqttMessage(newResponse.toString().getBytes(StandardCharsets.UTF_8));
-        try {
-            mqttClient.publish("POSITION/"+uavSn, message);
-        } catch (MqttException e) {
-            Log.e("POSITION", "************** Exception **************");
-            Log.e("POSITION", String.valueOf(e));
-        }
-    }
-
     switch ((obj.getString("instruction"))){
          case "OPEN_STREAM":
             Log.i("openStream", "=================================================");
