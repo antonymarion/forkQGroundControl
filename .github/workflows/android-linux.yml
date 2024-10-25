@@ -94,12 +94,21 @@ jobs:
 
       - name: Setup QMQTT Second Part
         run: |
-          cd /home/runner/work/forkQGroundControl/forkQGroundControl/qtmqtt/build
-          "/usr/local/bin/cmake" --build .
-          "/usr/local/bin/cmake" --install . --verbose
+          cd /home/runner/work/_temp/Qt/qtmqtt/build
+          "$CMAKE_BIN_DIR/cmake" --build . --parallel
+          "$CMAKE_BIN_DIR/cmake" --install . --prefix $QT_INSTALL_DIR/$QT_VERSION/android_arm64_v8a
+
+      - name: Check QTMQTT Content
+        run: |
+          echo "Listing content of qtmqtt directory..."
+          ls -l /home/runner/work/_temp/Qt/qtmqtt
+
+      - name: Check Qt Bin Directory
+        run: |
+          echo "Listing content of Qt bin directory..."
+          ls -l $QMAKE_BIN_DIR
 
       - run: mkdir ${{ runner.temp }}/shadow_build_dir
-
       - name: Configure
         working-directory: ${{ runner.temp }}/shadow_build_dir
         run:
