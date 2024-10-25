@@ -98,9 +98,8 @@ jobs:
 
           cp -r /usr/local/lib/cmake/Qt6Mqtt/* "$QT_INSTALL_DIR/$QT_VERSION/gcc_64/lib/cmake/Qt6Mqtt/"
       
-      - name: mkdir dir 
-        run: 
-         mkdir ${{ runner.temp }}/shadow_build_dir
+      
+      -run:  mkdir ${{ runner.temp }}/shadow_build_dir
 
       
         working-directory: ${{ runner.temp }}/shadow_build_dir
