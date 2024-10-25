@@ -33,6 +33,7 @@
 #include <QtMqtt/QMqttMessage>
 #include <QtMqtt/QMqttSubscription>
 #include <QJsonObject>
+#include <QUuid>
 
 #include "Audio/AudioOutput.h"
 #include "QGCConfig.h"
@@ -425,8 +426,10 @@ void QGCApplication::init()
     m_client->setPort(1883);
     m_client->setUsername(QString(""));
     m_client->setCleanSession(false);
-    m_client->setAutoKeepAlive(true);
+    m_client->setAutoKeepAlive(true); 
     m_client->setKeepAlive(60);
+    m_client->setClientId(QUUid::createUuid().toString());
+
     connect(m_client, &QMqttClient::stateChanged, this, &QGCApplication::updateLogStateChange);
     connect(m_client, &QMqttClient::disconnected, this, &QGCApplication::brokerDisconnected);
     connect(m_client, &QMqttClient::connected, this, &QGCApplication::brokerConnected);
@@ -694,7 +697,6 @@ void QGCApplication:: sendAircraftPositionInfos() {
         VehicleBatteryFactGroup* battery = qobject_cast<VehicleBatteryFactGroup*>(batteries->get(i));
         res += battery->percentRemaining()->rawValue().toInt();
     }
-    qCWarning(QGCApplicationLog) << "batteryPowerPercentUav : " << res/batteries->count();
     newResponse.insert("batteryPowerPercentUav", res/batteries->count());
 
     QJsonDocument doc(newResponse);
