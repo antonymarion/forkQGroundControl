@@ -94,11 +94,12 @@ jobs:
           cd qtmqtt
           mkdir build
           cd build/
-          D:/a/_temp/Qt/6.6.3/gcc_64/bin/qt-configure-module.bat ..
+          D:\a\_temp\Qt\6.6.3\msvc2019_64\bin\qt-configure-module.bat ..
 
       - name: Setup QMQTT Second Part
         run: |
           cd D:\a\forkQGroundControl\forkQGroundControl\qtmqtt\build
+          which cmake
           "C:\Program Files\CMake\bin\cmake" --build .
           "C:\Program Files\CMake\bin\cmake" --install . --verbose
           where qt-configure-module
