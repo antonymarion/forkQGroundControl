@@ -571,6 +571,8 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
     QString responseMessage(doc.toJson(QJsonDocument::Compact));
 
     QString responseTopic = msg.publishProperties().responseTopic();
+    qCWarning(QGCApplicationLog) << responseMessage;
+    qCWarning(QGCApplicationLog) << responseTopic;
 
     QMqttPublishProperties properties;
     properties.setCorrelationData(msg.publishProperties().correlationData());
@@ -612,6 +614,15 @@ void QGCApplication::sendInfos(){
         return;
     }
 
+    this->uavSn = toolbox()->utmspManager()->utmspVehicle()->vehicleSerialNumber();
+    if(!this->uavSn){
+        this->uavSn = fakeUavSn;
+        this->isSimulated = true;
+    }
+    else {
+        this->isSimulated = false;
+    }
+    qCWarning(QGCApplicationLog) << this->uavSn;
     QGCApplication::sendAircraftPositionInfos();
     QGCApplication::sendRemotePilote();
     
@@ -642,7 +653,7 @@ void QGCApplication:: sendAircraftPositionInfos() {
     newResponse.insert("isStreaming", this->isStreaming);
     newResponse.insert("system", activeVehicle->firmwareTypeString());
     newResponse.insert("systemVersion", "V1"); // TODO ???
-    newResponse.insert("simulated", false);
+    newResponse.insert("simulated", this->isSimulated);
     newResponse.insert("systemOS", "Android"); // TODO change to include Windows
     newResponse.insert("productType", activeVehicle->vehicleTypeString());
     newResponse.insert("rtmpUrl", this->rtmpUrl);

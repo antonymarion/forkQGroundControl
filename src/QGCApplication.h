@@ -250,7 +250,9 @@ private:
     QString rtmpUrl = "";
     QString loggedEmail = "graphx.stephaneroma@gmail.com";
     QString registrationNumber = "UAS-FR-161114";
-    QString uavSn = "1L987654321";
+    QString fakeUavSn = "1L987654321";
+    QString uavSn = "";
+    bool isSimulated = false;
     bool isStreaming = false;
     int countdown = 10;
     bool reset = true;
