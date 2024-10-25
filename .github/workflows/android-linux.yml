@@ -92,16 +92,6 @@ jobs:
           cd build/
           $QMAKE_BIN_DIR/qt-configure-module ..
 
-      - name: Check QTMQTT Content
-        run: |
-          echo "Listing content of qtmqtt directory..."
-          ls -l /home/runner/work/_temp/Qt/qtmqtt
-
-      - name: Check Qt Bin Directory
-        run: |
-          echo "Listing content of Qt bin directory..."
-          ls -l $QMAKE_BIN_DIR
-
       - run: mkdir ${{ runner.temp }}/shadow_build_dir
 
       - name: Configure
@@ -116,6 +106,10 @@ jobs:
           -DQT_DEBUG_FIND_PACKAGE=ON
           -DQGC_STABLE_BUILD=${{ github.ref_type == 'tag' || contains(github.ref, 'Stable') && 'ON' || 'OFF' }}
 
+      - name: Check Qt Bin Directory
+        run: |
+          echo "Listing content of Qt bin directory..."
+          ls -l $QMAKE_BIN_DIR
       - name: Build
         working-directory: ${{ runner.temp }}/shadow_build_dir
         run: cmake --build . --target all --config ${{ matrix.BuildType }}

@@ -5,7 +5,7 @@ on:
     branches:
       - master
       - "Stable*"
-      - fork_detached_squashed
+
     tags:
       - "v*"
     paths-ignore:
