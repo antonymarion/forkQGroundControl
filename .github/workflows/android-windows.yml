@@ -7,7 +7,6 @@ on:
       - "Stable*"
       - detached
       - detached_squashed
-      - fork_detached_squashed
     tags:
       - "v*"
     paths-ignore:
@@ -101,7 +100,7 @@ jobs:
       - name: Setup QMQTT Second Part
         run: |
           cd D:\a\forkQGroundControl\forkQGroundControl\qtmqtt\build
-          "C:\Program Files\CMake\bin\cmake" --build . --config ${{ matrix.BuildType }}
+          "C:\Program Files\CMake\bin\cmake" --build .
           "C:\Program Files\CMake\bin\cmake" --install . --verbose
           where qt-configure-module
 
