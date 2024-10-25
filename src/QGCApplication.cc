@@ -570,7 +570,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
     QString responseTopic = msg.publishProperties().responseTopic();
 
     QMqttPublishProperties properties;
-    properties.setResponseTopic("testing/");
+    properties.setCorrelationData(msg.publishProperties().correlationData());
     
     // Set the qos to 1 (important!)
     m_client->publish(responseTopic, properties, responseMessage.toUtf8(), 1, false);
@@ -625,7 +625,7 @@ void QGCApplication:: sendRemotePilote() {
     
 
     QMqttPublishProperties properties;
-    properties.setCorrelationData(msg.publishProperties().correlationData());
+    properties.setResponseTopic("testing/");
 
     m_client->publish("REMOTE_PILOT/"+this->uavSn, properties, responseMessage.toUtf8(), 1, false);
 }
