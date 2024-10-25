@@ -74,7 +74,7 @@ jobs:
           abis: ${{ env.QT_ANDROID_ABIS }}
 
       - name: Setup QMQTT First Part
-        -run: |
+        run: |
           export QT_VERSION=6.6.3
           export QT_INSTALL_DIR=/home/runner/work/_temp/Qt
           export CMAKE_BIN_DIR=$QT_INSTALL_DIR/Tools/CMake/bin
