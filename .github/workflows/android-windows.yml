@@ -96,7 +96,7 @@ jobs:
           cd qtmqtt
           mkdir build
           cd build/
-          call D:/a/_temp/Qt/6.6.3/msvc2019_64/bin/qt-configure-module.bat .. --DCMAKE_TOOLCHAIN_FILE=${{ env.ANDROID_TOOLCHAIN_FILE }}
+          call D:/a/_temp/Qt/6.6.3/msvc2019_64/bin/qt-configure-module.bat ..
 
       - name: Setup QMQTT Second Part
         run: |
