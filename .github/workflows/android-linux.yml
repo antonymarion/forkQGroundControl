@@ -100,8 +100,7 @@ jobs:
 
           mkdir ${{ runner.temp }}/shadow_build_dir
 
-
-      
+      - name: Configure
         working-directory: ${{ runner.temp }}/shadow_build_dir
         run:
           ${{ env.QT_ROOT_DIR }}/bin/qt-cmake -S ${{ github.workspace }} -B . -G Ninja
