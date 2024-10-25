@@ -428,7 +428,7 @@ void QGCApplication::init()
     m_client->setCleanSession(false);
     m_client->setAutoKeepAlive(true); 
     m_client->setKeepAlive(60);
-    m_client->setClientId(QUUid::createUuid().toString());
+    m_client->setClientId(QUuid::createUuid().toString());
 
     connect(m_client, &QMqttClient::stateChanged, this, &QGCApplication::updateLogStateChange);
     connect(m_client, &QMqttClient::disconnected, this, &QGCApplication::brokerDisconnected);
