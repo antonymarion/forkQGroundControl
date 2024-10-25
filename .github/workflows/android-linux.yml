@@ -91,8 +91,8 @@ jobs:
       - name: Setup QMQTT Second Part
         run: |
           cd /home/runner/work/forkQGroundControl/forkQGroundControl/qtmqtt/build
-          $CMAKE_BIN_DIR/cmake --build .
-          $CMAKE_BIN_DIR/cmake --install . --verbose
+          "C:/Program Files/CMake/bin/cmake" --build .
+          "C:/Program Files/CMake/bin/cmake" --install . --verbose
           which qt-configure-module
 
       - run: mkdir ${{ runner.temp }}/shadow_build_dir

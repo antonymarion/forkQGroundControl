@@ -7,7 +7,7 @@ on:
       - "Stable*"
       - detached
       - detached_squashed
-      - fork_detached_squashed
+
     tags:
       - "v*"
     paths-ignore:
