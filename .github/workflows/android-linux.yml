@@ -92,9 +92,16 @@ jobs:
           cd build/
           $QMAKE_BIN_DIR/qt-configure-module ..
 
-      - run: mkdir ${{ runner.temp }}/shadow_build_dir
+          "/usr/local/bin/cmake" --build . --parallel
 
-      - name: Configure
+          mkdir -p "$QT_INSTALL_DIR/$QT_VERSION/gcc_64/lib/cmake/Qt6Mqtt"
+
+          cp -r /usr/local/lib/cmake/Qt6Mqtt/* "$QT_INSTALL_DIR/$QT_VERSION/gcc_64/lib/cmake/Qt6Mqtt/"
+      - name: mkdir dir 
+      
+        run: mkdir ${{ runner.temp }}/shadow_build_dir
+
+      
         working-directory: ${{ runner.temp }}/shadow_build_dir
         run:
           ${{ env.QT_ROOT_DIR }}/bin/qt-cmake -S ${{ github.workspace }} -B . -G Ninja
