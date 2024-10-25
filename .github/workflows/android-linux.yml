@@ -126,7 +126,6 @@ jobs:
           -DQGC_STABLE_BUILD=${{ github.ref_type == 'tag' || contains(github.ref, 'Stable') && 'ON' || 'OFF' }}
 
       - name: Build
-        working-directory: ${{ runner.temp }}/shadow_build_dir
         run:
           cmake -DMQTT_PATH=/home/runner/work/_temp/Qt/6.6.3/gcc_64/lib/cmake/Qt6Mqtt/ -B${{ runner.temp }}/shadow_build_dir -S .
 
