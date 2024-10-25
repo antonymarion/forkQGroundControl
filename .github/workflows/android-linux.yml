@@ -95,9 +95,10 @@ jobs:
       - name: Setup QMQTT Second Part
         run: |
           cd /home/runner/work/forkQGroundControl/forkQGroundControl/qtmqtt/build
+          mkdir -p "$QT_INSTALL_DIR/$QT_VERSION/android_arm64_v8a"
           "/usr/local/bin/cmake" --build .
           "/usr/local/bin/cmake" --install . --verbose --prefix $QT_INSTALL_DIR/$QT_VERSION/android_arm64_v8a
-      
+
       - name: Check QTMQTT Content
         run: |
           echo "Listing content of qtmqtt directory..."
@@ -107,7 +108,6 @@ jobs:
         run: |
           echo "Listing content of Qt bin directory..."
           ls -l $QMAKE_BIN_DIR
-
 
       - run: mkdir ${{ runner.temp }}/shadow_build_dir
 
