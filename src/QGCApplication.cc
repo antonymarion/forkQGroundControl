@@ -615,7 +615,7 @@ void QGCApplication::sendInfos(){
     }
 
     this->uavSn = toolbox()->utmspManager()->utmspVehicle()->vehicleSerialNumber();
-    if(!this->uavSn){
+    if(this->uavSn.isNull()){
         this->uavSn = fakeUavSn;
         this->isSimulated = true;
     }
@@ -773,7 +773,6 @@ void QGCApplication:: sendAircraftPositionInfos() {
             Log.i("getCam", "=================================================");
             Log.i("getCam", "recieved GET_CAMERA");
             Log.i("getCam", "=================================================");
-            obj.put("gimbalRange", GimbalUtil.gimbalRange);
             obj.put("gimbalSN", GimbalUtil.gimbalSN);
             obj.put("hasZoom", CameraUtil.hasZoom);
             obj.put("hasLens", CameraUtil.hasLens);
