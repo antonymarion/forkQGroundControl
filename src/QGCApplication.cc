@@ -568,8 +568,9 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
     QString responseMessage(doc.toJson(QJsonDocument::Compact));
 
     QString responseTopic = msg.publishProperties().responseTopic();
-    qCWarning(QGCApplicationLog) << responseMessage;
-    qCWarning(QGCApplicationLog) << responseTopic;
+    qCWarning(QGCApplicationLog) << msg;
+    qCWarning(QGCApplicationLog) << msg.publishProperties();
+    qCWarning(QGCApplicationLog) << msg.publishProperties().responseTopic();
 
     QMqttPublishProperties properties;
     properties.setCorrelationData(msg.publishProperties().correlationData());
