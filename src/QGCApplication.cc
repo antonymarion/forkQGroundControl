@@ -413,9 +413,6 @@ void QGCApplication::init()
         AudioOutput::instance()->setMuted(true);
     }
 
-    // Fix Mqtt
-    QNetworkProxy::setApplicationProxy(QNetworkProxy::NoProxy);
-
     // Setup switch/case lists
     axisList << "pitch" << "yaw" << "roll";
     this->commandsList << "OPEN_STREAM" << "STOP_STREAM" << "RESET_GIMBAL" << "MOVE_GIMBAL" << "GET_CAMERAS" << "SET_CAMERA" << "SET_CAMERA_INTRINSICS" << "GET_CAMERA" << "ZOOM_CAMERA" << "TAKE_PHOTO" << "START_RECORDING" << "STOP_RECORDING";
@@ -614,15 +611,6 @@ void QGCApplication::sendInfos(){
         return;
     }
 
-    this->uavSn = toolbox()->utmspManager()->utmspVehicle()->vehicleSerialNumber();
-    if(this->uavSn.isNull()){
-        this->uavSn = fakeUavSn;
-        this->isSimulated = true;
-    }
-    else {
-        this->isSimulated = false;
-    }
-    qCWarning(QGCApplicationLog) << this->uavSn;
     QGCApplication::sendAircraftPositionInfos();
     QGCApplication::sendRemotePilote();
     
@@ -653,7 +641,7 @@ void QGCApplication:: sendAircraftPositionInfos() {
     newResponse.insert("isStreaming", this->isStreaming);
     newResponse.insert("system", activeVehicle->firmwareTypeString());
     newResponse.insert("systemVersion", "V1"); // TODO ???
-    newResponse.insert("simulated", this->isSimulated);
+    newResponse.insert("simulated", false);
     newResponse.insert("systemOS", "Android"); // TODO change to include Windows
     newResponse.insert("productType", activeVehicle->vehicleTypeString());
     newResponse.insert("rtmpUrl", this->rtmpUrl);
@@ -725,7 +713,9 @@ void QGCApplication:: sendAircraftPositionInfos() {
     currentValues.insert("videoFileFormat", Vehicule::cameraManager().currentCameraInstance().); // TODO
     currentValues.insert("photoFileFormat", Vehicule::cameraManager().currentCameraInstance().); // TODO
     newResponse.insert("isZooming", Vehicule::cameraManager().currentCameraInstance().); // TODO
-    newResponse.insert("isMovingGimbal", Vehicule::gimbalController().activeGimbal()); // TODO */
+    newResponse.insert("isMovingGimbal", Vehicule::gimbalController().activeGimbal()); // TODO 
+            obj.put("gimbalRange", GimbalUtil.gimbalRange);
+            obj.put("gimbalSN", GimbalUtil.gimbalSN);*/
 }
         /* 
     switch ((obj.getString("instruction"))){
@@ -773,7 +763,6 @@ void QGCApplication:: sendAircraftPositionInfos() {
             Log.i("getCam", "=================================================");
             Log.i("getCam", "recieved GET_CAMERA");
             Log.i("getCam", "=================================================");
-            obj.put("gimbalSN", GimbalUtil.gimbalSN);
             obj.put("hasZoom", CameraUtil.hasZoom);
             obj.put("hasLens", CameraUtil.hasLens);
             obj.put("isoRange", CameraUtil.ISO);
