@@ -122,12 +122,17 @@ jobs:
           -DQT_HOST_PATH="${{ env.QT_ROOT_DIR }}/../gcc_64"
           -DCMAKE_PREFIX_PATH="${{ env.QT_INSTALL_DIR }}/${{ env.QT_VERSION }}/gcc_64" \
           -DQT_MQTT_DIR="${{ env.QT_INSTALL_DIR }}/${{ env.QT_VERSION }}/gcc_64/lib/cmake/Qt6Mqtt"
+
+          -DQT_ANDROID_SIGN_APK=${{ github.ref == 'refs/heads/master' && github.event_name != 'pull_request' && 'ON' || 'OFF' }}
           -DQT_DEBUG_FIND_PACKAGE=ON
           -DQGC_STABLE_BUILD=${{ github.ref_type == 'tag' || contains(github.ref, 'Stable') && 'ON' || 'OFF' }}
 
       - name: Build
         working-directory: ${{ runner.temp }}/shadow_build_dir
-        run: cmake --build . --target all --config ${{ matrix.BuildType }}
+        run:
+          cmake -DMQTT_PATH=/home/runner/work/_temp/Qt/6.6.3/gcc_64/lib/cmake/Qt6Mqtt/ -B${{ runner.temp }}/shadow_build_dir -S .
+
+          cmake --build ${{ runner.temp }}/shadow_build_dir --target all --config ${{ matrix.BuildType }}
 
       - run: cp ${{ runner.temp }}/shadow_build_dir/android-build/*.apk ${{ runner.temp }}/shadow_build_dir/${{ env.ARTIFACT }}
 
