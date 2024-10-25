@@ -622,12 +622,7 @@ void QGCApplication:: sendRemotePilote() {
 
     QJsonDocument doc(newResponse);
     QString responseMessage(doc.toJson(QJsonDocument::Compact));
-    
-
-    QMqttPublishProperties properties;
-    properties.setResponseTopic("testing/");
-
-    m_client->publish("REMOTE_PILOT/"+this->uavSn, properties, responseMessage.toUtf8(), 1, false);
+    m_client->publish("REMOTE_PILOT/"+this->uavSn, responseMessage.toUtf8());
 }
 
 void QGCApplication:: sendAircraftPositionInfos() {
