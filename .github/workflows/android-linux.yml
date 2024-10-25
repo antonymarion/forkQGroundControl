@@ -96,15 +96,7 @@ jobs:
           "/usr/local/bin/cmake" --install . --verbose
 
       - name: Cpy files and check mqtt
-        run: mkdir -p "$QT_INSTALL_DIR/$QT_VERSION/gcc_64/lib/cmake/Qt6Mqtt"
-          cd D:\a\forkQGroundControl\forkQGroundControl\qtmqtt\build
-          ls -l
-
-          where qt-configure-module
-
-          ls -l /usr/local/lib/cmake/
-
-          mkdir ${{ runner.temp }}/shadow_build_dir
+        run: mkdir ${{ runner.temp }}/shadow_build_dir
 
       - name: Configure
         working-directory: ${{ runner.temp }}/shadow_build_dir
