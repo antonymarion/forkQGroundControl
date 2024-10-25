@@ -95,6 +95,11 @@ jobs:
           "/usr/local/bin/cmake" --build . --parallel
           "/usr/local/bin/cmake" --install . --verbose
 
+          cmake .. -DCMAKE_INSTALL_PREFIX=/home/runner/work/_temp/Qt/6.6.3/android_arm64_v8a -G Ninja
+
+
+          ninja install
+
       - name: Cpy files and check mqtt
         run: mkdir ${{ runner.temp }}/shadow_build_dir
 
@@ -105,6 +110,7 @@ jobs:
 
           cp -r /home/runner/work/_temp/Qt/6.6.3/gcc_64/lib/cmake/Qt6Mqtt/* \
              /home/runner/work/_temp/Qt/6.6.3/android_arm64_v8a/lib/cmake/Qt6Mqtt/
+          cp /home/runner/work/_temp/Qt/6.6.3/gcc_64/lib/libQt6Mqtt.so.6.6.3 /home/runner/work/_temp/Qt/6.6.3/android_arm64_v8a/lib/
 
       - name: Configure
         working-directory: ${{ runner.temp }}/shadow_build_dir
