@@ -568,12 +568,9 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
     QString responseMessage(doc.toJson(QJsonDocument::Compact));
 
     QString responseTopic = msg.publishProperties().responseTopic();
-    qCWarning(QGCApplicationLog) << msg;
-    qCWarning(QGCApplicationLog) << msg.publishProperties();
-    qCWarning(QGCApplicationLog) << msg.publishProperties().responseTopic();
 
     QMqttPublishProperties properties;
-    properties.setCorrelationData(msg.publishProperties().correlationData());
+    properties.setResponseTopic("testing/");
     
     // Set the qos to 1 (important!)
     m_client->publish(responseTopic, properties, responseMessage.toUtf8(), 1, false);
@@ -625,7 +622,12 @@ void QGCApplication:: sendRemotePilote() {
 
     QJsonDocument doc(newResponse);
     QString responseMessage(doc.toJson(QJsonDocument::Compact));
-    m_client->publish("REMOTE_PILOT/"+this->uavSn, responseMessage.toUtf8());
+    
+
+    QMqttPublishProperties properties;
+    properties.setCorrelationData(msg.publishProperties().correlationData());
+
+    m_client->publish("REMOTE_PILOT/"+this->uavSn, properties, responseMessage.toUtf8(), 1, false);
 }
 
 void QGCApplication:: sendAircraftPositionInfos() {
