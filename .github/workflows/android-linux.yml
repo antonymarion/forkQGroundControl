@@ -90,7 +90,7 @@ jobs:
 
       - name: Setup QMQTT Second Part
         run: |
-          cd $GITHUB_WORKSPACE/qtmqtt/build
+          cd /home/runner/work/forkQGroundControl/forkQGroundControl/qtmqtt/build
           $CMAKE_BIN_DIR/cmake --build .
           $CMAKE_BIN_DIR/cmake --install . --verbose
           which qt-configure-module

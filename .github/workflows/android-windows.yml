@@ -94,7 +94,6 @@ jobs:
           cd qtmqtt
           mkdir build
           cd build/
-          ls -l D:/a/_temp/Qt/6.6.3
           D:/a/_temp/Qt/6.6.3/gcc_64/bin/qt-configure-module.bat ..
 
       - name: Setup QMQTT Second Part
