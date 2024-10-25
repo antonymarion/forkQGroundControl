@@ -106,6 +106,8 @@ jobs:
           -DQT_ANDROID_ABIS="${{ env.QT_ANDROID_ABIS }}"
           -DQT_ANDROID_BUILD_ALL_ABIS=OFF
           -DQT_HOST_PATH="${{ env.QT_ROOT_DIR }}/../gcc_64"
+          -DCMAKE_PREFIX_PATH="${{ env.QT_INSTALL_DIR }}/${{ env.QT_VERSION }}/gcc_64" \
+
           -DQT_ANDROID_SIGN_APK=${{ github.ref == 'refs/heads/master' && github.event_name != 'pull_request' && 'ON' || 'OFF' }}
           -DQT_DEBUG_FIND_PACKAGE=ON
           -DQGC_STABLE_BUILD=${{ github.ref_type == 'tag' || contains(github.ref, 'Stable') && 'ON' || 'OFF' }}
