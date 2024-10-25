@@ -65,6 +65,10 @@ jobs:
           cd ccache-*-linux-x86_64
           sudo make install
 
+      - name: Check CMake Installation
+        run: |
+          which cmake
+
       - name: Install Qt for Android
         uses: ./.github/actions/qt-android
         with:
@@ -91,7 +95,7 @@ jobs:
       - name: Setup QMQTT Second Part
         run: |
           cd /home/runner/work/forkQGroundControl/forkQGroundControl/qtmqtt/build
-          "/usr/bin/cmake" --build .
+          cmake --build .
           "/usr/bin/cmake" --install . --verbose
           which cmake
 
