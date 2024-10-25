@@ -103,7 +103,7 @@ jobs:
 
           mkdir -p /home/runner/work/_temp/Qt/6.6.3/android_arm64_v8a/lib/cmake/Qt6Mqtt
 
-          cp -r /home/runner/work/_temp/Qt/6.6.3/gcc/lib/cmake/Qt6Mqtt/* \
+          cp -r /home/runner/work/_temp/Qt/6.6.3/gcc_64/lib/cmake/Qt6Mqtt/* \
              /home/runner/work/_temp/Qt/6.6.3/android_arm64_v8a/lib/cmake/Qt6Mqtt/
 
       - name: Configure
