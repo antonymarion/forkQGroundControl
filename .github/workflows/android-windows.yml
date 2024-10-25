@@ -83,9 +83,7 @@ jobs:
           where qmake
           where qt-configure-module
           dir D:\a\_temp\Qt
-      - run: |
-          echo "ANDROID_TOOLCHAIN_FILE=${{ steps.setup-ndk.outputs.ndk-path }}/build/cmake/android.toolchain.cmake" >> "$GITHUB_ENV"
-          shell: bash
+
       - name: Setup QMQTT First Part
         run: |
           set QT_VERSION=6.6.3
