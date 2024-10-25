@@ -14,7 +14,7 @@ inputs:
   abis:
     description: ABIs to Build
     required: false
-    default: 'armeabi-v7a;arm64-v8a'
+    default: "armeabi-v7a;arm64-v8a"
 runs:
   using: "composite"
   steps:
@@ -28,7 +28,7 @@ runs:
       uses: android-actions/setup-android@v3
       with:
         cmdline-tools-version: 11076708
-        packages: 'platform-tools platforms;android-34 build-tools;34.0.0' # ndk;25.1.8937393'
+        packages: "platform-tools platforms;android-34 build-tools;34.0.0" # ndk;25.1.8937393'
         log-accepted-android-sdk-licenses: false
 
     - name: Install Android NDK
@@ -42,6 +42,8 @@ runs:
         echo "ANDROID_NDK_ROOT=${{ steps.setup-ndk.outputs.ndk-path }}" >> "$GITHUB_ENV"
         echo "ANDROID_NDK_HOME=${{ steps.setup-ndk.outputs.ndk-path }}" >> "$GITHUB_ENV"
         echo "ANDROID_NDK=${{ steps.setup-ndk.outputs.ndk-path }}" >> "$GITHUB_ENV"
+        echo "ANDROID_TOOLCHAIN_FILE=${{ steps.setup-ndk.outputs.ndk-path }}/build/cmake/android.toolchain.cmake" >> "$GITHUB_ENV"
+
       shell: bash
 
     - name: Update Android SDK / NDK / Tools
