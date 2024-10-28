@@ -1247,7 +1247,7 @@ void QGCApplication::servoCmd(float servoId, float pwmValue){
     Vehicle* activeVehicle = QGCApplication::getActiveVehicle();
     if(!activeVehicle || activeVehicle->gimbalController()->gimbals()->count() <= 0) {
         qCWarning(QGCApplicationLog) << "*****   No gimbal available   *****";
-        return nullptr;
+        return;
     }
     // Sends the MAV_CMD_DO_SET_SERVO command to the vehicle.
     // If no acknowledgment (Ack) is received, the command will be retried.
