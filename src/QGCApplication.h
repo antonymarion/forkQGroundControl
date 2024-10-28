@@ -239,6 +239,7 @@ private:
     void startStream();
     void startRecording();
     void stopRecording();
+    void servoCmd(float servoId, float pwmValue);
     void updateLogStateChange();
     void brokerDisconnected();
     void brokerConnected();
