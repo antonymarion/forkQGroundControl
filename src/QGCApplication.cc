@@ -715,7 +715,7 @@ void QGCApplication::init()
 
     // Setup switch/case lists
     axisList << "pitch" << "yaw" << "roll";
-    this->commandsList << "OPEN_STREAM" << "STOP_STREAM" << "RESET_GIMBAL" << "MOVE_GIMBAL" << "GET_CAMERAS" << "SET_CAMERA" << "SET_CAMERA_INTRINSICS" << "GET_CAMERA" << "ZOOM_CAMERA" << "TAKE_PHOTO" << "START_RECORDING" << "STOP_RECORDING" << "OPEN_HATCH";
+    this->commandsList << "OPEN_STREAM" << "STOP_STREAM" << "RESET_GIMBAL" << "MOVE_GIMBAL" << "GET_CAMERAS" << "SET_CAMERA" << "SET_CAMERA_INTRINSICS" << "GET_CAMERA" << "ZOOM_CAMERA" << "TAKE_PHOTO" << "START_RECORDING" << "STOP_RECORDING" << "MAV_CMD_DO_SET_SERVO";
 
     // Setup MqttClient
     m_client = new QMqttClient(this);
@@ -862,9 +862,9 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             break;
         case 12:
             qCWarning(QGCApplicationLog) << "=================================================";
-            qCWarning(QGCApplicationLog) << "recieved OPEN_HATCH";
+            qCWarning(QGCApplicationLog) << "recieved MAV_CMD_DO_SET_SERVO";
             qCWarning(QGCApplicationLog) << "=================================================";
-            QGCApplication::servoCmd(message["servoId"].toDouble(), message["pwmValue"].toDouble()); 
+            QGCApplication::servoCmd(message["param1"].toDouble(), message["param2"].toDouble()); 
             break; // ************** SERVO ID, SURTOUT PAS 1 2 3 4 13 14 **********************
         default:
             message.insert("status","KO");
@@ -1271,7 +1271,7 @@ void QGCApplication::servoCmd(float servoId, float pwmValue){
         0,                               // param5: Not used (set to 0)
         0,                               // param6: Not used (set to 0)
         0                                // param7: Not used (set to 0)
-    );
+    ); // ************** SERVO ID, SURTOUT PAS 1 2 3 4 13 14 **********************
 }
 
 void QGCApplication::_initForNormalAppBoot()
