@@ -241,7 +241,7 @@ private:
     void startStream();
     void QProcessErrHandler(const QProcess::ProcessError &error);
     void QProcessStarted();
-    void QProcessFinishHandler(const int &exitCode, const QProcess::ExitStatus &exitStatus = NormalExit);
+    void QProcessFinishHandler(const int &exitCode, const QProcess::ExitStatus &exitStatus = QProcess::NormalExit);
     void stopStream();
     void startRecording();
     void stopRecording();
