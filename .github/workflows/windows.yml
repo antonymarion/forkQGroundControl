@@ -143,11 +143,10 @@ jobs:
       - name: Setup FFmpeg
         run: |
           cd D:/a/_temp/Qt/6.6.3/msvc2019_64/bin
-          git clone https://github.com/FFmpeg/FFmpeg.git --branch release/7.1
-          cd FFmpeg
-          bash ./configure
-          make
-          make install
+          Invoke-WebRequest -Uri https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip -OutFile ffmpeg.zip
+          mkdir ffmpeg
+          tar -xf ffmpeg.zip -C ffmpeg --strip-components=1
+          Remove-Item ffmpeg.zip
 
       - name: Configure
         working-directory: ${{ runner.temp }}\shadow_build_dir
