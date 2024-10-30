@@ -1214,7 +1214,7 @@ void QGCApplication::QProcessStarted(){
     qCWarning(QGCApplicationLog) << "==============  STREAM STARTED  ==============";
 }
 
-void QGCApplication::QProcessFinishHandler(const int &exitCode, const QProcess::ExitStatus &exitStatus = NormalExit){
+void QGCApplication::QProcessFinishHandler(const int &exitCode, const QProcess::ExitStatus &exitStatus = QProcess::NormalExit){
     qCWarning(QGCApplicationLog) << "==============  STREAM ENDED  ==============";
     qCWarning(QGCApplicationLog) << "Code : " << exitCode << ", Status : " << exitStatus;
 }
