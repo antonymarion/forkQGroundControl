@@ -140,6 +140,15 @@ jobs:
           "C:\Program Files\CMake\bin\cmake" --build .
           "C:\Program Files\CMake\bin\cmake" --install . --verbose
 
+      - name: Setup FFmpeg
+        run: |
+          cd D:/a/_temp/Qt/6.6.3/msvc2019_64/bin
+          git clone https://github.com/FFmpeg/FFmpeg.git --branch release/7.1
+          cd FFmpeg
+          ./configure
+          make
+          make install
+
       - name: Configure
         working-directory: ${{ runner.temp }}\shadow_build_dir
         run: |
