@@ -34,6 +34,7 @@
 #include <QtMqtt/QMqttSubscription>
 #include <QJsonObject>
 #include <QUuid>
+#include <QProcess>
 
 #include "Audio/AudioOutput.h"
 #include "QGCConfig.h"
@@ -756,8 +757,6 @@ void QGCApplication::brokerConnected()
     if(!subscription) {
         qCWarning(QGCApplicationLog) << "============== here ==============";
     }
-    // updateStatus(subscription->state());
-    // QObject::connect(subscription, &QMqttSubscription::stateChanged, this, &QGCApplication::updateStatus);
     QObject::connect(subscription, &QMqttSubscription::messageReceived, this, &QGCApplication::updateMessage);
 
     qCWarning(QGCApplicationLog) << "Mqtt Connected";
@@ -781,11 +780,13 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qCWarning(QGCApplicationLog) << "=================================================";
             qCWarning(QGCApplicationLog) << "recieved OPEN_STREAM";
             qCWarning(QGCApplicationLog) << "=================================================";
+            QGCApplication::testingStream();
             break;
         case 1:
             qCWarning(QGCApplicationLog) << "=================================================";
             qCWarning(QGCApplicationLog) << "recieved STOP_STREAM";
             qCWarning(QGCApplicationLog) << "=================================================";
+            QGCApplication::testingStream();
             break;
         case 2:
             qCWarning(QGCApplicationLog) << "=================================================";
@@ -1178,8 +1179,7 @@ void QGCApplication::setZoom(float value){
     qCWarning(QGCApplicationLog) << "==============  END TAKE_PHOTO  ==============";
 }
 
-void QGCApplication::startStream(){
-    qCWarning(QGCApplicationLog) << "==============  START OPEN_STREAM  ==============";
+void QGCApplication::testingStream(){ // TODO remove this
     MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
     if(!activeCamera) return;
     QGCVideoStreamInfo *streamInstance = activeCamera->currentStreamInstance();
@@ -1187,7 +1187,43 @@ void QGCApplication::startStream(){
     qCWarning(QGCApplicationLog) << "stream name : " <<streamInstance->name();
     qCWarning(QGCApplicationLog) << "stream uri : " <<streamInstance->uri();
     qCWarning(QGCApplicationLog) << "stream type : " <<streamInstance->type();
-    qCWarning(QGCApplicationLog) << "==============   END OPEN_STREAM   ==============";
+}
+void QGCApplication::startStream(){
+    qCWarning(QGCApplicationLog) << "==============  START OPEN_STREAM  ==============";
+    MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
+    if(!activeCamera) return;
+    /* QString ffmpegPath = "./path/to/Qt/examples/widgets/analogclock";
+    QStringList arguments;
+    arguments << "-style" << "fusion"; */
+
+    QProcess *streamingProcess = new QProcess(this);
+    connect(process, &QProcess::errorOccurred, this, &QGCApplication::QProcessErrHandler);
+    connect(process, &QProcess::started, this, &QGCApplication::QProcessStarted);
+    connect(process, &QProcess::finished, this, &QGCApplication::QProcessFinishHandler);
+    /* streamingProcess->setProgram("bash");
+    streamingProcess->setArguments({"-c", "ffmpeg -y -f lavfi -i testsrc=size=1280x720:rate=1:duration=10 -vcodec mjpeg -pix_fmt yuvj422p -f mjpeg input.yuvj422p"});
+    streamingProcess->start(); */
+}
+
+void QGCApplication::QProcessErrHandler(const QProcess::ProcessError &error){
+    qCWarning(QGCApplicationLog) << "**********  STREAM ERROR  **********";
+    qCWarning(QGCApplicationLog) << error;
+}
+
+void QGCApplication::QProcessStarted(){
+    qCWarning(QGCApplicationLog) << "==============  STREAM STARTED  ==============";
+}
+
+void QGCApplication::QProcessFinishHandler(const int &exitCode, const QProcess::ExitStatus &exitStatus = NormalExit){
+    qCWarning(QGCApplicationLog) << "==============  STREAM ENDED  ==============";
+    qCWarning(QGCApplicationLog) << "Code : " << exitCode << ", Status : " << exitStatus;
+}
+
+void QGCApplication::stopStream(){
+    qCWarning(QGCApplicationLog) << "==============  START STOP_STREAM  ==============";
+    if(!streamingProcess) return;
+    streamingProcess->kill();
+    streamingProcess = nullptr;
 }
 
 void QGCApplication::startRecording(){

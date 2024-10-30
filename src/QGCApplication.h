@@ -23,6 +23,7 @@
 #include <QtMqtt/QMqttMessage>
 #include <QtMqtt/QMqttSubscription>
 #include <QJsonObject>
+#include <QProcess>
 
 // These private headers are require to implement the signal compress support below
 #include <QtCore/private/qthread_p.h>
@@ -236,7 +237,12 @@ private:
     QJsonArray getCameras();
     void takePhoto();
     void setZoom(float value);
+    void testingStream(); // TODO remove this
     void startStream();
+    void QProcessErrHandler(const QProcess::ProcessError &error);
+    void QProcessStarted();
+    void QProcessFinishHandler(const int &exitCode, const QProcess::ExitStatus &exitStatus = NormalExit);
+    void stopStream();
     void startRecording();
     void stopRecording();
     void servoCmd(float servoId, float pwmValue);
@@ -258,4 +264,5 @@ private:
     QMqttClient *m_client = nullptr;
     QStringList commandsList;
     QStringList axisList;
+    QProcess *streamingProcess = nullptr;
 };
