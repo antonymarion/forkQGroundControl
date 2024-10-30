@@ -1197,9 +1197,9 @@ void QGCApplication::startStream(){
     arguments << "-style" << "fusion"; */
 
     QProcess *streamingProcess = new QProcess(this);
-    connect(process, &QProcess::errorOccurred, this, &QGCApplication::QProcessErrHandler);
-    connect(process, &QProcess::started, this, &QGCApplication::QProcessStarted);
-    connect(process, &QProcess::finished, this, &QGCApplication::QProcessFinishHandler);
+    connect(streamingProcess, &QProcess::errorOccurred, this, &QGCApplication::QProcessErrHandler);
+    connect(streamingProcess, &QProcess::started, this, &QGCApplication::QProcessStarted);
+    connect(streamingProcess, &QProcess::finished, this, &QGCApplication::QProcessFinishHandler);
     /* streamingProcess->setProgram("bash");
     streamingProcess->setArguments({"-c", "ffmpeg -y -f lavfi -i testsrc=size=1280x720:rate=1:duration=10 -vcodec mjpeg -pix_fmt yuvj422p -f mjpeg input.yuvj422p"});
     streamingProcess->start(); */
