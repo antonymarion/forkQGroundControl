@@ -966,7 +966,7 @@ void QGCApplication:: sendAircraftPositionInfos() {
     bool hasCamera = activeVehicle->cameraManager()->cameras()->count() != 0;
     newResponse.insert("hasCamera", hasCamera);
     if(hasCamera) {
-        VehicleCameraControl *activeCamera = activeVehicle->cameraManager()->currentCameraInstance();
+        VehicleCameraControl *activeCamera = qobject_cast<VehicleCameraControl*>(activeVehicle->cameraManager()->currentCameraInstance());
         if(activeCamera) {
             qCWarning(QGCApplicationLog) << "============== current camera values ==============";
             newResponse.insert("sensorName", activeCamera->modelName());
@@ -1121,7 +1121,7 @@ VehicleCameraControl* QGCApplication::getActiveCamera(){
         qCWarning(QGCApplicationLog) << "*****   No camera available   *****";
         return nullptr;
     }
-    VehicleCameraControl *activeCamera = activeVehicle->cameraManager()->currentCameraInstance();
+    VehicleCameraControl *activeCamera = qobject_cast<VehicleCameraControl*>(activeVehicle->cameraManager()->currentCameraInstance());
     if(!activeCamera) {
         qCWarning(QGCApplicationLog) << "*****   No active camera   *****";
         return nullptr;
