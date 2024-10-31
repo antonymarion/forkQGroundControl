@@ -36,7 +36,7 @@ class QQuickWindow;
 class QGCImageProvider;
 class QGCApplication;
 class Vehicle;
-class VehicleCameraControl;
+class MavlinkCameraControl;
 class Gimbal;
 
 #if defined(qApp)
