@@ -101,6 +101,7 @@
 #include "ToolStripAction.h"
 #include "ToolStripActionList.h"
 #include "VehicleLinkManager.h"
+#include "VehicleCameraControl.h"
 #include "Autotune.h"
 #include "RemoteIDManager.h"
 #include "CustomAction.h"
