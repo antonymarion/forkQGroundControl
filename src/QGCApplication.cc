@@ -1121,7 +1121,8 @@ VehicleCameraControl* QGCApplication::getActiveCamera(){
         qCWarning(QGCApplicationLog) << "*****   No camera available   *****";
         return nullptr;
     }
-    VehicleCameraControl *activeCamera = qobject_cast<VehicleCameraControl*>(activeVehicle->cameraManager()->currentCameraInstance());
+    QmlObjectListModel *cameras = activeVehicle->cameraManager()->cameras();
+    VehicleCameraControl *activeCamera = qobject_cast<VehicleCameraControl*>(cameras->get((activeVehicle->cameraManager()->currentCamera())));
     if(!activeCamera) {
         qCWarning(QGCApplicationLog) << "*****   No active camera   *****";
         return nullptr;
