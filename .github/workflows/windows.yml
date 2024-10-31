@@ -146,7 +146,8 @@ jobs:
           curl.exe -OL https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip
           mkdir ffmpeg
           tar -xf ffmpeg-release-essentials.zip -C ffmpeg --strip-components=1
-          del ffmpeg.zip
+          dir ffmpeg
+          del ffmpeg-release-essentials.zip
 
       - name: Configure
         working-directory: ${{ runner.temp }}\shadow_build_dir
