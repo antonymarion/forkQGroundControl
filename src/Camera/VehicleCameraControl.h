@@ -46,6 +46,7 @@ public:
 /// MAVLink Camera API controller
 class VehicleCameraControl : public MavlinkCameraControl
 {
+    Q_OBJECT
 public:
     VehicleCameraControl(const mavlink_camera_information_t* info, Vehicle* vehicle, int compID, QObject* parent = nullptr);
     virtual ~VehicleCameraControl();

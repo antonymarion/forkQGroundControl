@@ -1122,7 +1122,7 @@ VehicleCameraControl* QGCApplication::getActiveCamera(){
         return nullptr;
     }
     QmlObjectListModel *cameras = activeVehicle->cameraManager()->cameras();
-    VehicleCameraControl *activeCamera = static_cast<VehicleCameraControl*>(cameras->get((activeVehicle->cameraManager()->currentCamera())));
+    VehicleCameraControl *activeCamera = qobject_cast<VehicleCameraControl*>(cameras->get((activeVehicle->cameraManager()->currentCamera())));
     if(!activeCamera) {
         qCWarning(QGCApplicationLog) << "*****   No active camera   *****";
         return nullptr;
@@ -1151,7 +1151,7 @@ QJsonArray QGCApplication::getCameras() {
     QmlObjectListModel *cameras = activeVehicle->cameraManager()->cameras();
     for (int i = 0; i < cameras->count(); i++) {
         qCWarning(QGCApplicationLog) << "*****   Here   *****";
-        VehicleCameraControl *camera = static_cast<VehicleCameraControl*>(cameras->get(i));
+        VehicleCameraControl *camera = qobject_cast<VehicleCameraControl*>(cameras->get(i));
         QJsonObject thisCamera;
         thisCamera.insert("index",i);
         thisCamera.insert("name",camera->modelName());
