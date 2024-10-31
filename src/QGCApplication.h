@@ -36,7 +36,7 @@ class QQuickWindow;
 class QGCImageProvider;
 class QGCApplication;
 class Vehicle;
-class MavlinkCameraControl;
+class VehicleCameraControl;
 class Gimbal;
 
 #if defined(qApp)
@@ -252,7 +252,7 @@ private:
     void updateMessage(const QMqttMessage &msg);
     void updateStatus(QMqttSubscription::SubscriptionState state);
     Vehicle* getActiveVehicle();
-    MavlinkCameraControl* getActiveCamera();
+    VehicleCameraControl* getActiveCamera();
     Gimbal* getActiveGimbal();
     QString rtmpUrl = "";
     QString loggedEmail = "graphx.stephaneroma@gmail.com";
