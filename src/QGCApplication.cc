@@ -1284,8 +1284,8 @@ void QGCApplication::moveGimbal(QString axis, QString value) {
 
 void QGCApplication::servoCmd(float servoId, float pwmValue){
     Vehicle* activeVehicle = QGCApplication::getActiveVehicle();
-    if(!activeVehicle || activeVehicle->gimbalController()->gimbals()->count() <= 0) {
-        qCWarning(QGCApplicationLog) << "*****   No gimbal available   *****";
+    if(!activeVehicle) {
+        qCWarning(QGCApplicationLog) << "*****   No vehicle found   *****";
         return;
     }
     // Sends the MAV_CMD_DO_SET_SERVO command to the vehicle.
