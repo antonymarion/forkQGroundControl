@@ -1301,7 +1301,7 @@ void QGCApplication::servoCmd(float servoId, float pwmValue){
     
     // Signals: mavCommandResult emitted on success or failure of the command.
     activeVehicle->sendMavCommand(
-        activeVehicle->defaultComponentId(),  // compId: Default vehicle component ID
+        activeVehicle->id(),  // compId: Default vehicle component ID
         MAV_CMD_DO_SET_SERVO,            // command: MAV_CMD to set servo
         true,                            // showError: Display error if command fails
         servoId,                         // param1: Specify which servo to set (e.g., 1)
