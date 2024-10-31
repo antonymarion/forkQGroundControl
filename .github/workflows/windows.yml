@@ -143,11 +143,9 @@ jobs:
       - name: Setup FFmpeg
         run: |
           cd D:/a/_temp/Qt/6.6.3/msvc2019_64/bin
-          curl.exe -OL ffmpeg.zip https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip
+          curl.exe -oL ffmpeg.zip https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip
           mkdir ffmpeg
-          tar -xf ffmpeg.zip
-          dir ffmpeg
-          dir
+          tar -xf ffmpeg.zip -C ffmpeg --strip-components=1
           del ffmpeg.zip
 
       - name: Configure
