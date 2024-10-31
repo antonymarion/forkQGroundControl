@@ -143,12 +143,12 @@ jobs:
       - name: Setup FFmpeg
         run: |
           cd D:/a/_temp/Qt/6.6.3/msvc2019_64/bin
-          curl.exe -o ffmpeg.7z https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.7z
+          curl.exe -OL ffmpeg.zip https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip
           mkdir ffmpeg
-          tar -xf ffmpeg.7z
+          tar -xf ffmpeg.zip
           dir ffmpeg
           dir
-          del ffmpeg.7z
+          del ffmpeg.zip
 
       - name: Configure
         working-directory: ${{ runner.temp }}\shadow_build_dir
