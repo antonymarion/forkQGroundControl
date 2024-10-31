@@ -252,7 +252,7 @@ private:
     void updateMessage(const QMqttMessage &msg);
     void updateStatus(QMqttSubscription::SubscriptionState state);
     Vehicle* getActiveVehicle();
-    VehicleCameraControl* getActiveCamera();
+    MavlinkCameraControl* getActiveCamera();
     Gimbal* getActiveGimbal();
     QString rtmpUrl = "";
     QString loggedEmail = "graphx.stephaneroma@gmail.com";
