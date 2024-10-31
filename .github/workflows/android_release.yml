@@ -1,5 +1,5 @@
 # The 32 and 64 bit version of these actions should be kept in sync
-name: Android 32/64-bit Release
+name: Android 64-bit Release
 
 on:
   workflow_dispatch:
@@ -7,7 +7,6 @@ on:
     branches:
       - "master"
       - "Stable*"
-      - fork_detached_squashed
 
 defaults:
   run:
@@ -15,24 +14,13 @@ defaults:
 
 env:
   SOURCE_DIR: ${{ github.workspace }}
-  QT_VERSION: 6.6.*
-  BUILD_TYPE: ${{ fromJSON('["DailyBuild", "StableBuild"]')[ github.ref_type == 'tag' || contains(github.ref, 'Stable_' ) ] }}
+  QT_VERSION: 5.15.2
+  ARTIFACT: QGroundControl64.apk
+  BUILD_TYPE: StableBuild
 
 jobs:
   build:
     runs-on: ubuntu-20.04
-
-    strategy:
-      matrix:
-        include:
-          - architecture: 32bits
-            eabi: armeabi-v7a
-            arch: android_armv7
-            ARTIFACT: QGroundControl32.apk
-          - architecture: 64bits
-            eabi: arm64-v8a
-            arch: android_arm64_v8a
-            ARTIFACT: QGroundControl64.apk
 
     steps:
       - name: Checkout repo
@@ -40,33 +28,42 @@ jobs:
         with:
           submodules: recursive
 
-      - run: sudo apt update
-
       - name: Get all tags for correct version determination
         working-directory: ${{ github.workspace }}
         run: |
           git fetch --all --tags -f --depth 1
 
-      - name: Install Qt6 for Android
+      - name: Install Qt
         uses: jurplel/install-qt-action@v3
         with:
           version: ${{ env.QT_VERSION }}
-          aqtversion: ==3.1.*
           host: linux
           target: android
-          arch: ${{ matrix.arch }}
-          extra: --autodesktop
           dir: ${{ runner.temp }}
-          modules: qtcharts qtlocation qtpositioning qtspeech qt5compat qtmultimedia qtserialport qtimageformats qtshadertools qtconnectivity qtquick3d
+          modules: qtcharts
           setup-python: true
+
+      - name: Install Android NDK
+        uses: nttld/setup-ndk@v1
+        id: setup-ndk
+        with:
+          ndk-version: r21e
+          add-to-path: false
 
       - name: Remove Android SDKs to force usage of android-33 only
         run: |
+          ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --uninstall "build-tools;31.0.0"
+          ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --uninstall "build-tools;32.0.0"
+          ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --uninstall "build-tools;34.0.0"
+          ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --uninstall "platforms;android-31"
+          ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --uninstall "platforms;android-32"
           ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --uninstall "platforms;android-33-ext5"
           ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --uninstall "platforms;android-33-ext4"
           ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --uninstall "platforms;android-34"
           ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --uninstall "platforms;android-34-ext8"
           ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --uninstall "platforms;android-34-ext10"
+          ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --uninstall "platforms;android-34-ext11"
+          ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --uninstall "platforms;android-34-ext12"
 
       - name: Create build directory
         run: mkdir ${{ runner.temp }}/shadow_build_dir
@@ -74,26 +71,36 @@ jobs:
       - name: Install gstreamer
         working-directory: ${{ github.workspace }}
         run: |
-          wget --quiet https://gstreamer.freedesktop.org/data/pkg/android/1.18.5/gstreamer-1.0-android-universal-1.18.5.tar.xz
-          mkdir gstreamer-1.0-android-universal-1.18.5
-          tar xf gstreamer-1.0-android-universal-1.18.5.tar.xz -C gstreamer-1.0-android-universal-1.18.5
+          wget --quiet https://gstreamer.freedesktop.org/data/pkg/android/1.18.6/gstreamer-1.0-android-universal-1.18.6.tar.xz
+          mkdir gstreamer-1.0-android-universal-1.18.6
+          tar xf gstreamer-1.0-android-universal-1.18.6.tar.xz -C gstreamer-1.0-android-universal-1.18.6 arm64
+          rm -f gstreamer-1.0-android-universal-1.18.6.tar.xz
 
       - name: Update android manifest
         if: github.ref_name != 'Stable'
         run: |
           ${SOURCE_DIR}/tools/update_android_manifest_package.sh ${{ github.ref_name }}
 
+      - name: Free up space
+        run: |
+          sudo df -h /
+          sudo rm -rf ${ANDROID_SDK_ROOT}/ndk
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /usr/share/miniconda
+          sudo rm -rf /usr/share/swift
+          sudo df -h /
+
       - name: Build
         working-directory: ${{ runner.temp }}/shadow_build_dir
         env:
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_NDK_ROOT: ${{ steps.setup-ndk.outputs.ndk-path }}
         run: |
-          ls /home/runner/work/_temp/Qt/${{ env.QT_VERSION }}
-          qmake -r ${SOURCE_DIR}/qgroundcontrol.pro -spec android-clang CONFIG+=${BUILD_TYPE} CONFIG+=installer ANDROID_ABIS="${{ matrix.eabi }}"
+          qmake -r ${SOURCE_DIR}/qgroundcontrol.pro -spec android-clang CONFIG+=${BUILD_TYPE} CONFIG+=installer ANDROID_ABIS="arm64-v8a"
           make -j2
 
       - name: Save artifact
         uses: actions/upload-artifact@master
         with:
-          name: ${{ matrix.ARTIFACT }}
-          path: ${{ runner.temp }}/shadow_build_dir/package/${{ matrix.ARTIFACT }}
+          name: ${{ env.ARTIFACT }}
+          path: ${{ runner.temp }}/shadow_build_dir/package/${{ env.ARTIFACT }}
