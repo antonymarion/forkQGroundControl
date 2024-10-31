@@ -776,7 +776,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
     QString payload = QString(msg.payload());
     QJsonDocument d = QJsonDocument::fromJson(payload.toUtf8());
     QJsonObject message = d.object();
-    VehicleCameraControl *activeCamera;
+    MavlinkCameraControl *activeCamera;
     switch (this->commandsList.indexOf(message["instruction"].toString())){
         case 0:
             qCWarning(QGCApplicationLog) << "=================================================";
@@ -966,7 +966,7 @@ void QGCApplication:: sendAircraftPositionInfos() {
     bool hasCamera = activeVehicle->cameraManager()->cameras()->count() != 0;
     newResponse.insert("hasCamera", hasCamera);
     if(hasCamera) {
-        VehicleCameraControl *activeCamera = QGCApplication::getActiveCamera();
+        MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
         if(activeCamera) {
             qCWarning(QGCApplicationLog) << "============== current camera values ==============";
             newResponse.insert("sensorName", activeCamera->modelName());
@@ -1115,14 +1115,14 @@ Vehicle* QGCApplication::getActiveVehicle(){
     return activeVehicle;
 }
 
-VehicleCameraControl* QGCApplication::getActiveCamera(){
+MavlinkCameraControl* QGCApplication::getActiveCamera(){
     Vehicle* activeVehicle = QGCApplication::getActiveVehicle();
     if(!activeVehicle || activeVehicle->cameraManager()->cameras()->count() <= 0) {
         qCWarning(QGCApplicationLog) << "*****   No camera available   *****";
         return nullptr;
     }
     QmlObjectListModel *cameras = activeVehicle->cameraManager()->cameras();
-    VehicleCameraControl *activeCamera = qobject_cast<VehicleCameraControl*>(cameras->get((activeVehicle->cameraManager()->currentCamera())));
+    MavlinkCameraControl *activeCamera = qobject_cast<MavlinkCameraControl*>(cameras->get((activeVehicle->cameraManager()->currentCamera())));
     if(!activeCamera) {
         qCWarning(QGCApplicationLog) << "*****   No active camera   *****";
         return nullptr;
@@ -1151,7 +1151,7 @@ QJsonArray QGCApplication::getCameras() {
     QmlObjectListModel *cameras = activeVehicle->cameraManager()->cameras();
     for (int i = 0; i < cameras->count(); i++) {
         qCWarning(QGCApplicationLog) << "*****   Here   *****";
-        VehicleCameraControl *camera = qobject_cast<VehicleCameraControl*>(cameras->get(i));
+        MavlinkCameraControl *camera = qobject_cast<MavlinkCameraControl*>(cameras->get(i));
         QJsonObject thisCamera;
         thisCamera.insert("index",i);
         thisCamera.insert("name",camera->modelName());
@@ -1162,7 +1162,7 @@ QJsonArray QGCApplication::getCameras() {
 
 void QGCApplication::takePhoto(){
     qCWarning(QGCApplicationLog) << "==============  START TAKE_PHOTO  ==============";
-    VehicleCameraControl *activeCamera = QGCApplication::getActiveCamera();
+    MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
     if(!activeCamera) {
         qCWarning(QGCApplicationLog) << "*****   No active camera   *****";
         return;
@@ -1174,7 +1174,7 @@ void QGCApplication::takePhoto(){
 
 void QGCApplication::setZoom(float value){
     qCWarning(QGCApplicationLog) << "==============  START TAKE_PHOTO  ==============";
-    VehicleCameraControl *activeCamera = QGCApplication::getActiveCamera();
+    MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
     if(!activeCamera) {
         qCWarning(QGCApplicationLog) << "*****   No active camera   *****";
         return;
@@ -1184,7 +1184,7 @@ void QGCApplication::setZoom(float value){
 }
 
 void QGCApplication::testingStream(){ // TODO remove this
-    VehicleCameraControl *activeCamera = QGCApplication::getActiveCamera();
+    MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
     if(!activeCamera) return;
     QGCVideoStreamInfo *streamInstance = activeCamera->currentStreamInstance();
     if(!streamInstance) return;
@@ -1194,7 +1194,7 @@ void QGCApplication::testingStream(){ // TODO remove this
 }
 void QGCApplication::startStream(){
     qCWarning(QGCApplicationLog) << "==============  START OPEN_STREAM  ==============";
-    VehicleCameraControl *activeCamera = QGCApplication::getActiveCamera();
+    MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
     if(!activeCamera) return;
     /* QString ffmpegPath = Q;
     QStringList arguments;
@@ -1232,7 +1232,7 @@ void QGCApplication::stopStream(){
 
 void QGCApplication::startRecording(){
     qCWarning(QGCApplicationLog) << "==============  START START_RECORDING  ==============";
-    VehicleCameraControl *activeCamera = QGCApplication::getActiveCamera();
+    MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
     if(!activeCamera) {
         qCWarning(QGCApplicationLog) << "*****   No active camera   *****";
         return;
@@ -1244,7 +1244,7 @@ void QGCApplication::startRecording(){
 
 void QGCApplication::stopRecording(){
     qCWarning(QGCApplicationLog) << "==============  START STOP_RECORDING  ==============";
-    VehicleCameraControl *activeCamera = QGCApplication::getActiveCamera();
+    MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
     if(!activeCamera) return;
     activeCamera->stopVideoRecording();
     qCWarning(QGCApplicationLog) << "==============   END STOP_RECORDING   ==============";
