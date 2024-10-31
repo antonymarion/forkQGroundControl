@@ -966,7 +966,7 @@ void QGCApplication:: sendAircraftPositionInfos() {
     bool hasCamera = activeVehicle->cameraManager()->cameras()->count() != 0;
     newResponse.insert("hasCamera", hasCamera);
     if(hasCamera) {
-        VehicleCameraControl *activeCamera = qobject_cast<VehicleCameraControl*>(activeVehicle->cameraManager()->currentCameraInstance());
+        VehicleCameraControl *activeCamera = QGCApplication::getActiveCamera();
         if(activeCamera) {
             qCWarning(QGCApplicationLog) << "============== current camera values ==============";
             newResponse.insert("sensorName", activeCamera->modelName());
