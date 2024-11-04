@@ -1289,6 +1289,11 @@ void QGCApplication::servoCmd(float servoId, float pwmValue){
         qCWarning(QGCApplicationLog) << "*****   No vehicle found   *****";
         return;
     }
+
+    
+    qCWarning(QGCApplicationLog) << activeVehicle->id();
+    qCWarning(QGCApplicationLog) << activeVehicle->compId();
+    qCWarning(QGCApplicationLog) << activeVehicle->defaultComponentId();
     // Sends the MAV_CMD_DO_SET_SERVO command to the vehicle.
     // If no acknowledgment (Ack) is received, the command will be retried.
     // If another sendMavCommand is already in progress,
