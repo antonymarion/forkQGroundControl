@@ -782,13 +782,13 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qCWarning(QGCApplicationLog) << "=================================================";
             qCWarning(QGCApplicationLog) << "recieved OPEN_STREAM";
             qCWarning(QGCApplicationLog) << "=================================================";
-            QGCApplication::testingStream();
+            QGCApplication::startStream();
             break;
         case 1:
             qCWarning(QGCApplicationLog) << "=================================================";
             qCWarning(QGCApplicationLog) << "recieved STOP_STREAM";
             qCWarning(QGCApplicationLog) << "=================================================";
-            QGCApplication::testingStream();
+            QGCApplication::stopStream();
             break;
         case 2:
             qCWarning(QGCApplicationLog) << "=================================================";
