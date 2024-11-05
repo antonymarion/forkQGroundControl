@@ -1192,6 +1192,7 @@ void QGCApplication::testingStream(){ // TODO remove this
     qCWarning(QGCApplicationLog) << "stream uri : " <<streamInstance->uri();
     qCWarning(QGCApplicationLog) << "stream type : " <<streamInstance->type();
 }
+
 void QGCApplication::startStream(){
     qCWarning(QGCApplicationLog) << "==============  START OPEN_STREAM  ==============";
     MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
@@ -1207,6 +1208,8 @@ void QGCApplication::startStream(){
     /* streamingProcess->setProgram(ffmpegPath);
     streamingProcess->setArguments(arguments);
     streamingProcess->start(); */
+    this->isStreaming = true;
+    this->rtmpUrl = "rtmp://ome.stationdrone.net/app/" + this->uavSn;
 }
 
 void QGCApplication::QProcessErrHandler(const QProcess::ProcessError &error){
@@ -1228,6 +1231,8 @@ void QGCApplication::stopStream(){
     if(!streamingProcess) return;
     streamingProcess->kill();
     streamingProcess = nullptr;
+    this->isStreaming = false;
+    this->rtmpUrl = "";
 }
 
 void QGCApplication::startRecording(){
@@ -1289,11 +1294,7 @@ void QGCApplication::servoCmd(float servoId, float pwmValue){
         qCWarning(QGCApplicationLog) << "*****   No vehicle found   *****";
         return;
     }
-
     
-    qCWarning(QGCApplicationLog) << activeVehicle->id();
-    qCWarning(QGCApplicationLog) << activeVehicle->compId();
-    qCWarning(QGCApplicationLog) << activeVehicle->defaultComponentId();
     // Sends the MAV_CMD_DO_SET_SERVO command to the vehicle.
     // If no acknowledgment (Ack) is received, the command will be retried.
     // If another sendMavCommand is already in progress,
@@ -1306,7 +1307,7 @@ void QGCApplication::servoCmd(float servoId, float pwmValue){
     
     // Signals: mavCommandResult emitted on success or failure of the command.
     activeVehicle->sendMavCommand(
-        activeVehicle->id(),  // compId: Default vehicle component ID
+        activeVehicle->defaultComponentId(),  // compId: Default vehicle component ID
         MAV_CMD_DO_SET_SERVO,            // command: MAV_CMD to set servo
         true,                            // showError: Display error if command fails
         servoId,                         // param1: Specify which servo to set (e.g., 1)
