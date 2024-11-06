@@ -36,6 +36,8 @@
 #include <QUuid>
 #include <QProcess>
 #include <QCoreApplication>
+//#include <GStreamer.h>
+#include <gst/gst.h>
 
 #include "Audio/AudioOutput.h"
 #include "QGCConfig.h"
@@ -1197,19 +1199,36 @@ void QGCApplication::startStream(){
     qCWarning(QGCApplicationLog) << "==============  START OPEN_STREAM  ==============";
     MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
     if(!activeCamera) return;
-    /* QString ffmpegPath = Q;
-    QStringList arguments;
-    arguments << "-style" << "fusion"; */
+    /* // QString ffmpegPath = Q;
+    // QStringList arguments;
+    // arguments << "-style" << "fusion";
 
     QProcess *streamingProcess = new QProcess(this);
     connect(streamingProcess, &QProcess::errorOccurred, this, &QGCApplication::QProcessErrHandler);
     connect(streamingProcess, &QProcess::started, this, &QGCApplication::QProcessStarted);
     connect(streamingProcess, &QProcess::finished, this, &QGCApplication::QProcessFinishHandler);
-    /* streamingProcess->setProgram(ffmpegPath);
-    streamingProcess->setArguments(arguments);
-    streamingProcess->start(); */
+    // streamingProcess->setProgram(ffmpegPath);
+    // streamingProcess->setArguments(arguments);
+    // streamingProcess->start();
     this->isStreaming = true;
-    this->rtmpUrl = "rtmp://ome.stationdrone.net/app/" + this->uavSn;
+    this->rtmpUrl = "rtmp://ome.stationdrone.net/app/" + this->uavSn; */
+    
+    GError *error = nullptr;
+
+    const gchar *pipeline_desc = "rtspsrc location=SETURLHERE !"
+                                "rtph264depay ! h264parse ! flvmux streamable=true ! "
+                                "rtmpsink location=SETOTHERURLHERE";
+    
+    pipeline = gst_parse_launch(pipeline_desc, &error);
+
+    if(!pipeline){
+        qCWarning(QGCApplicationLog) << "==============  ERREUR GSTREAMER  ==============";
+        qCWarning(QGCApplicationLog) << error->message;
+        g_clear_error(&error);
+        return;
+    }
+
+    gst_element_set_state(pipeline, GST_STATE_PLAYING);
 }
 
 void QGCApplication::QProcessErrHandler(const QProcess::ProcessError &error){
@@ -1228,11 +1247,13 @@ void QGCApplication::QProcessFinishHandler(const int &exitCode, const QProcess::
 
 void QGCApplication::stopStream(){
     qCWarning(QGCApplicationLog) << "==============  START STOP_STREAM  ==============";
-    if(!streamingProcess) return;
+    /* if(!streamingProcess) return;
     streamingProcess->kill();
     streamingProcess = nullptr;
     this->isStreaming = false;
-    this->rtmpUrl = "";
+    this->rtmpUrl = ""; */
+
+    gst_element_set_state(pipeline, GST_STATE_NULL);
 }
 
 void QGCApplication::startRecording(){

@@ -24,6 +24,7 @@
 #include <QtMqtt/QMqttSubscription>
 #include <QJsonObject>
 #include <QProcess>
+#include <gst/gst.h>
 
 // These private headers are require to implement the signal compress support below
 #include <QtCore/private/qthread_p.h>
@@ -265,4 +266,5 @@ private:
     QStringList commandsList;
     QStringList axisList;
     QProcess *streamingProcess = nullptr;
+    GstElement *pipeline = nullptr;
 };
