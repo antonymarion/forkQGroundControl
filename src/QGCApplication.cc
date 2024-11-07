@@ -1209,9 +1209,7 @@ void QGCApplication::startStream(){
     connect(streamingProcess, &QProcess::finished, this, &QGCApplication::QProcessFinishHandler);
     // streamingProcess->setProgram(ffmpegPath);
     // streamingProcess->setArguments(arguments);
-    // streamingProcess->start();
-    this->isStreaming = true;
-    this->rtmpUrl = "rtmp://ome.stationdrone.net/app/" + this->uavSn; */
+    // streamingProcess->start(); */
     
     GError *error = nullptr;
 
@@ -1229,6 +1227,8 @@ void QGCApplication::startStream(){
     }
 
     gst_element_set_state(pipeline, GST_STATE_PLAYING);
+    this->isStreaming = true;
+    this->rtmpUrl = "rtmp://ome.stationdrone.net/app/" + this->uavSn;
 }
 
 void QGCApplication::QProcessErrHandler(const QProcess::ProcessError &error){
@@ -1254,6 +1254,8 @@ void QGCApplication::stopStream(){
     this->rtmpUrl = ""; */
 
     gst_element_set_state(pipeline, GST_STATE_NULL);
+    this->isStreaming = false;
+    this->rtmpUrl = "";
 }
 
 void QGCApplication::startRecording(){
