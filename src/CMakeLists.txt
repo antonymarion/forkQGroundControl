@@ -106,6 +106,7 @@ target_link_libraries(QGC
         Qt6::Core
         Qt6::CorePrivate
         Qt6::Widgets
+        gstqml6gl
 )
 
 if(QGC_CUSTOM_BUILD)
