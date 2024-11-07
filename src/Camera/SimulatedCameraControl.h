@@ -69,7 +69,7 @@ public:
     void                startTracking               (QPointF /*point*/, double /*radius*/) override {}
     void                stopTracking                () override {}
     int                 version                     () override { return 0; }
-    QString             modelName                   () override { return QStringLiteral("Simulated Camera"); }
+    QString             modelName                   () override { return QStringLiteral("Caméra intégré Tundra II"); }
     QString             vendor                      () override { return QStringLiteral("QGroundControl"); }
     QString             firmwareVersion             () override { return QStringLiteral("1.0"); }
     qreal               focalLength                 () override { return qQNaN(); }
