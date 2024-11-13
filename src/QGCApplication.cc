@@ -1154,6 +1154,7 @@ QJsonArray QGCApplication::getCameras() {
     for (int i = 0; i < cameras->count(); i++) {
         qCWarning(QGCApplicationLog) << "*****   Here   *****";
         MavlinkCameraControl *camera = qobject_cast<MavlinkCameraControl*>(cameras->get(i));
+        VehicleCameraControl *camera = qobject_cast<VehicleCameraControl*>(camera);
         QJsonObject thisCamera;
         thisCamera.insert("index",i);
         thisCamera.insert("name",camera->modelName());
@@ -1211,7 +1212,7 @@ void QGCApplication::startStream(){
     // streamingProcess->setArguments(arguments);
     // streamingProcess->start(); */
     
-    GError *error = nullptr;
+    /* GError *error = nullptr;
 
     const gchar *pipeline_desc = "rtspsrc location=rtsp://192.168.144.25:8554/main.264 ! rtph264depay ! h264parse ! flvmux streamable=true ! rtmpsink location=rtmp://ome.stationdrone.net/app/1600FTR2STD24289930B";
     
@@ -1224,7 +1225,7 @@ void QGCApplication::startStream(){
         return;
     }
 
-    gst_element_set_state(pipeline, GST_STATE_PLAYING);
+    gst_element_set_state(pipeline, GST_STATE_PLAYING); */
     this->isStreaming = true;
     this->rtmpUrl = "rtmp://ome.stationdrone.net/app/" + this->uavSn;
 }
@@ -1251,7 +1252,7 @@ void QGCApplication::stopStream(){
     this->isStreaming = false;
     this->rtmpUrl = ""; */
 
-    gst_element_set_state(pipeline, GST_STATE_NULL);
+    // gst_element_set_state(pipeline, GST_STATE_NULL);
     this->isStreaming = false;
     this->rtmpUrl = "";
 }
