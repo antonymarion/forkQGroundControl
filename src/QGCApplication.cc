@@ -1154,7 +1154,6 @@ QJsonArray QGCApplication::getCameras() {
     for (int i = 0; i < cameras->count(); i++) {
         qCWarning(QGCApplicationLog) << "*****   Here   *****";
         MavlinkCameraControl *camera = qobject_cast<MavlinkCameraControl*>(cameras->get(i));
-        VehicleCameraControl *vehicleCamera = qobject_cast<VehicleCameraControl*>(camera);
         QJsonObject thisCamera;
         thisCamera.insert("index",i);
         thisCamera.insert("name",camera->modelName());
@@ -1252,7 +1251,7 @@ void QGCApplication::stopStream(){
     this->isStreaming = false;
     this->rtmpUrl = ""; */
 
-    // gst_element_set_state(pipeline, GST_STATE_NULL);
+    gst_element_set_state(pipeline, GST_STATE_NULL);
     this->isStreaming = false;
     this->rtmpUrl = "";
 }
