@@ -38,6 +38,7 @@ class QGCImageProvider;
 class QGCApplication;
 class Vehicle;
 class MavlinkCameraControl;
+class VehicleCameraControl;
 class Gimbal;
 
 #if defined(qApp)

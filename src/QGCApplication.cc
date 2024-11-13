@@ -829,7 +829,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             if(!activeCamera) {
                 qCWarning(QGCApplicationLog) << "============== camera ranges ==============";
                 message.insert("hasZoom", activeCamera->hasZoom());
-                if(activeCamera->modelName() != "Caméra intégré Tundra II"){
+                if(activeCamera->modelName() != "Caméra intégrée Tundra II"){
                     QJsonObject iso;
                     QJsonObject aperture;
                     iso.insert("min", activeCamera->iso()->cookedMinString());
@@ -973,7 +973,7 @@ void QGCApplication:: sendAircraftPositionInfos() {
             qCWarning(QGCApplicationLog) << "============== current camera values ==============";
             newResponse.insert("sensorName", activeCamera->modelName());
             newResponse.insert("hasZoom", activeCamera->hasZoom());
-            if(activeCamera->modelName() != "Caméra intégré Tundra II"){
+            if(activeCamera->modelName() != "Caméra intégrée Tundra II"){
                 QJsonObject currentValues;
                 currentValues.insert("ISO", activeCamera->iso()->rawValueString());
                 currentValues.insert("whiteBalance", activeCamera->wb()->rawValueString());
@@ -1153,7 +1153,7 @@ QJsonArray QGCApplication::getCameras() {
     QmlObjectListModel *cameras = activeVehicle->cameraManager()->cameras();
     for (int i = 0; i < cameras->count(); i++) {
         qCWarning(QGCApplicationLog) << "*****   Here   *****";
-        MavlinkCameraControl *camera = qobject_cast<MavlinkCameraControl*>(cameras->get(i));
+        MavlinkCameraControl *camera = qobject_cast<VehicleCameraControl*>(cameras->get(i));
         QJsonObject thisCamera;
         thisCamera.insert("index",i);
         thisCamera.insert("name",camera->modelName());
