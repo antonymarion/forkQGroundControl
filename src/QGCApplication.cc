@@ -1154,7 +1154,7 @@ QJsonArray QGCApplication::getCameras() {
     for (int i = 0; i < cameras->count(); i++) {
         qCWarning(QGCApplicationLog) << "*****   Here   *****";
         MavlinkCameraControl *camera = qobject_cast<MavlinkCameraControl*>(cameras->get(i));
-        VehicleCameraControl *camera = qobject_cast<VehicleCameraControl*>(camera);
+        VehicleCameraControl *vehicleCamera = qobject_cast<VehicleCameraControl*>(camera);
         QJsonObject thisCamera;
         thisCamera.insert("index",i);
         thisCamera.insert("name",camera->modelName());
