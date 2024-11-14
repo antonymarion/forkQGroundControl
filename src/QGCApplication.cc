@@ -460,7 +460,7 @@ QGCApplication::QGCApplication(int &argc, char* argv[], bool unitTesting)
 
     // Setup for network proxy support
     QNetworkProxyFactory::setUseSystemConfiguration(true);
-
+    gst_init(&argc, &argv);
     // Parse command line options
     bool fClearSettingsOptions = false; // Clear stored settings
     bool fClearCache = false;           // Clear parameter/airframe caches
@@ -1212,7 +1212,7 @@ void QGCApplication::startStream(){
     // streamingProcess->setArguments(arguments);
     // streamingProcess->start(); */
     
-    gst_init();
+    
     GError *error = nullptr;
 
     // const gchar *pipeline_desc = "-e rtspsrc location='rtsp://192.168.144.25:8554/main.264' ! rtph264depay ! h264parse ! flvmux streamable=true ! rtmpsink location='rtmp://ome.stationdrone.net/app/1600FTR2STD24289930B live=1'";
