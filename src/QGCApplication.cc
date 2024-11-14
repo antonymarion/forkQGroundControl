@@ -1157,7 +1157,7 @@ QJsonArray QGCApplication::getCameras() {
         VehicleCameraControl *vehicleCamera = qobject_cast<VehicleCameraControl*>(camera);
         QJsonObject thisCamera;
         thisCamera.insert("index",i);
-        thisCamera.insert("name",camera->modelName());
+        thisCamera.insert("name",vehicleCamera->modelName());
         cameraList.append(thisCamera);
     }
     return cameraList;
