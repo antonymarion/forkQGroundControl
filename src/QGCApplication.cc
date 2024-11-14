@@ -1212,7 +1212,7 @@ void QGCApplication::startStream(){
     // streamingProcess->setArguments(arguments);
     // streamingProcess->start(); */
     
-    GError *error = nullptr;
+    /* GError *error = nullptr;
 
     // const gchar *pipeline_desc = "-e rtspsrc location='rtsp://192.168.144.25:8554/main.264' ! rtph264depay ! h264parse ! flvmux streamable=true ! rtmpsink location='rtmp://ome.stationdrone.net/app/1600FTR2STD24289930B live=1'";
     
@@ -1225,7 +1225,85 @@ void QGCApplication::startStream(){
         return;
     }
 
-    gst_element_set_state(pipeline, GST_STATE_PLAYING);
+    gst_element_set_state(pipeline, GST_STATE_PLAYING); */
+    GstElement *pipeline, *source, *encoder, *converter, *sink, *queue1, *queue2, *queue3, *flvmux;
+    GstBus *bus;
+    GstMessage *message;
+    GstStateChangeReturn ret;
+
+    gst_init();
+
+    converter = gst_element_factory_make("videoconvert", "converter");
+    encoder = gst_element_factory_make("x264enc", "encoder");
+    sink = gst_element_factory_make("rtmpsink", "sink");
+    queue1 = gst_element_factory_make("queue", "queue1");
+    queue2 = gst_element_factory_make("queue", "queue2");
+    queue3 = gst_element_factory_make("queue", "queue3");
+    flvmux = gst_element_factory_make("flvmux", "flvmux");
+
+    if (!converter || !encoder || !sink || !queue1 || !queue2 || !queue3 || !flvmux)
+    {
+        std::cerr << "Not all elements could be created." << std::endl;
+
+        return -1;
+    }
+
+    g_object_set(sink, "location", "rtmp://ome.stationdrone.net/app/1600FTR2STD24289930B live=1", NULL);
+    g_object_set(flvmux, "streamable", true, NULL);
+
+    pipeline = gst_pipeline_new("pipeline");
+
+    if (!pipeline)
+    {
+        std::cerr << "Pipeline could not be created." << std::endl;
+
+        return -1;
+    }
+
+    source = gst_element_factory_make("rtspsrc", "source");
+    
+    g_object_set(source, "location", "rtsp://192.168.144.25:8554/main.264", NULL);
+
+    if (!source)
+    {
+        std::cerr << "Screen capture source could not be created." << std::endl;
+        gst_object_unref(pipeline);
+
+        return -1;
+    }
+
+    gst_bin_add_many(GST_BIN(pipeline), source, converter, queue1, encoder, queue2, flvmux, queue3, sink, NULL);
+
+    if (!gst_element_link_many(source, converter, queue1, encoder, queue2, flvmux, queue3, sink, NULL))
+    {
+        std::cerr << "Elements could not be linked" << std::endl;
+        gst_object_unref(pipeline);
+
+        return -1;
+    }
+
+    ret = gst_element_set_state(pipeline, GST_STATE_PLAYING);
+
+    if (ret == GST_STATE_CHANGE_FAILURE)
+    {
+        std::cerr << "Unable to set the pipeline to playing state" << std::endl;
+        gst_object_unref(pipeline);
+
+        return -1;
+    }
+
+    bus = gst_element_get_bus(pipeline);
+    message = gst_bus_timed_pop_filtered(bus, GST_CLOCK_TIME_NONE, GstMessageType(GST_MESSAGE_ERROR | GST_MESSAGE_EOS));
+
+    if (message != NULL)
+    {
+        gst_message_unref(message);
+    }
+
+    gst_object_unref(bus);
+    gst_element_set_state(pipeline, GST_STATE_NULL);
+    gst_object_unref(pipeline);
+    
     this->isStreaming = true;
 }
 
