@@ -1153,7 +1153,8 @@ QJsonArray QGCApplication::getCameras() {
     QmlObjectListModel *cameras = activeVehicle->cameraManager()->cameras();
     for (int i = 0; i < cameras->count(); i++) {
         qCWarning(QGCApplicationLog) << "*****   Here   *****";
-        VehicleCameraControl *vehicleCamera = qobject_cast<VehicleCameraControl*>(cameras->get(i));
+        MavlinkCameraControl *camera = qobject_cast<VehicleCameraControl*>(cameras->get(i));
+        VehicleCameraControl *vehicleCamera = (VehicleCameraControl*)camera;
         QJsonObject thisCamera;
         thisCamera.insert("index",i);
         thisCamera.insert("name", vehicleCamera->modelName());
