@@ -258,8 +258,8 @@ private:
     Gimbal* getActiveGimbal();
     QString rtmpUrl = "";
     QString loggedEmail = "graphx.stephaneroma@gmail.com";
-    QString registrationNumber = "UAS-FR-161114";
-    QString uavSn = "1L987654321";
+    QString registrationNumber = "UAS-FR-458156";
+    QString uavSn = "1600FTR2STD24289930B";
     bool isStreaming = false;
     int countdown = 10;
     bool reset = true;

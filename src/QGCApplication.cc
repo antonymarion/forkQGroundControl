@@ -1199,6 +1199,7 @@ void QGCApplication::startStream(){
     qCWarning(QGCApplicationLog) << "==============  START OPEN_STREAM  ==============";
     MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
     if(!activeCamera) return;
+    this->rtmpUrl = "rtmp://ome.stationdrone.net/app/" + this->uavSn;
     /* // QString ffmpegPath = Q;
     // QStringList arguments;
     // arguments << "-style" << "fusion";
@@ -1213,7 +1214,7 @@ void QGCApplication::startStream(){
     
     GError *error = nullptr;
 
-    const gchar *pipeline_desc = "rtspsrc location=rtsp://192.168.144.25:8554/main.264 ! rtph264depay ! h264parse ! flvmux streamable=true ! rtmpsink location=rtmp://ome.stationdrone.net/app/1600FTR2STD24289930B";
+    const gchar *pipeline_desc = "-e rtspsrc location='rtsp://192.168.144.25:8554/main.264' ! rtph264depay ! h264parse ! flvmux streamable=true ! rtmpsink location='"+this->rtmpUrl+" live=1'";
     
     pipeline = gst_parse_launch(pipeline_desc, &error);
 
@@ -1225,8 +1226,9 @@ void QGCApplication::startStream(){
     }
 
     gst_element_set_state(pipeline, GST_STATE_PLAYING);
+    qCWarning(QGCApplicationLog) << "==============  GSTREAMER STATE  ==============";
+    qCWarning(QGCApplicationLog) << gst_element_get_state (pipeline, NULL, NULL, GST_CLOCK_TIME_NONE);
     this->isStreaming = true;
-    this->rtmpUrl = "rtmp://ome.stationdrone.net/app/" + this->uavSn;
 }
 
 void QGCApplication::QProcessErrHandler(const QProcess::ProcessError &error){
