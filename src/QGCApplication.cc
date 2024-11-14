@@ -1227,7 +1227,8 @@ void QGCApplication::startStream(){
 
     gst_element_set_state(pipeline, GST_STATE_PLAYING);
     qCWarning(QGCApplicationLog) << "==============  GSTREAMER STATE  ==============";
-    qCWarning(QGCApplicationLog) << gst_element_get_state (pipeline, NULL, NULL, GST_CLOCK_TIME_NONE);
+    qCWarning(QGCApplicationLog) << gst_element_get_state (pipeline, NULL, GST_STATE_PLAYING, GST_CLOCK_TIME_NONE);
+    qCWarning(QGCApplicationLog) << gst_element_get_state (pipeline, NULL, GST_STATE_PLAYING, 10000);
     this->isStreaming = true;
 }
 
