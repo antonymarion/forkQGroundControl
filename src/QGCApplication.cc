@@ -1212,7 +1212,8 @@ void QGCApplication::startStream(){
     // streamingProcess->setArguments(arguments);
     // streamingProcess->start(); */
     
-    /* GError *error = nullptr;
+    gst_init();
+    GError *error = nullptr;
 
     // const gchar *pipeline_desc = "-e rtspsrc location='rtsp://192.168.144.25:8554/main.264' ! rtph264depay ! h264parse ! flvmux streamable=true ! rtmpsink location='rtmp://ome.stationdrone.net/app/1600FTR2STD24289930B live=1'";
     
@@ -1225,8 +1226,8 @@ void QGCApplication::startStream(){
         return;
     }
 
-    gst_element_set_state(pipeline, GST_STATE_PLAYING); */
-    GstElement *pipeline, *source, *encoder, *converter, *sink, *queue1, *queue2, *queue3, *flvmux;
+    gst_element_set_state(pipeline, GST_STATE_PLAYING);
+   /*  GstElement *pipeline, *source, *encoder, *converter, *sink, *queue1, *queue2, *queue3, *flvmux;
     GstBus *bus;
     GstMessage *message;
     GstStateChangeReturn ret;
@@ -1302,7 +1303,7 @@ void QGCApplication::startStream(){
 
     gst_object_unref(bus);
     gst_element_set_state(pipeline, GST_STATE_NULL);
-    gst_object_unref(pipeline);
+    gst_object_unref(pipeline); */
     
     this->isStreaming = true;
 }
