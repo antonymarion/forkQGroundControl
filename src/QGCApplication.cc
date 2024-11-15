@@ -721,7 +721,7 @@ void QGCApplication::init()
     // Setup switch/case lists
     axisList << "pitch" << "yaw" << "roll";
     this->commandsList << "OPEN_STREAM" << "STOP_STREAM" << "RESET_GIMBAL" << "MOVE_GIMBAL" << "GET_CAMERAS" << "SET_CAMERA" << "SET_CAMERA_INTRINSICS" << "GET_CAMERA" << "ZOOM_CAMERA" << "TAKE_PHOTO" << "START_RECORDING" << "STOP_RECORDING" << "MAV_CMD_DO_SET_SERVO";
-    this->aircraftList << "Tundra II"
+    this->aircraftList << "Tundra 2";
     // Setup MqttClient
     m_client = new QMqttClient(this);
     m_client->setHostname("152.228.246.204");
@@ -802,7 +802,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qCWarning(QGCApplicationLog) << "=================================================";
             qCWarning(QGCApplicationLog) << "recieved MOVE_GIMBAL";
             qCWarning(QGCApplicationLog) << "=================================================";
-            QGCApplication::moveGimbal(message["axis"].toString(), message["value"].toString());
+            QGCApplication::genericGimbal(message["axis"].toString(), message["value"].toString());
             break;
         case 4:
             qCWarning(QGCApplicationLog) << "=================================================";
@@ -1288,8 +1288,18 @@ void QGCApplication::resetGimbal() {
 }
 
 void QGCApplication::genericGimbal(QString axis, QString value){
-    Vehicle* currentVehicle = QGCApplication::getActiveVehicle();
+    switch (this->aircraftList.indexOf(this->productName)){
+        case 0:
+            QGCApplication::moveGimbalTundra(axis, value);
+            break;
+        default:
+            QGCApplication::moveGimbal(axis, value);
+    }
+}
 
+void QGCApplication::moveGimbalTundra(QString axis, QString value){
+
+    QGCApplication::servoCmd(9, float pwmValue);
 }
 
 void QGCApplication::moveGimbal(QString axis, QString value) {

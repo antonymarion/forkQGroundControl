@@ -261,6 +261,7 @@ private:
     QString loggedEmail = "graphx.stephaneroma@gmail.com";
     QString registrationNumber = "UAS-FR-458156";
     QString uavSn = "1600FTR2STD24289930B";
+    QString productName = "Tundra 2";
     bool isStreaming = false;
     int countdown = 10;
     bool reset = true;
