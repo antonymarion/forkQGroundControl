@@ -1230,12 +1230,12 @@ void QGCApplication::startStream(){
     GstMessage *message;
     GstStateChangeReturn ret;
 
-    converter = gst_element_factory_make("videoconvert", "converter");
+    // converter = gst_element_factory_make("videoconvert", "converter");
     encoder = gst_element_factory_make("x264enc", "encoder");
     sink = gst_element_factory_make("rtmpsink", "sink");
     flvmux = gst_element_factory_make("flvmux", "flvmux");
 
-    if (!converter || !encoder || !sink || !flvmux)
+    if (!encoder || !sink || !flvmux)
     {
         qCWarning(QGCApplicationLog) << "Not all elements could be created.";
 
@@ -1266,9 +1266,9 @@ void QGCApplication::startStream(){
         return;
     }
 
-    gst_bin_add_many(GST_BIN(pipeline), source, converter, encoder, flvmux, sink, NULL);
+    gst_bin_add_many(GST_BIN(pipeline), source, encoder, flvmux, sink, NULL);
 
-    if (!gst_element_link_many(source, converter, encoder, flvmux, sink, NULL))
+    if (!gst_element_link_many(source, encoder, flvmux, sink, NULL))
     {
         qCWarning(QGCApplicationLog) << "Elements could not be linked";
         gst_object_unref(pipeline);
