@@ -1226,7 +1226,7 @@ void QGCApplication::startStream(){
     }
 
     gst_element_set_state(pipeline, GST_STATE_PLAYING);
-    GstElement *source, *encoder, *converter, *sink, *queue1, *queue2, *queue3, *flvmux;
+    GstElement *source, *encoder, *converter, *sink, *queue1, *flvmux;
     GstMessage *message;
     GstStateChangeReturn ret;
 
@@ -1234,11 +1234,9 @@ void QGCApplication::startStream(){
     encoder = gst_element_factory_make("x264enc", "encoder");
     sink = gst_element_factory_make("rtmpsink", "sink");
     queue1 = gst_element_factory_make("queue", "queue1");
-    queue2 = gst_element_factory_make("queue", "queue2");
-    queue3 = gst_element_factory_make("queue", "queue3");
     flvmux = gst_element_factory_make("flvmux", "flvmux");
 
-    if (!converter || !encoder || !sink || !queue1 || !queue2 || !queue3 || !flvmux)
+    if (!converter || !encoder || !sink || !queue1 || !flvmux)
     {
         qCWarning(QGCApplicationLog) << "Not all elements could be created.";
 
@@ -1269,9 +1267,9 @@ void QGCApplication::startStream(){
         return;
     }
 
-    gst_bin_add_many(GST_BIN(pipeline), source, converter, queue1, encoder, queue2, flvmux, queue3, sink, NULL);
+    gst_bin_add_many(GST_BIN(pipeline), source, converter, queue1, encoder, flvmux, sink, NULL);
 
-    if (!gst_element_link_many(source, converter, queue1, encoder, queue2, flvmux, queue3, sink, NULL))
+    if (!gst_element_link_many(source, converter, queue1, encoder, flvmux, sink, NULL))
     {
         qCWarning(QGCApplicationLog) << "Elements could not be linked";
         gst_object_unref(pipeline);
