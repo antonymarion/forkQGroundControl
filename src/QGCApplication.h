@@ -233,6 +233,7 @@ private:
     void sendInfos();
     void sendRemotePilote();
     void sendAircraftPositionInfos();
+    void genericGimbal(QString axis, QString value);
     void moveGimbal(QString axis, QString value);
     void resetGimbal();
     QJsonObject getGimbalCapabilities();
@@ -265,6 +266,7 @@ private:
     bool reset = true;
     QMqttClient *m_client = nullptr;
     QStringList commandsList;
+    QStringList aircraftList;
     QStringList axisList;
     QProcess *streamingProcess = nullptr;
     GstElement *pipeline = nullptr;

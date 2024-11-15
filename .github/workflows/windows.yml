@@ -7,6 +7,7 @@ on:
       - 'Stable*'
       - detached
       - detached_squashed
+      - generic-gimbal
     tags:
       - 'v*'
     paths-ignore:
