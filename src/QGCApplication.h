@@ -268,4 +268,5 @@ private:
     QStringList axisList;
     QProcess *streamingProcess = nullptr;
     GstElement *pipeline = nullptr;
+    GstBus *bus;
 };

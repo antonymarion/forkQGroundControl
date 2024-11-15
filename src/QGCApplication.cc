@@ -460,7 +460,6 @@ QGCApplication::QGCApplication(int &argc, char* argv[], bool unitTesting)
 
     // Setup for network proxy support
     QNetworkProxyFactory::setUseSystemConfiguration(true);
-    gst_init(&argc, &argv);
     // Parse command line options
     bool fClearSettingsOptions = false; // Clear stored settings
     bool fClearCache = false;           // Clear parameter/airframe caches
@@ -1227,12 +1226,9 @@ void QGCApplication::startStream(){
     }
 
     gst_element_set_state(pipeline, GST_STATE_PLAYING);
-   /*  GstElement *pipeline, *source, *encoder, *converter, *sink, *queue1, *queue2, *queue3, *flvmux;
-    GstBus *bus;
+    GstElement *source, *encoder, *converter, *sink, *queue1, *queue2, *queue3, *flvmux;
     GstMessage *message;
     GstStateChangeReturn ret;
-
-    gst_init();
 
     converter = gst_element_factory_make("videoconvert", "converter");
     encoder = gst_element_factory_make("x264enc", "encoder");
@@ -1302,8 +1298,6 @@ void QGCApplication::startStream(){
     }
 
     gst_object_unref(bus);
-    gst_element_set_state(pipeline, GST_STATE_NULL);
-    gst_object_unref(pipeline); */
     
     this->isStreaming = true;
 }
@@ -1331,6 +1325,7 @@ void QGCApplication::stopStream(){
     this->rtmpUrl = ""; */
 
     gst_element_set_state(pipeline, GST_STATE_NULL);
+    gst_object_unref(pipeline);
     this->isStreaming = false;
     this->rtmpUrl = "";
 }
