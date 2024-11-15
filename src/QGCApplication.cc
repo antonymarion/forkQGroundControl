@@ -1240,7 +1240,7 @@ void QGCApplication::startStream(){
 
     if (!converter || !encoder || !sink || !queue1 || !queue2 || !queue3 || !flvmux)
     {
-        std::cerr << "Not all elements could be created." << std::endl;
+        qCWarning(QGCApplicationLog) << "Not all elements could be created.";
 
         return -1;
     }
@@ -1252,7 +1252,7 @@ void QGCApplication::startStream(){
 
     if (!pipeline)
     {
-        std::cerr << "Pipeline could not be created." << std::endl;
+        qCWarning(QGCApplicationLog) << "Pipeline could not be created.";
 
         return -1;
     }
@@ -1263,7 +1263,7 @@ void QGCApplication::startStream(){
 
     if (!source)
     {
-        std::cerr << "Screen capture source could not be created." << std::endl;
+        qCWarning(QGCApplicationLog) << "Screen capture source could not be created.";
         gst_object_unref(pipeline);
 
         return -1;
@@ -1273,7 +1273,7 @@ void QGCApplication::startStream(){
 
     if (!gst_element_link_many(source, converter, queue1, encoder, queue2, flvmux, queue3, sink, NULL))
     {
-        std::cerr << "Elements could not be linked" << std::endl;
+        qCWarning(QGCApplicationLog) << "Elements could not be linked";
         gst_object_unref(pipeline);
 
         return -1;
@@ -1283,7 +1283,7 @@ void QGCApplication::startStream(){
 
     if (ret == GST_STATE_CHANGE_FAILURE)
     {
-        std::cerr << "Unable to set the pipeline to playing state" << std::endl;
+        qCWarning(QGCApplicationLog) << "Unable to set the pipeline to playing state";
         gst_object_unref(pipeline);
 
         return -1;
