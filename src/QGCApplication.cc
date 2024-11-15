@@ -1299,7 +1299,7 @@ void QGCApplication::genericGimbal(QString axis, QString value){
 
 void QGCApplication::moveGimbalTundra(QString axis, QString value){
 
-    QGCApplication::servoCmd(9, float pwmValue);
+    // QGCApplication::servoCmd(9, pwmValue);
 }
 
 void QGCApplication::moveGimbal(QString axis, QString value) {
