@@ -1233,7 +1233,6 @@ void QGCApplication::startStream(){
     converter = gst_element_factory_make("videoconvert", "converter");
     encoder = gst_element_factory_make("x264enc", "encoder");
     sink = gst_element_factory_make("rtmpsink", "sink");
-    queue1 = gst_element_factory_make("queue", "queue1");
     flvmux = gst_element_factory_make("flvmux", "flvmux");
 
     if (!converter || !encoder || !sink || !queue1 || !flvmux)
