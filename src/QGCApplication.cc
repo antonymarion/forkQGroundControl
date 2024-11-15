@@ -1242,7 +1242,7 @@ void QGCApplication::startStream(){
     {
         qCWarning(QGCApplicationLog) << "Not all elements could be created.";
 
-        return -1;
+        return;
     }
 
     g_object_set(sink, "location", "rtmp://ome.stationdrone.net/app/1600FTR2STD24289930B live=1", NULL);
@@ -1254,7 +1254,7 @@ void QGCApplication::startStream(){
     {
         qCWarning(QGCApplicationLog) << "Pipeline could not be created.";
 
-        return -1;
+        return;
     }
 
     source = gst_element_factory_make("rtspsrc", "source");
@@ -1266,7 +1266,7 @@ void QGCApplication::startStream(){
         qCWarning(QGCApplicationLog) << "Screen capture source could not be created.";
         gst_object_unref(pipeline);
 
-        return -1;
+        return;
     }
 
     gst_bin_add_many(GST_BIN(pipeline), source, converter, queue1, encoder, queue2, flvmux, queue3, sink, NULL);
@@ -1276,7 +1276,7 @@ void QGCApplication::startStream(){
         qCWarning(QGCApplicationLog) << "Elements could not be linked";
         gst_object_unref(pipeline);
 
-        return -1;
+        return;
     }
 
     ret = gst_element_set_state(pipeline, GST_STATE_PLAYING);
@@ -1286,7 +1286,7 @@ void QGCApplication::startStream(){
         qCWarning(QGCApplicationLog) << "Unable to set the pipeline to playing state";
         gst_object_unref(pipeline);
 
-        return -1;
+        return;
     }
 
     bus = gst_element_get_bus(pipeline);
