@@ -1245,7 +1245,7 @@ void QGCApplication::startStream(){
         return;
     }
 
-    g_object_set(sink, "location", "rtmp://ome.stationdrone.net/app/1600FTR2STD24289930B live=1", NULL);
+    g_object_set(sink, "location", "rtmp://ome.stationdrone.net/app/1600FTR2STD24289930B", NULL);
     g_object_set(flvmux, "streamable", true, NULL);
 
     pipeline = gst_pipeline_new("pipeline");
