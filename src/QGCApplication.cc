@@ -1226,7 +1226,7 @@ void QGCApplication::startStream(){
     }
 
     gst_element_set_state(pipeline, GST_STATE_PLAYING);
-    GstElement *source, *encoder, *converter, *sink, *queue1, *flvmux;
+    GstElement *source, *encoder, *converter, *sink, *flvmux;
     GstMessage *message;
     GstStateChangeReturn ret;
 
