@@ -950,7 +950,7 @@ void QGCApplication:: sendAircraftPositionInfos() {
     newResponse.insert("isStreaming", this->isStreaming);
     newResponse.insert("system", activeVehicle->firmwareTypeString());
     newResponse.insert("systemVersion", "V1"); // TODO ???
-    newResponse.insert("simulated", false);
+    newResponse.insert("simulated", true);
     newResponse.insert("systemOS", "Android"); // TODO change to include Windows
     newResponse.insert("productType", activeVehicle->vehicleTypeString());
     newResponse.insert("rtmpUrl", this->rtmpUrl);
@@ -1212,7 +1212,7 @@ void QGCApplication::startStream(){
     // streamingProcess->start(); */
     
     
-    GError *error = nullptr;
+    /* GError *error = nullptr;
 
     // const gchar *pipeline_desc = "-e rtspsrc location='rtsp://192.168.144.25:8554/main.264' ! rtph264depay ! h264parse ! flvmux streamable=true ! rtmpsink location='rtmp://ome.stationdrone.net/app/1600FTR2STD24289930B live=1'";
     
@@ -1225,7 +1225,7 @@ void QGCApplication::startStream(){
         return;
     }
 
-    gst_element_set_state(pipeline, GST_STATE_PLAYING);
+    gst_element_set_state(pipeline, GST_STATE_PLAYING); */
     GstElement *source, *encoder, *converter, *sink, *queue1, *queue2, *queue3, *flvmux;
     GstMessage *message;
     GstStateChangeReturn ret;
