@@ -1227,9 +1227,9 @@ void QGCApplication::startStream(){
 
     gst_element_set_state(pipeline, GST_STATE_PLAYING); */
 
-    qCWarning(QGCApplicationLog) << " gst_is_initialized : "
+    qCWarning(QGCApplicationLog) << " gst_is_initialized : ";
     qCWarning(QGCApplicationLog) << gst_is_initialized();
-    /* GstElement *source, *encoder, *converter, *sink, *queue1, *queue2, *queue3, *flvmux, *bin;
+    GstElement *source, *encoder, *converter, *sink, *queue1, *queue2, *queue3, *flvmux, *bin;
     GstMessage *message;
     GstStateChangeReturn ret;
 
@@ -1316,9 +1316,9 @@ void QGCApplication::startStream(){
 
     gst_object_unref(bus);
     
-    this->isStreaming = true; */
+    this->isStreaming = true;
 
-    GError *error = nullptr;
+    /* GError *error = nullptr;
     QString pipelineDesc = "rtspsrc location='rtsp://192.168.144.25:8554/main.264' ! rtph264depay ! h264parse ! flvmux streamable=true ! rtmpsink location='rtmp://ome.stationdrone.net/app/1600FTR2STD24289930B live=1'";
 
     pipeline = gst_parse_launch(pipelineDesc, &error);
@@ -1327,7 +1327,7 @@ void QGCApplication::startStream(){
         qCWarning(QGCApplicationLog) << "Error pipeline: " << error->message;
         g_clear_error(&error);
         return;
-    }
+    } */
 }
 
 void QGCApplication::QProcessErrHandler(const QProcess::ProcessError &error){
