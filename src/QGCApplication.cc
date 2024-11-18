@@ -1283,7 +1283,7 @@ void QGCApplication::startStream(){
 
     gst_bin_add_many(GST_BIN(bin), source, sink, NULL);
 
-    gst_bin_add(GST_BIN(pipeline), bin)
+    gst_bin_add(GST_BIN(pipeline), bin);
 
     if (!gst_element_link_many(source, sink, NULL))
     {
