@@ -1318,6 +1318,7 @@ void QGCApplication::startStream(){
     
      */
 
+    GstStateChangeReturn ret;
     GError *error = nullptr;
     const gchar* pipelineDesc = "rtspsrc location='rtsp://localhost:8554/city-traffic' ! rtph264depay ! h264parse ! flvmux streamable=true ! rtmpsink location='rtmp://ome.stationdrone.net/app/city-traffic live=1'";
 
@@ -1328,7 +1329,15 @@ void QGCApplication::startStream(){
         g_clear_error(&error);
         return;
     }
-    gst_element_set_state(pipeline, GST_STATE_PLAYING);
+
+    ret = gst_element_set_state(pipeline, GST_STATE_PLAYING);
+
+    if (ret == GST_STATE_CHANGE_FAILURE)
+    {
+        qCWarning(QGCApplicationLog) << "Unable to set the pipeline to playing state";
+        gst_object_unref(pipeline);
+    }
+
 
     this->isStreaming = true;
 }
