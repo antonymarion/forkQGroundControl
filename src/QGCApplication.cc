@@ -1328,6 +1328,7 @@ void QGCApplication::startStream(){
         g_clear_error(&error);
         return;
     }
+    gst_element_set_state(pipeline, GST_STATE_PLAYING);
 
     this->isStreaming = true;
 }
