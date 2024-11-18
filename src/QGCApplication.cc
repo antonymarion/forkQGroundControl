@@ -1226,7 +1226,7 @@ void QGCApplication::startStream(){
     }
 
     gst_element_set_state(pipeline, GST_STATE_PLAYING); */
-    GstElement *source, *encoder, *converter, *sink, *queue1, *queue2, *queue3, *flvmux;
+    GstElement *source, *encoder, *converter, *sink, *queue1, *queue2, *queue3, *flvmux, *bin;
     GstMessage *message;
     GstStateChangeReturn ret;
 
@@ -1269,7 +1269,21 @@ void QGCApplication::startStream(){
         return;
     }
 
-    gst_bin_add_many(GST_BIN(pipeline), source, sink, NULL);
+    bin = gst_bin_new("my_bin");
+
+    if (!source)
+    {
+        qCWarning(QGCApplicationLog) << "Screen capture source could not be created.";
+        gst_object_unref(pipeline);
+
+        return;
+    }
+
+
+
+    gst_bin_add_many(GST_BIN(bin), source, sink, NULL);
+
+    gst_bin_add(GST_BIN(pipeline), bin)
 
     if (!gst_element_link_many(source, sink, NULL))
     {
