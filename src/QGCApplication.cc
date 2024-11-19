@@ -1370,8 +1370,9 @@ bool QGCApplication::busProcessMsg(GstElement *pipeline, GstMessage *msg, QStrin
     gchar *dbg = nullptr;
     switch (mType) {
         case (GST_MESSAGE_ERROR):
+            qCWarning(QGCApplicationLog) << " ERROR !";
             // Parse error and exit program, hard exit
-            gst_message_parse_error(msg, &err, &dbg);
+            /* gst_message_parse_error(msg, &err, &dbg);
             if(err) {
                 qCWarning(QGCApplicationLog) << "ERR = " << err->message << " FROM " << GST_OBJECT_NAME(msg->src);
                 g_clear_error(&err);
@@ -1383,7 +1384,7 @@ bool QGCApplication::busProcessMsg(GstElement *pipeline, GstMessage *msg, QStrin
                 g_free(dbg);
             } else {
                 qCWarning(QGCApplicationLog) << "NO DBG";
-            }
+            } */
             exit(1);
         case (GST_MESSAGE_EOS) :
             // Soft exit on EOS
