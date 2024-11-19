@@ -1344,7 +1344,6 @@ void QGCApplication::startStream(){
 
     const gchar* pipelineDesc = "rtspsrc location=rtsp://localhost:8554/city-traffic ! rtph264depay ! h264parse ! flvmux streamable=true ! rtmpsink location=rtmp://ome.stationdrone.net/app/city-traffic live=1";
     GError *err = nullptr;
-    QString prefix = "GOBLIN";
     this->data.pipeline = gst_parse_launch(pipelineDesc, &err);
 
     // Play the pipeline
@@ -1352,7 +1351,7 @@ void QGCApplication::startStream(){
 
     // Start the bus thread
     std::thread threadBus([this]() -> void {
-        codeThreadBus(this->data.pipeline, this->data, prefix);
+        codeThreadBus(this->data.pipeline, this->data, (QString)"GOBLIN");
     });
 
     // Wait for threads
