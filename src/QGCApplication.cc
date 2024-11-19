@@ -1350,8 +1350,8 @@ void QGCApplication::startStream(){
     gst_element_set_state(this->data.pipeline, GST_STATE_PLAYING);
 
     // Start the bus thread
-    std::thread threadBus([&data]() -> void {
-        codeThreadBus(this->data.pipeline, data, "GOBLIN");
+    std::thread threadBus([&this->data]() -> void {
+        codeThreadBus(this->data.pipeline, this->data, "GOBLIN");
     });
 
     // Wait for threads
