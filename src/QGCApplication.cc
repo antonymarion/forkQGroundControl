@@ -1344,6 +1344,7 @@ void QGCApplication::startStream(){
 
     const gchar* pipelineDesc = "rtspsrc location=rtsp://localhost:8554/city-traffic ! rtph264depay ! h264parse ! flvmux streamable=true ! rtmpsink location=rtmp://ome.stationdrone.net/app/city-traffic live=1";
     GError *err = nullptr;
+    QString prefix = "GOBLIN";
     this->data.pipeline = gst_parse_launch(pipelineDesc, &err);
 
     // Play the pipeline
@@ -1351,7 +1352,7 @@ void QGCApplication::startStream(){
 
     // Start the bus thread
     std::thread threadBus([&]() -> void {
-        codeThreadBus(data.pipeline, data, "GOBLIN");
+        codeThreadBus(data.pipeline, data, prefix);
     });
 
     // Wait for threads
@@ -1362,7 +1363,7 @@ void QGCApplication::startStream(){
 
 //======================================================================================================================
 /// Process a single bus message, log messages, exit on error, return false on eof
-bool QGCApplication::busProcessMsg(GstElement *pipeline, GstMessage *msg, QString &prefix) {
+bool QGCApplication::busProcessMsg(GstElement *pipeline, GstMessage *msg, QString prefix) {
     GstMessageType mType = GST_MESSAGE_TYPE(msg);
     qCWarning(QGCApplicationLog) << "[" << prefix << "] : mType = " << mType << " ";
     switch (mType) {
@@ -1409,7 +1410,7 @@ bool QGCApplication::busProcessMsg(GstElement *pipeline, GstMessage *msg, QStrin
 
 //======================================================================================================================
 /// Run the message loop for one bus
-void QGCApplication::codeThreadBus(GstElement *pipeline, GoblinData &data, QString &prefix) {
+void QGCApplication::codeThreadBus(GstElement *pipeline, GoblinData &data, QString prefix) {
     GstBus *bus = gst_element_get_bus(pipeline);
     int res;
     while (true) {
