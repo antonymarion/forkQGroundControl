@@ -1351,7 +1351,7 @@ void QGCApplication::startStream(){
 
     // Start the bus thread
     std::thread threadBus([&this->data]() -> void {
-        codeThreadBus(this->data.pipeline, this->data, "GOBLIN");
+        codeThreadBus(data.pipeline, data, "GOBLIN");
     });
 
     // Wait for threads
