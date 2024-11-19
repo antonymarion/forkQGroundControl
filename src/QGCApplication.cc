@@ -1361,7 +1361,7 @@ void QGCApplication::startStream(){
 
 //======================================================================================================================
 /// Process a single bus message, log messages, exit on error, return false on eof
-bool QGCApplication::busProcessMsg(GstElement *pipeline, GstMessage *msg, const char[] &prefix) {
+bool QGCApplication::busProcessMsg(GstElement *pipeline, GstMessage *msg, const char* &prefix) {
     GstMessageType mType = GST_MESSAGE_TYPE(msg);
     qCWarning(QGCApplicationLog) << "[" << prefix << "] : mType = " << mType << " ";
     switch (mType) {
@@ -1408,7 +1408,7 @@ bool QGCApplication::busProcessMsg(GstElement *pipeline, GstMessage *msg, const 
 
 //======================================================================================================================
 /// Run the message loop for one bus
-void QGCApplication::codeThreadBus(GstElement *pipeline, GoblinData &data, const char[] &prefix) {
+void QGCApplication::codeThreadBus(GstElement *pipeline, GoblinData &data, const char* &prefix) {
     GstBus *bus = gst_element_get_bus(pipeline);
     int res;
     while (true) {
