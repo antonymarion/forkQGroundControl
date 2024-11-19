@@ -1356,7 +1356,7 @@ void QGCApplication::startStream(){
 
     // Wait for threads
     threadBus.join();
-
+    
 
     this->isStreaming = true;
 }
@@ -1412,14 +1412,14 @@ bool QGCApplication::busProcessMsg(GstElement *pipeline, GstMessage *msg, QStrin
 /// Run the message loop for one bus
 void QGCApplication::codeThreadBus(GstElement *pipeline, GoblinData &data, QString prefix) {
     GstBus *bus = gst_element_get_bus(pipeline);
-    int res;
+    /* int res;
     while (true) {
         GstMessage *msg = gst_bus_timed_pop(bus, GST_CLOCK_TIME_NONE);
-        // res = busProcessMsg(pipeline, msg, prefix);
+        res = busProcessMsg(pipeline, msg, prefix);
         gst_message_unref(msg);
-        //if (!res)
-        break;
-    }
+        if (!res)
+            break;
+    } */
     gst_object_unref(bus);
     qCWarning(QGCApplicationLog) << "BUS THREAD FINISHED : " << prefix;
 }
