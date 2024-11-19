@@ -175,8 +175,3 @@ jobs:
           aws_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           source: ''
-
-      # delete-artifact
-      - uses: geekyeggo/delete-artifact@v1
-        with:
-          name: setup

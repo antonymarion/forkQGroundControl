@@ -25,6 +25,8 @@
 #include <QJsonObject>
 #include <QProcess>
 #include <gst/gst.h>
+#include <thread>
+#include <gst/app/gstappsink.h>
 
 // These private headers are require to implement the signal compress support below
 #include <QtCore/private/qthread_p.h>
@@ -269,4 +271,15 @@ private:
     QProcess *streamingProcess = nullptr;
     GstElement *pipeline = nullptr;
     GstBus *bus;
+
+    //======================================================================================================================
+    /// Our global data, serious gstreamer apps should always have this !
+    struct GoblinData {
+        GstElement *pipeline = nullptr;
+        GstElement *sinkVideo = nullptr;
+    };
+
+    void codeThreadBus(GstElement *pipeline, GoblinData &data, const char[] &prefix);
+    bool busProcessMsg(GstElement *pipeline, GstMessage *msg, const char[] &prefix);
+    GoblinData data;
 };
