@@ -279,7 +279,7 @@ private:
         GstElement *sinkVideo = nullptr;
     };
 
-    void codeThreadBus(GstElement *pipeline, GoblinData &data, const char* &prefix);
-    bool busProcessMsg(GstElement *pipeline, GstMessage *msg, const char* &prefix);
+    void codeThreadBus(GstElement *pipeline, GoblinData &data, QString &prefix);
+    bool busProcessMsg(GstElement *pipeline, GstMessage *msg, QString &prefix);
     GoblinData data;
 };
