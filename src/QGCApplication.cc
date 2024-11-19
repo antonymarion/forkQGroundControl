@@ -1351,11 +1351,16 @@ void QGCApplication::startStream(){
 
     // Start the bus thread
     std::thread threadBus([this]() -> void {
-        // codeThreadBus(this->data.pipeline, this->data, (QString)"GOBLIN");
+        codeThreadBus(this->data.pipeline, this->data, (QString)"GOBLIN");
     });
 
     // Wait for threads
     threadBus.join();
+
+    // Destroy the pipeline
+    gst_element_set_state(data.pipeline, GST_STATE_NULL);
+    gst_object_unref(data.pipeline);
+
 
     this->isStreaming = true;
 }
