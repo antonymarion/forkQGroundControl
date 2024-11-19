@@ -1371,13 +1371,13 @@ bool QGCApplication::busProcessMsg(GstElement *pipeline, GstMessage *msg, QStrin
     switch (mType) {
         case (GST_MESSAGE_ERROR):
             // Parse error and exit program, hard exit
-            gst_message_parse_error(msg, &err, &dbg);
+            /* gst_message_parse_error(msg, &err, &dbg);
             if(err) {
                 qCWarning(QGCApplicationLog) << "ERR = " << err->message << " FROM " << GST_OBJECT_NAME(msg->src);
                 g_clear_error(&err);
             }
             qCWarning(QGCApplicationLog) << "DBG = " << dbg;
-            g_free(dbg);
+            g_free(dbg); */
             exit(1);
         case (GST_MESSAGE_EOS) :
             // Soft exit on EOS
