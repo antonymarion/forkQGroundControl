@@ -1365,7 +1365,7 @@ void QGCApplication::startStream(){
 /// Process a single bus message, log messages, exit on error, return false on eof
 bool QGCApplication::busProcessMsg(GstElement *pipeline, GstMessage *msg, QString prefix) {
     GstMessageType mType = GST_MESSAGE_TYPE(msg);
-    qCWarning(QGCApplicationLog) << "[" << prefix << "] : mType = " << mType << " ";
+    qCWarning(QGCApplicationLog) << "[" << prefix << "] : mType = " << mType << " ";/* 
     switch (mType) {
         case (GST_MESSAGE_ERROR):
             // Parse error and exit program, hard exit
@@ -1404,7 +1404,7 @@ bool QGCApplication::busProcessMsg(GstElement *pipeline, GstMessage *msg, QStrin
 
         default:
             qCWarning(QGCApplicationLog) << "default";
-    }
+    } */
     return true;
 }
 
