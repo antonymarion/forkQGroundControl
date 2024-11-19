@@ -1369,8 +1369,8 @@ bool QGCApplication::busProcessMsg(GstElement *pipeline, GstMessage *msg, QStrin
     switch (mType) {
         case (GST_MESSAGE_ERROR):
             // Parse error and exit program, hard exit
-            GError *err;
-            gchar *dbg;
+            GError *err = nullptr;
+            gchar *dbg = nullptr;
             gst_message_parse_error(msg, &err, &dbg);
             qCWarning(QGCApplicationLog) << "ERR = " << err->message << " FROM " << GST_OBJECT_NAME(msg->src);
             qCWarning(QGCApplicationLog) << "DBG = " << dbg;
@@ -1412,14 +1412,14 @@ bool QGCApplication::busProcessMsg(GstElement *pipeline, GstMessage *msg, QStrin
 /// Run the message loop for one bus
 void QGCApplication::codeThreadBus(GstElement *pipeline, GoblinData &data, QString prefix) {
     GstBus *bus = gst_element_get_bus(pipeline);
-    /* int res;
+    int res;
     while (true) {
         GstMessage *msg = gst_bus_timed_pop(bus, GST_CLOCK_TIME_NONE);
         res = busProcessMsg(pipeline, msg, prefix);
         gst_message_unref(msg);
         if (!res)
             break;
-    } */
+    }
     gst_object_unref(bus);
     qCWarning(QGCApplicationLog) << "BUS THREAD FINISHED : " << prefix;
 }
