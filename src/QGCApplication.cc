@@ -1367,14 +1367,16 @@ bool QGCApplication::busProcessMsg(GstElement *pipeline, GstMessage *msg, QStrin
     GstMessageType mType = GST_MESSAGE_TYPE(msg);
     qCWarning(QGCApplicationLog) << "[" << prefix << "] : mType = " << mType << " ";
     GError *err = nullptr;
-    gchar *dbg = nullptr;
+    gchar *dbg = "";
     switch (mType) {
         case (GST_MESSAGE_ERROR):
             // Parse error and exit program, hard exit
             gst_message_parse_error(msg, &err, &dbg);
-            qCWarning(QGCApplicationLog) << "ERR = " << err->message << " FROM " << GST_OBJECT_NAME(msg->src);
+            if(err) {
+                qCWarning(QGCApplicationLog) << "ERR = " << err->message << " FROM " << GST_OBJECT_NAME(msg->src);
+                g_clear_error(&err);
+            }
             qCWarning(QGCApplicationLog) << "DBG = " << dbg;
-            g_clear_error(&err);
             g_free(dbg);
             exit(1);
         case (GST_MESSAGE_EOS) :
