@@ -1371,13 +1371,13 @@ bool QGCApplication::busProcessMsg(GstElement *pipeline, GstMessage *msg, QStrin
     switch (mType) {
         case (GST_MESSAGE_ERROR):
             // Parse error and exit program, hard exit
-            /* gst_message_parse_error(msg, &err, &dbg);
+            gst_message_parse_error(msg, &err, &dbg);
             if(err) {
                 qCWarning(QGCApplicationLog) << "ERR = " << err->message << " FROM " << GST_OBJECT_NAME(msg->src);
                 g_clear_error(&err);
             }
             qCWarning(QGCApplicationLog) << "DBG = " << dbg;
-            g_free(dbg); */
+            g_free(dbg);
             exit(1);
         case (GST_MESSAGE_EOS) :
             // Soft exit on EOS
@@ -1386,11 +1386,11 @@ bool QGCApplication::busProcessMsg(GstElement *pipeline, GstMessage *msg, QStrin
         case (GST_MESSAGE_STATE_CHANGED):
             // Parse state change, print extra info for pipeline only
             qCWarning(QGCApplicationLog) << "State changed !";
-            if (GST_MESSAGE_SRC(msg) == GST_OBJECT(pipeline)) {
+            /* if (GST_MESSAGE_SRC(msg) == GST_OBJECT(pipeline)) {
                 GstState sOld, sNew, sPenging;
                 gst_message_parse_state_changed(msg, &sOld, &sNew, &sPenging);
                 qCWarning(QGCApplicationLog) << "Pipeline changed from " << gst_element_state_get_name(sOld) << " to " << gst_element_state_get_name(sNew);
-            }
+            } */
             break;
         case (GST_MESSAGE_STEP_START):
             qCWarning(QGCApplicationLog) << "STEP START !";
