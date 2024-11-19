@@ -1357,10 +1357,6 @@ void QGCApplication::startStream(){
     // Wait for threads
     threadBus.join();
 
-    // Destroy the pipeline
-    gst_element_set_state(data.pipeline, GST_STATE_NULL);
-    gst_object_unref(data.pipeline);
-
 
     this->isStreaming = true;
 }
@@ -1419,10 +1415,10 @@ void QGCApplication::codeThreadBus(GstElement *pipeline, GoblinData &data, QStri
     int res;
     while (true) {
         GstMessage *msg = gst_bus_timed_pop(bus, GST_CLOCK_TIME_NONE);
-        res = busProcessMsg(pipeline, msg, prefix);
+        // res = busProcessMsg(pipeline, msg, prefix);
         gst_message_unref(msg);
-        if (!res)
-            break;
+        //if (!res)
+        break;
     }
     gst_object_unref(bus);
     qCWarning(QGCApplicationLog) << "BUS THREAD FINISHED : " << prefix;
