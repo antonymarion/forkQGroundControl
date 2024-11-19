@@ -40,6 +40,7 @@
 #include <gst/gst.h>
 #include <thread>
 #include <gst/app/gstappsink.h>
+#include <iostream>
 
 
 #include "Audio/AudioOutput.h"
@@ -1349,7 +1350,7 @@ void QGCApplication::startStream(){
     gst_element_set_state(this->data.pipeline, GST_STATE_PLAYING);
 
     // Start the bus thread
-    thread threadBus([&data]() -> void {
+    std::thread threadBus([&data]() -> void {
         codeThreadBus(this->data.pipeline, data, "GOBLIN");
     });
 
