@@ -1346,7 +1346,7 @@ void QGCApplication::startStream(){
 
     // Start the bus thread
     std::thread threadBus([this]() -> void {
-        const gchar* pipelineDesc = "rtspsrc location=rtsp://localhost:8554/city-traffic is-live=true name=src ! rtph264depay ! h264parse ! flvmux streamable=true ! rtmpsink location=rtmp://ome.stationdrone.net/app/city-traffic live=true name=sink";
+        const gchar* pipelineDesc = "rtspsrc location=rtsp://192.168.144.25:8554/main.264 is-live=true name=src ! rtph264depay ! h264parse ! flvmux streamable=true ! rtmpsink location=rtmp://ome.stationdrone.net/app/1600FTR2STD24289930B live=true name=sink";
         GError *err = nullptr;
         this->data.pipeline = gst_parse_launch(pipelineDesc, &err);
         GstElement *sink = gst_bin_get_by_name(GST_BIN(this->data.pipeline), "sink");
