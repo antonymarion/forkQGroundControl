@@ -720,7 +720,7 @@ void QGCApplication::init()
 
     // Setup switch/case lists
     axisList << "pitch" << "yaw" << "roll";
-    this->commandsList << "OPEN_STREAM" << "STOP_STREAM" << "RESET_GIMBAL" << "MOVE_GIMBAL" << "GET_CAMERAS" << "SET_CAMERA" << "SET_CAMERA_INTRINSICS" << "GET_CAMERA" << "ZOOM_CAMERA" << "TAKE_PHOTO" << "START_RECORDING" << "STOP_RECORDING" << "MAV_CMD_DO_SET_SERVO";
+    this->commandsList << "OPEN_STREAM" << "STOP_STREAM" << "RESET_GIMBAL" << "MOVE_GIMBAL" << "GET_CAMERAS" << "SET_CAMERA" << "SET_CAMERA_INTRINSICS" << "GET_CAMERA" << "ZOOM_CAMERA" << "TAKE_PHOTO" << "START_RECORDING" << "STOP_RECORDING" << "MAV_CMD_DO_SET_SERVO" << "MOVE_GIMBAL2";
     this->aircraftList << "Tundra 2";
     // Setup MqttClient
     m_client = new QMqttClient(this);
@@ -870,6 +870,12 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qCWarning(QGCApplicationLog) << "recieved MAV_CMD_DO_SET_SERVO";
             qCWarning(QGCApplicationLog) << "=================================================";
             QGCApplication::servoCmd(message["param1"].toDouble(), message["param2"].toDouble()); 
+            break; // ************** SERVO ID, SURTOUT PAS 1 2 3 4 13 14 **********************
+        case 13:
+            qCWarning(QGCApplicationLog) << "=================================================";
+            qCWarning(QGCApplicationLog) << "recieved MOVE_GIMBAL2";
+            qCWarning(QGCApplicationLog) << "=================================================";
+            QGCApplication::moveGimbalTundra(message["axis"].toString(), message["value"].toString()); 
             break; // ************** SERVO ID, SURTOUT PAS 1 2 3 4 13 14 **********************
         default:
             message.insert("status","KO");
@@ -1290,16 +1296,18 @@ void QGCApplication::resetGimbal() {
 void QGCApplication::genericGimbal(QString axis, QString value){
     switch (this->aircraftList.indexOf(this->productName)){
         case 0:
-            QGCApplication::moveGimbalTundra(axis, value);
+            QGCApplication::moveGimbalTundra(value);
             break;
         default:
             QGCApplication::moveGimbal(axis, value);
     }
 }
 
-void QGCApplication::moveGimbalTundra(QString axis, QString value){
-
-    // QGCApplication::servoCmd(9, pwmValue);
+void QGCApplication::moveGimbalTundra(QString value){
+    if(value === "+") QGCApplication::servoCmd(9, 1801);
+    if(value === "-") QGCApplication::servoCmd(9, 1201);
+    if(value === "0") QGCApplication::servoCmd(9, 1501);
+    
 }
 
 void QGCApplication::moveGimbal(QString axis, QString value) {
