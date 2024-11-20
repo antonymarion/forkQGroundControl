@@ -1342,7 +1342,7 @@ void QGCApplication::startStream(){
         gst_object_unref(pipeline);
     } */
 
-    const gchar* pipelineDesc = "rtspsrc location=rtsp://192.168.144.25:8554/main.264 is-live=true ! rtph264depay ! h264parse ! flvmux streamable=true ! rtmpsink location=rtmp://ome.stationdrone.net/app/1600FTR2STD24289930B live=true";
+    const gchar* pipelineDesc = "rtspsrc location=rtsp://192.168.144.25:8554/main.264 is-live=true ! x264enc ! rtph264depay ! flvmux streamable=true ! rtmpsink location=rtmp://ome.stationdrone.net/app/1600FTR2STD24289930B live=true";
     GError *err = nullptr;
     this->data.pipeline = gst_parse_launch(pipelineDesc, &err);
 
