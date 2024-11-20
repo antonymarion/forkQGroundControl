@@ -1385,7 +1385,7 @@ bool QGCApplication::busProcessMsg(GstElement *pipeline, GstMessage *msg, QStrin
             } else {
                 qCWarning(QGCApplicationLog) << "NO DBG";
             } */
-            exit(1);
+            return false;
         case (GST_MESSAGE_EOS) :
             // Soft exit on EOS
             qCWarning(QGCApplicationLog) << " EOS !";
