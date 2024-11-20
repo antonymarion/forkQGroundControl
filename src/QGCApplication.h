@@ -234,7 +234,7 @@ private:
     void sendRemotePilote();
     void sendAircraftPositionInfos();
     void genericGimbal(QString axis, QString value);
-    void moveGimbalTundra(QString axis, QString value);
+    void moveGimbalTundra(QString value);
     void moveGimbal(QString axis, QString value);
     void resetGimbal();
     QJsonObject getGimbalCapabilities();

@@ -875,7 +875,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qCWarning(QGCApplicationLog) << "=================================================";
             qCWarning(QGCApplicationLog) << "recieved MOVE_GIMBAL2";
             qCWarning(QGCApplicationLog) << "=================================================";
-            QGCApplication::moveGimbalTundra(message["axis"].toString(), message["value"].toString()); 
+            QGCApplication::genericGimbal(message["axis"].toString(), message["value"].toString()); 
             break; // ************** SERVO ID, SURTOUT PAS 1 2 3 4 13 14 **********************
         default:
             message.insert("status","KO");
@@ -1304,9 +1304,9 @@ void QGCApplication::genericGimbal(QString axis, QString value){
 }
 
 void QGCApplication::moveGimbalTundra(QString value){
-    if(value === "+") QGCApplication::servoCmd(9, 1801);
-    if(value === "-") QGCApplication::servoCmd(9, 1201);
-    if(value === "0") QGCApplication::servoCmd(9, 1501);
+    if(value == "+") QGCApplication::servoCmd(9, 1801);
+    if(value == "-") QGCApplication::servoCmd(9, 1201);
+    if(value == "0") QGCApplication::servoCmd(9, 1501);
     
 }
 
