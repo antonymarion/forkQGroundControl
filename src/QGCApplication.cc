@@ -1346,7 +1346,7 @@ void QGCApplication::startStream(){
     
 
     // Start the bus thread
-    QtConcurrent::run([this]() -> {
+    QtConcurrent::run([this]() {
         const gchar* pipelineDesc = "rtspsrc location=rtsp://localhost:8554/city-traffic is-live=true latency=0 protocols=tcp ! rtpbin ! decodebin ! videoconvert ! x264enc ! flvmux streamable=true ! rtmpsink location=rtmp://ome.stationdrone.net/app/city-traffic";
         GError *err = nullptr; // RECUP COMMANDE DANS WSL
         this->data.pipeline = gst_parse_launch(pipelineDesc, &err);
