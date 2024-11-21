@@ -955,7 +955,7 @@ void QGCApplication:: sendAircraftPositionInfos() {
     newResponse.insert("isStreaming", this->isStreaming);
     newResponse.insert("system", activeVehicle->firmwareTypeString());
     newResponse.insert("systemVersion", "V1"); // TODO ???
-    newResponse.insert("simulated", true);
+    newResponse.insert("simulated", false);
     newResponse.insert("systemOS", "Android"); // TODO change to include Windows
     newResponse.insert("productType", activeVehicle->vehicleTypeString());
     newResponse.insert("rtmpUrl", this->rtmpUrl);
@@ -1204,151 +1204,11 @@ void QGCApplication::startStream(){
     MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
     if(!activeCamera) return;
     this->rtmpUrl = "rtmp://ome.stationdrone.net/app/" + this->uavSn;
-    /* // QString ffmpegPath = Q;
-    // QStringList arguments;
-    // arguments << "-style" << "fusion";
-
-    QProcess *streamingProcess = new QProcess(this);
-    connect(streamingProcess, &QProcess::errorOccurred, this, &QGCApplication::QProcessErrHandler);
-    connect(streamingProcess, &QProcess::started, this, &QGCApplication::QProcessStarted);
-    connect(streamingProcess, &QProcess::finished, this, &QGCApplication::QProcessFinishHandler);
-    // streamingProcess->setProgram(ffmpegPath);
-    // streamingProcess->setArguments(arguments);
-    // streamingProcess->start(); */
-    
-    
-    /* GError *error = nullptr;
-
-    // const gchar *pipeline_desc = "-e rtspsrc location='rtsp://192.168.144.25:8554/main.264' ! rtph264depay ! h264parse ! flvmux streamable=true ! rtmpsink location='rtmp://ome.stationdrone.net/app/1600FTR2STD24289930B live=1'";
-    
-    pipeline = gst_parse_launch("-e rtspsrc location='rtsp://192.168.144.25:8554/main.264' ! rtph264depay ! h264parse ! flvmux streamable=true ! rtmpsink location='rtmp://ome.stationdrone.net/app/1600FTR2STD24289930B live=1'", &error);
-
-    if(!pipeline){
-        qCWarning(QGCApplicationLog) << "==============  ERREUR GSTREAMER  ==============";
-        qCWarning(QGCApplicationLog) << error->message;
-        g_clear_error(&error);
-        return;
-    }
-
-    gst_element_set_state(pipeline, GST_STATE_PLAYING); */
-
-    qCWarning(QGCApplicationLog) << " gst_is_initialized : ";
-    qCWarning(QGCApplicationLog) << gst_is_initialized();
-    /* GstElement *source, *encoder, *converter, *sink, *queue1, *queue2, *queue3, *flvmux, *bin;
-    GstMessage *message;
-    GstStateChangeReturn ret;
-
-    converter = gst_element_factory_make("videoconvert", "converter");
-    encoder = gst_element_factory_make("x264enc", "encoder");
-    sink = gst_element_factory_make("rtmpsink", "sink");
-    queue1 = gst_element_factory_make("queue", "queue1");
-    queue2 = gst_element_factory_make("queue", "queue2");
-    queue3 = gst_element_factory_make("queue", "queue3");
-    flvmux = gst_element_factory_make("flvmux", "flvmux");
-
-    if (!converter || !encoder || !sink || !queue1 || !queue2 || !queue3 || !flvmux)
-    {
-        qCWarning(QGCApplicationLog) << "Not all elements could be created.";
-
-        return;
-    }
-
-    g_object_set(sink, "location", "rtmp://ome.stationdrone.net/app/1600FTR2STD24289930B", NULL);
-    g_object_set(flvmux, "streamable", true, NULL);
-
-    pipeline = gst_pipeline_new("pipeline");
-
-    if (!pipeline)
-    {
-        qCWarning(QGCApplicationLog) << "Pipeline could not be created.";
-
-        return;
-    }
-
-    source = gst_element_factory_make("rtspsrc", "source");
-    
-    g_object_set(source, "location", "rtsp://192.168.144.25:8554/main.264", NULL);
-
-    if (!source)
-    {
-        qCWarning(QGCApplicationLog) << "Screen capture source could not be created.";
-        gst_object_unref(pipeline);
-
-        return;
-    }
-
-    bin = gst_bin_new("my_bin");
-
-    if (!source)
-    {
-        qCWarning(QGCApplicationLog) << "Screen capture source could not be created.";
-        gst_object_unref(pipeline);
-
-        return;
-    }
-
-
-
-    gst_bin_add_many(GST_BIN(bin), source, sink, NULL);
-
-    gst_bin_add(GST_BIN(pipeline), bin);
-
-    if (!gst_element_link_many(source, sink, NULL))
-    {
-        qCWarning(QGCApplicationLog) << "Elements could not be linked";
-        gst_object_unref(pipeline);
-
-        return;
-    }
-
-    ret = gst_element_set_state(pipeline, GST_STATE_PLAYING);
-
-    if (ret == GST_STATE_CHANGE_FAILURE)
-    {
-        qCWarning(QGCApplicationLog) << "Unable to set the pipeline to playing state";
-        gst_object_unref(pipeline);
-
-        return;
-    }
-
-    bus = gst_element_get_bus(pipeline);
-    message = gst_bus_timed_pop_filtered(bus, GST_CLOCK_TIME_NONE, GstMessageType(GST_MESSAGE_ERROR | GST_MESSAGE_EOS));
-
-    if (message != NULL)
-    {
-        gst_message_unref(message);
-    }
-
-    gst_object_unref(bus);
-    
-     */
-
-    /* GstStateChangeReturn ret;
-    GError *error = nullptr;
-    const gchar* pipelineDesc = "rtspsrc location='rtsp://localhost:8554/city-traffic' ! rtph264depay ! h264parse ! flvmux streamable=true ! rtmpsink location='rtmp://ome.stationdrone.net/app/city-traffic live=1'";
-
-    pipeline = gst_parse_launch(pipelineDesc, &error);
-
-    if(!pipeline){
-        qCWarning(QGCApplicationLog) << "Error pipeline: " << error->message;
-        g_clear_error(&error);
-        return;
-    }
-
-    ret = gst_element_set_state(pipeline, GST_STATE_PLAYING);
-
-    if (ret == GST_STATE_CHANGE_FAILURE)
-    {
-        qCWarning(QGCApplicationLog) << "Unable to set the pipeline to playing state";
-        gst_object_unref(pipeline);
-    } */
-
-    
 
     // Start the bus thread
     QtConcurrent::run([this]() {
         const gchar* pipelineDesc = "rtspsrc location=rtsp://192.168.144.25:8554/main.264 is-live=true latency=0 protocols=tcp ! rtpbin ! decodebin ! videoconvert ! x264enc ! flvmux streamable=true ! rtmpsink location=rtmp://rtmp2.drone-geofencing.com/live/1600FTR2STD24289930B";
-        GError *err = nullptr; // RECUP COMMANDE DANS WSL
+        GError *err = nullptr;
         this->data.pipeline = gst_parse_launch(pipelineDesc, &err);
 
         // Play the pipeline
@@ -1431,21 +1291,7 @@ void QGCApplication::codeThreadBus(GstElement *pipeline, GoblinData &data, QStri
     gst_object_unref(bus);
     qCWarning(QGCApplicationLog) << "BUS THREAD FINISHED : " << prefix;
 }
-/* 
-void QGCApplication::QProcessErrHandler(const QProcess::ProcessError &error){
-    qCWarning(QGCApplicationLog) << "**********  STREAM ERROR  **********";
-    qCWarning(QGCApplicationLog) << error;
-}
 
-void QGCApplication::QProcessStarted(){
-    qCWarning(QGCApplicationLog) << "==============  STREAM STARTED  ==============";
-}
-
-void QGCApplication::QProcessFinishHandler(const int &exitCode, const QProcess::ExitStatus &exitStatus = QProcess::NormalExit){
-    qCWarning(QGCApplicationLog) << "==============  STREAM ENDED  ==============";
-    qCWarning(QGCApplicationLog) << "Code : " << exitCode << ", Status : " << exitStatus;
-}
- */
 void QGCApplication::stopStream(){
     qCWarning(QGCApplicationLog) << "==============  START STOP_STREAM  ==============";
     /* if(!streamingProcess) return;

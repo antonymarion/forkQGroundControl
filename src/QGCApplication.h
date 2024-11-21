@@ -243,9 +243,6 @@ private:
     void setZoom(float value);
     void testingStream(); // TODO remove this
     void startStream();
-    void QProcessErrHandler(const QProcess::ProcessError &error);
-    void QProcessStarted();
-    void QProcessFinishHandler(const int &exitCode, const QProcess::ExitStatus &exitStatus);
     void stopStream();
     void startRecording();
     void stopRecording();
