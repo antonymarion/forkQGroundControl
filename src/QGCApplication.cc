@@ -1347,7 +1347,7 @@ void QGCApplication::startStream(){
 
     // Start the bus thread
     QtConcurrent::run([this]() {
-        const gchar* pipelineDesc = "rtspsrc location=rtsp://192.168.144.25:8554/main.264 is-live=true latency=0 protocols=tcp ! rtpbin ! decodebin ! videoconvert ! x264enc ! flvmux streamable=true ! rtmpsink location=rtmp://ome.stationdrone.net/app/1600FTR2STD24289930B";
+        const gchar* pipelineDesc = "rtspsrc location=rtsp://192.168.144.25:8554/main.264 is-live=true latency=0 protocols=tcp ! rtpbin ! decodebin ! videoconvert ! x264enc ! flvmux streamable=true ! rtmpsink location=rtmp://rtmp2.drone-geofencing.com/live/1600FTR2STD24289930B";
         GError *err = nullptr; // RECUP COMMANDE DANS WSL
         this->data.pipeline = gst_parse_launch(pipelineDesc, &err);
 
@@ -2019,6 +2019,8 @@ QGCImageProvider* QGCApplication::qgcImageProvider()
 
 void QGCApplication::shutdown()
 {
+    gst_element_set_state(this->data.pipeline, GST_STATE_NULL);
+    gst_object_unref(this->data.pipeline);
     qCDebug(QGCApplicationLog) << "Exit";
     // This is bad, but currently qobject inheritances are incorrect and cause crashes on exit without
     delete _qmlAppEngine;
