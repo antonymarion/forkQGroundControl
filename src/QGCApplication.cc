@@ -36,6 +36,7 @@
 #include <QUuid>
 #include <QProcess>
 #include <QCoreApplication>
+#include <QtConcurrent>
 //#include <GStreamer.h>
 #include <gst/gst.h>
 #include <thread>
@@ -1345,7 +1346,7 @@ void QGCApplication::startStream(){
     
 
     // Start the bus thread
-    std::thread threadBus([this]() -> void {
+    QtConcurrent::run([this]() -> {
         const gchar* pipelineDesc = "rtspsrc location=rtsp://192.168.144.25:8554/main.264 is-live=true latency=0 protocols=tcp ! rtpbin ! decodebin ! videoconvert ! x264enc ! flvmux streamable=true ! rtmpsink location=rtmp://ome.stationdrone.net/app/1600FTR2STD24289930B";
         GError *err = nullptr; // RECUP COMMANDE DANS WSL
         this->data.pipeline = gst_parse_launch(pipelineDesc, &err);
@@ -1354,9 +1355,6 @@ void QGCApplication::startStream(){
         gst_element_set_state(this->data.pipeline, GST_STATE_PLAYING);
         codeThreadBus(this->data.pipeline, this->data, (QString)"DEBUG");
     });
-
-    // Wait for threads
-    threadBus.join();
     
 
     this->isStreaming = true;
