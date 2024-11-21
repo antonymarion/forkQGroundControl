@@ -1346,7 +1346,7 @@ void QGCApplication::startStream(){
 
     // Start the bus thread
     std::thread threadBus([this]() -> void {
-        const gchar* pipelineDesc = "rtspsrc location=rtsp://localhost:8554/city-traffic is-live=true latency=0 protocols=tcp ! rtpbin ! decodebin ! videoconvert ! x264enc ! flvmux streamable=true ! rtmpsink location=rtmp://ome.stationdrone.net/app/city-traffic";
+        const gchar* pipelineDesc = "rtspsrc location=rtsp://192.168.144.25:8554/main.264 is-live=true latency=0 protocols=tcp ! rtpbin ! decodebin ! videoconvert ! x264enc ! flvmux streamable=true ! rtmpsink location=rtmp://ome.stationdrone.net/app/1600FTR2STD24289930B";
         GError *err = nullptr; // RECUP COMMANDE DANS WSL
         this->data.pipeline = gst_parse_launch(pipelineDesc, &err);
 
