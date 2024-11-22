@@ -1304,7 +1304,7 @@ void QGCApplication::stopStream(){
 }
 
 void QGCApplication::takePhoto(){
-    qCWarning(QGCApplicationLog) << "==============  START TAKE_PHOTO  ==============";
+    qCWarning(QGCApplicationLog) << "==============  START TAKE_PHOTO  =============="; // NEED TO UPDATE FOR OTHER CAMS
     /* MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
     if(!activeCamera) {
         qCWarning(QGCApplicationLog) << "*****   No active camera   *****";
@@ -1319,22 +1319,28 @@ void QGCApplication::takePhoto(){
 }
 
 void QGCApplication::startRecording(){
-    qCWarning(QGCApplicationLog) << "==============  START START_RECORDING  ==============";
-    MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
+    qCWarning(QGCApplicationLog) << "==============  START START_RECORDING  =============="; // NEED TO UPDATE FOR OTHER CAMS
+    /* MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
     if(!activeCamera) {
         qCWarning(QGCApplicationLog) << "*****   No active camera   *****";
         return;
     }
     activeCamera->setCameraModeVideo();
-    activeCamera->startVideoRecording();
+    activeCamera->startVideoRecording(); */
+    
+    VideoManager* videoManager = QGCApplication::getVideoManager();
+    videoManager.startRecording();
     qCWarning(QGCApplicationLog) << "==============   END START_RECORDING   ==============";
 }
 
 void QGCApplication::stopRecording(){
-    qCWarning(QGCApplicationLog) << "==============  START STOP_RECORDING  ==============";
-    MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
+    qCWarning(QGCApplicationLog) << "==============  START STOP_RECORDING  =============="; // NEED TO UPDATE FOR OTHER CAMS
+    /* MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
     if(!activeCamera) return;
-    activeCamera->stopVideoRecording();
+    activeCamera->stopVideoRecording(); */
+    
+    VideoManager* videoManager = QGCApplication::getVideoManager();
+    videoManager.stopRecording();
     qCWarning(QGCApplicationLog) << "==============   END STOP_RECORDING   ==============";
 }
 
