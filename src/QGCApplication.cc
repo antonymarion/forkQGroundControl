@@ -1150,6 +1150,14 @@ Gimbal* QGCApplication::getActiveGimbal(){
     return activeGimbal;
 }
 
+VideoManager* QGCApplication::getVideoManager(){
+    VideoManager* videoManager = toolbox()->videoManager();
+    if(!videoManager || !QGCApplication::getActiveCamera()){
+        qCWarning(QGCApplicationLog) << "*****   Video manager not available   *****";
+        return nullptr;
+    }
+}
+
 QJsonArray QGCApplication::getCameras() {
     QJsonArray cameraList;
     Vehicle* activeVehicle = QGCApplication::getActiveVehicle();
@@ -1297,19 +1305,16 @@ void QGCApplication::stopStream(){
 
 void QGCApplication::takePhoto(){
     qCWarning(QGCApplicationLog) << "==============  START TAKE_PHOTO  ==============";
-    MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
+    /* MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
     if(!activeCamera) {
         qCWarning(QGCApplicationLog) << "*****   No active camera   *****";
         return;
     }
-    Vehicle* activeVehicle = QGCApplication::getActiveVehicle();
-    if(!activeVehicle) {
-        qCWarning(QGCApplicationLog) << "*****   No active vehicle   *****";
-        return;
-    } // use video manager
-    MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
     activeCamera->setCameraModePhoto();
-    activeCamera->takePhoto();
+    activeCamera->takePhoto(); */
+
+    VideoManager* videoManager = QGCApplication::getVideoManager();
+    videoManager.grabImage();
     qCWarning(QGCApplicationLog) << "==============   END TAKE_PHOTO   ==============";
 }
 
