@@ -1203,7 +1203,7 @@ void QGCApplication::startStream(){
 
     // Start the bus thread
     QtConcurrent::run([this]() {
-        const gchar* pipelineDesc = "rtspsrc location=rtsp://192.168.144.25:8554/main.264 is-live=true latency=0 protocols=tcp ! decodebin ! x264enc bframes=0 key-int-max=60 ! flvmux streamable=true ! rtmpsink location=" + (gchar*)this->rtmpUrl;
+        const gchar* pipelineDesc = "rtspsrc location=rtsp://192.168.144.25:8554/main.264 is-live=true latency=0 protocols=tcp ! decodebin ! x264enc bframes=0 key-int-max=60 ! flvmux streamable=true ! rtmpsink location=rtmp://ome.stationdrone.net/app/1600FTR2STD24289930B";
         GError *err = nullptr;
         this->data.pipeline = gst_parse_launch(pipelineDesc, &err);
 
