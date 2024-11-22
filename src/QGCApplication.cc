@@ -1303,7 +1303,7 @@ void QGCApplication::stopStream(){
     gst_object_unref(this->data.pipeline);
     this->isStreaming = false;
     this->rtmpUrl = "";
-    if(this->future){
+    if(!(!this->future)){
         this->future.cancel();
     }
 }
@@ -1889,7 +1889,7 @@ void QGCApplication::shutdown()
 {
     gst_element_set_state(this->data.pipeline, GST_STATE_NULL);
     gst_object_unref(this->data.pipeline);
-    if(this->future){
+    if(!(!this->future)){
         this->future.cancel();
     }
     qCDebug(QGCApplicationLog) << "Exit";
