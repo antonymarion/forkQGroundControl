@@ -1317,9 +1317,34 @@ void QGCApplication::takePhoto(){
     }
     activeCamera->setCameraModePhoto();
     activeCamera->takePhoto(); */
+    
+    QString baseImageFileName = "capture_" + QDateTime::currentDateTime().toString("yyyy-MM-dd_hh.mm.ss.zzz") + ".jpg";
+    QString imageFile = toolbox()->settingsManager()->appSettings()->photoSavePath() + "/" + baseImageFileName;
+    QString imageFileS3 = "station-drone/aircrafts/operatorID-16/sn-" + this->uavSn + "/images/" + baseImageFileName;
 
-    VideoManager* videoManager = QGCApplication::getVideoManager();
-    videoManager->grabImage();
+    GError *err = nullptr;
+    GstElement *pipelinePhoto = gst_parse_launch("rtspsrc location=rtsp://192.168.144.25:8554/main.264 num-buffers=10000000 ! decodebin ! jpegenc ! filesink name=sink", &err);
+
+    if (!pipelinePhoto) {
+        qCWarning(QGCApplicationLog) << "Erreur lors de la création du pipelinePhoto.";
+        return;
+    }
+
+    // Récupérer l'élément filesink et définir son emplacement
+    GstElement *filesink = gst_bin_get_by_name(GST_BIN(pipelinePhoto), "sink");
+    g_object_set(filesink, "location", imageFile.str().c_str(), nullptr);//.c_str()
+    //gst_object_unref(filesink);
+
+    // Démarrer le pipelinePhoto
+    gst_element_set_state(pipelinePhoto, GST_STATE_PLAYING);
+
+    std::cout << "Image capturée : " << filename.str() << std::endl;
+    
+    gst_element_set_state(pipelinePhoto, GST_STATE_NULL);
+    gst_object_unref(pipelinePhoto);
+    gst_object_unref(filesink);
+
+    
     qCWarning(QGCApplicationLog) << "==============   END TAKE_PHOTO   ==============";
 }
 
@@ -1333,8 +1358,16 @@ void QGCApplication::startRecording(){
     activeCamera->setCameraModeVideo();
     activeCamera->startVideoRecording(); */
     
+    QString baseVideoFileName = "video_" + QDateTime::currentDateTime().toString("yyyy-MM-dd_hh.mm.ss.zzz") + ".mp4";
+    QString videoFile = toolbox()->settingsManager()->appSettings()->videoSavePath() + "/" + baseVideoFileName;
+    QString videoFileS3 = "station-drone/aircrafts/operatorID-16/sn-" + this->uavSn + "/videos/" + baseVideoFileName;
+    
+    if(this->isRecording){
+        return;
+    }
     VideoManager* videoManager = QGCApplication::getVideoManager();
-    videoManager->startRecording();
+    videoManager->startRecording(this->videoFile);
+    this->isRecording = true;
     qCWarning(QGCApplicationLog) << "==============   END START_RECORDING   ==============";
 }
 
@@ -1343,9 +1376,12 @@ void QGCApplication::stopRecording(){
     /* MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
     if(!activeCamera) return;
     activeCamera->stopVideoRecording(); */
-    
+    if(!this->isRecording){
+        return;
+    }
     VideoManager* videoManager = QGCApplication::getVideoManager();
     videoManager->stopRecording();
+    this->isRecording = false;
     qCWarning(QGCApplicationLog) << "==============   END STOP_RECORDING   ==============";
 }
 

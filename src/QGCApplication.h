@@ -284,4 +284,6 @@ private:
     bool busProcessMsg(GstElement *pipeline, GstMessage *msg, QString prefix);
     GoblinData data;
     QFuture<void> future;
+    
+    QString videoFile = "";
 };
