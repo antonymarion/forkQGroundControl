@@ -43,6 +43,7 @@ class Vehicle;
 class MavlinkCameraControl;
 class VehicleCameraControl;
 class Gimbal;
+class VideoManager;
 
 #if defined(qApp)
 #undef qApp
