@@ -1205,7 +1205,7 @@ void QGCApplication::startStream(){
 
     // Start the bus thread
     this->future = QtConcurrent::run([this]() {
-        const gchar* pipelineDesc = "rtspsrc location=rtsp://192.168.144.25:8554/main.264 is-live=true latency=0 protocols=tcp ! decodebin ! x264enc bframes=0 key-int-max=60 ! flvmux streamable=true ! rtmpsink location=rtmp://ome.stationdrone.net/app/1600FTR2STD24289930B";
+        const gchar* pipelineDesc = "rtspsrc location=rtsp://192.168.144.25:8554/main.264 is-live=true latency=0 protocols=tcp ! decodebin ! x264enc bframes=0 key-int-max=60 ! flvmux streamable=true ! rtmpsink location=" + this->rtmpUrl.toStdString();
         GError *err = nullptr;
         this->data.pipeline = gst_parse_launch(pipelineDesc, &err);
 
@@ -1332,13 +1332,13 @@ void QGCApplication::takePhoto(){
 
     // Récupérer l'élément filesink et définir son emplacement
     GstElement *filesink = gst_bin_get_by_name(GST_BIN(pipelinePhoto), "sink");
-    g_object_set(filesink, "location", imageFile.str().c_str(), nullptr);//.c_str()
+    g_object_set(filesink, "location", imageFile.toStdString().c_str(), nullptr);//.c_str()
     //gst_object_unref(filesink);
 
     // Démarrer le pipelinePhoto
     gst_element_set_state(pipelinePhoto, GST_STATE_PLAYING);
 
-    std::cout << "Image capturée : " << filename.str() << std::endl;
+    qCWarning(QGCApplicationLog) << "Image capturée : " << imageFile;
     
     gst_element_set_state(pipelinePhoto, GST_STATE_NULL);
     gst_object_unref(pipelinePhoto);
