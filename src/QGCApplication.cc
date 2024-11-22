@@ -1322,7 +1322,7 @@ void QGCApplication::takePhoto(){
     QString imageFile = toolbox()->settingsManager()->appSettings()->photoSavePath() + "/" + baseImageFileName;
     QString imageFileS3 = "station-drone/aircrafts/operatorID-16/sn-" + this->uavSn + "/images/" + baseImageFileName;
 
-    GError *err = nullptr;
+    /* GError *err = nullptr;
     GstElement *pipelinePhoto = gst_parse_launch("rtspsrc location=rtsp://192.168.144.25:8554/main.264 num-buffers=10000000 ! decodebin ! jpegenc ! filesink name=sink", &err);
 
     if (!pipelinePhoto) {
@@ -1342,7 +1342,11 @@ void QGCApplication::takePhoto(){
     
     gst_element_set_state(pipelinePhoto, GST_STATE_NULL);
     gst_object_unref(pipelinePhoto);
-    gst_object_unref(filesink);
+    gst_object_unref(filesink); */
+
+    
+    VideoManager* videoManager = QGCApplication::getVideoManager();
+    videoManager->grabImage(imageFile);
 
     
     qCWarning(QGCApplicationLog) << "==============   END TAKE_PHOTO   ==============";
@@ -1358,15 +1362,18 @@ void QGCApplication::startRecording(){
     activeCamera->setCameraModeVideo();
     activeCamera->startVideoRecording(); */
     
-    QString baseVideoFileName = "video_" + QDateTime::currentDateTime().toString("yyyy-MM-dd_hh.mm.ss.zzz") + ".mp4";
-    QString videoFile = toolbox()->settingsManager()->appSettings()->videoSavePath() + "/" + baseVideoFileName;
-    QString videoFileS3 = "station-drone/aircrafts/operatorID-16/sn-" + this->uavSn + "/videos/" + baseVideoFileName;
+    QString baseVideoFileName = "video_" + QDateTime::currentDateTime().toString("yyyy-MM-dd_hh.mm.ss.zzz");
+    QString ext = QString();
     
     if(this->isRecording){
         return;
     }
     VideoManager* videoManager = QGCApplication::getVideoManager();
-    videoManager->startRecording(this->videoFile);
+    videoManager->startRecording(baseVideoFileName, ext);
+    
+    QString videoFile = toolbox()->settingsManager()->appSettings()->videoSavePath() + "/" + baseVideoFileName + ext;
+    QString videoFileS3 = "station-drone/aircrafts/operatorID-16/sn-" + this->uavSn + "/videos/" + baseVideoFileName + ext;
+
     this->isRecording = true;
     qCWarning(QGCApplicationLog) << "==============   END START_RECORDING   ==============";
 }
