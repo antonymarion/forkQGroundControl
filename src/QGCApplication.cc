@@ -1303,10 +1303,6 @@ void QGCApplication::stopStream(){
     gst_object_unref(this->data.pipeline);
     this->isStreaming = false;
     this->rtmpUrl = "";
-    QGCApplication::stopThread();
-}
-
-void QGCApplication::stopThread(){
     if(this->future.isValid() && this->future.isRunning()) {
         this->future.cancel();
     }
@@ -1893,7 +1889,10 @@ void QGCApplication::shutdown()
 {
     gst_element_set_state(this->data.pipeline, GST_STATE_NULL);
     gst_object_unref(this->data.pipeline);
-    QGCApplication::stopThread();
+    if(this->future.isValid() && this->future.isRunning()) {
+        this->future.cancel();
+        this->future.waitForFinished();
+    }
     qCDebug(QGCApplicationLog) << "Exit";
     // This is bad, but currently qobject inheritances are incorrect and cause crashes on exit without
     delete _qmlAppEngine;
