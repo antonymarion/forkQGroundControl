@@ -256,6 +256,7 @@ private:
     Vehicle* getActiveVehicle();
     MavlinkCameraControl* getActiveCamera();
     Gimbal* getActiveGimbal();
+    VideoManager* getVideoManager();
     QString rtmpUrl = "";
     QString loggedEmail = "graphx.stephaneroma@gmail.com";
     QString registrationNumber = "UAS-FR-458156";
