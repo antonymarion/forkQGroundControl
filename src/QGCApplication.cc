@@ -37,6 +37,7 @@
 #include <QProcess>
 #include <QCoreApplication>
 #include <QtConcurrent>
+#include <QFuture>
 //#include <GStreamer.h>
 #include <gst/gst.h>
 #include <thread>
@@ -1203,7 +1204,7 @@ void QGCApplication::startStream(){
     this->rtmpUrl = "rtmp://ome.stationdrone.net/app/" + this->uavSn;
 
     // Start the bus thread
-    QtConcurrent::run([this]() {
+    this->future = QtConcurrent::run([this]() {
         const gchar* pipelineDesc = "rtspsrc location=rtsp://192.168.144.25:8554/main.264 is-live=true latency=0 protocols=tcp ! decodebin ! x264enc bframes=0 key-int-max=60 ! flvmux streamable=true ! rtmpsink location=rtmp://ome.stationdrone.net/app/1600FTR2STD24289930B";
         GError *err = nullptr;
         this->data.pipeline = gst_parse_launch(pipelineDesc, &err);
@@ -1302,6 +1303,9 @@ void QGCApplication::stopStream(){
     gst_object_unref(this->data.pipeline);
     this->isStreaming = false;
     this->rtmpUrl = "";
+    if(this->future){
+        this->future.cancel();
+    }
 }
 
 void QGCApplication::takePhoto(){
@@ -1885,6 +1889,9 @@ void QGCApplication::shutdown()
 {
     gst_element_set_state(this->data.pipeline, GST_STATE_NULL);
     gst_object_unref(this->data.pipeline);
+    if(this->future){
+        this->future.cancel();
+    }
     qCDebug(QGCApplicationLog) << "Exit";
     // This is bad, but currently qobject inheritances are incorrect and cause crashes on exit without
     delete _qmlAppEngine;

@@ -24,6 +24,7 @@
 #include <QtMqtt/QMqttSubscription>
 #include <QJsonObject>
 #include <QProcess>
+#include <QFuture>
 #include <gst/gst.h>
 #include <thread>
 #include <gst/app/gstappsink.h>
@@ -282,4 +283,5 @@ private:
     void codeThreadBus(GstElement *pipeline, GoblinData &data, QString prefix);
     bool busProcessMsg(GstElement *pipeline, GstMessage *msg, QString prefix);
     GoblinData data;
+    QFuture<void> future;
 };
