@@ -1156,6 +1156,7 @@ VideoManager* QGCApplication::getVideoManager(){
         qCWarning(QGCApplicationLog) << "*****   Video manager not available   *****";
         return nullptr;
     }
+    return videoManager;
 }
 
 QJsonArray QGCApplication::getCameras() {
@@ -1314,7 +1315,7 @@ void QGCApplication::takePhoto(){
     activeCamera->takePhoto(); */
 
     VideoManager* videoManager = QGCApplication::getVideoManager();
-    videoManager.grabImage();
+    videoManager->grabImage();
     qCWarning(QGCApplicationLog) << "==============   END TAKE_PHOTO   ==============";
 }
 
@@ -1329,7 +1330,7 @@ void QGCApplication::startRecording(){
     activeCamera->startVideoRecording(); */
     
     VideoManager* videoManager = QGCApplication::getVideoManager();
-    videoManager.startRecording();
+    videoManager->startRecording();
     qCWarning(QGCApplicationLog) << "==============   END START_RECORDING   ==============";
 }
 
@@ -1340,7 +1341,7 @@ void QGCApplication::stopRecording(){
     activeCamera->stopVideoRecording(); */
     
     VideoManager* videoManager = QGCApplication::getVideoManager();
-    videoManager.stopRecording();
+    videoManager->stopRecording();
     qCWarning(QGCApplicationLog) << "==============   END STOP_RECORDING   ==============";
 }
 
