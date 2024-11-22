@@ -1309,7 +1309,6 @@ void QGCApplication::stopStream(){
 void QGCApplication::stopThread(){
     if(this->future.isValid() && this->future.isRunning()) {
         this->future.cancel();
-        this->future.waitForFinished();
     }
 }
 
