@@ -1166,18 +1166,6 @@ QJsonArray QGCApplication::getCameras() {
     return cameraList;
 }
 
-void QGCApplication::takePhoto(){
-    qCWarning(QGCApplicationLog) << "==============  START TAKE_PHOTO  ==============";
-    MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
-    if(!activeCamera) {
-        qCWarning(QGCApplicationLog) << "*****   No active camera   *****";
-        return;
-    }
-    activeCamera->setCameraModePhoto();
-    activeCamera->takePhoto();
-    qCWarning(QGCApplicationLog) << "==============   END TAKE_PHOTO   ==============";
-}
-
 void QGCApplication::setZoom(float value){
     qCWarning(QGCApplicationLog) << "==============  START TAKE_PHOTO  ==============";
     MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
@@ -1207,7 +1195,7 @@ void QGCApplication::startStream(){
 
     // Start the bus thread
     QtConcurrent::run([this]() {
-        const gchar* pipelineDesc = "rtspsrc location=rtsp://192.168.144.25:8554/main.264 is-live=true latency=0 protocols=tcp ! rtpbin ! decodebin ! videoconvert ! x264enc ! flvmux streamable=true ! rtmpsink location=rtmp://rtmp2.drone-geofencing.com/live/1600FTR2STD24289930B";
+        const gchar* pipelineDesc = "rtspsrc location=rtsp://192.168.144.25:8554/main.264 is-live=true latency=0 protocols=tcp ! decodebin ! x264enc bframes=0 key-int-max=60 ! flvmux streamable=true ! rtmpsink location=rtmp://rtmp2.drone-geofencing.com/live/1600FTR2STD24289930B";
         GError *err = nullptr;
         this->data.pipeline = gst_parse_launch(pipelineDesc, &err);
 
@@ -1305,6 +1293,24 @@ void QGCApplication::stopStream(){
     gst_object_unref(this->data.pipeline);
     this->isStreaming = false;
     this->rtmpUrl = "";
+}
+
+void QGCApplication::takePhoto(){
+    qCWarning(QGCApplicationLog) << "==============  START TAKE_PHOTO  ==============";
+    MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
+    if(!activeCamera) {
+        qCWarning(QGCApplicationLog) << "*****   No active camera   *****";
+        return;
+    }
+    Vehicle* activeVehicle = QGCApplication::getActiveVehicle();
+    if(!activeVehicle) {
+        qCWarning(QGCApplicationLog) << "*****   No active vehicle   *****";
+        return;
+    } // use video manager
+    MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
+    activeCamera->setCameraModePhoto();
+    activeCamera->takePhoto();
+    qCWarning(QGCApplicationLog) << "==============   END TAKE_PHOTO   ==============";
 }
 
 void QGCApplication::startRecording(){

@@ -27,6 +27,7 @@
 #include <gst/gst.h>
 #include <thread>
 #include <gst/app/gstappsink.h>
+#include <iostream>
 
 // These private headers are require to implement the signal compress support below
 #include <QtCore/private/qthread_p.h>
@@ -239,11 +240,11 @@ private:
     void resetGimbal();
     QJsonObject getGimbalCapabilities();
     QJsonArray getCameras();
-    void takePhoto();
     void setZoom(float value);
     void testingStream(); // TODO remove this
     void startStream();
     void stopStream();
+    void takePhoto();
     void startRecording();
     void stopRecording();
     void servoCmd(float servoId, float pwmValue);
