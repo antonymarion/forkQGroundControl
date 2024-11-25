@@ -142,14 +142,9 @@ jobs:
           "C:\Program Files\CMake\bin\cmake" --build .
           "C:\Program Files\CMake\bin\cmake" --install . --verbose
 
-      - name: Setup FFmpeg
+      - name: Setup minio dependencies
         run: |
-          cd D:/a/_temp/Qt/6.6.3/msvc2019_64/bin
-          curl.exe -OL https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip
-          mkdir ffmpeg
-          tar -xf ffmpeg-release-essentials.zip -C ffmpeg --strip-components=1
-          dir ffmpeg
-          del ffmpeg-release-essentials.zip
+          vcpkg install curl:x64-windows jsoncpp:x64-windows
 
       - name: Configure
         working-directory: ${{ runner.temp }}\shadow_build_dir
