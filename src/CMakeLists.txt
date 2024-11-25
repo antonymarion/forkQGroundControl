@@ -8,8 +8,6 @@ find_package(Qt6
         QuickWidgets
         Widgets
 )
-find_package(CURL REQUIRED)
-find_package(jsoncpp REQUIRED)
 
 qt_add_library(QGC STATIC
     CmdLineOptParser.cc
