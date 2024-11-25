@@ -331,7 +331,7 @@ VideoManager::startRecording(const QString& videoFile, QString* usedExt = nullpt
             + (videoFile.isEmpty() ? QDateTime::currentDateTime().toString("yyyy-MM-dd_hh.mm.ss") : videoFile)
             + ".";
 
-    ext = kFileExtension[fileFormat - VideoReceiver::FILE_FORMAT_MIN];
+    const QString ext = kFileExtension[fileFormat - VideoReceiver::FILE_FORMAT_MIN];
     const QString videoFile2 = _videoFile + "2." + ext;
     _videoFile += ext;
     *usedExt += ext;
