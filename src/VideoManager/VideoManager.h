@@ -83,7 +83,7 @@ public:
     Q_INVOKABLE void startVideo();
     Q_INVOKABLE void stopVideo();
 
-    Q_INVOKABLE void startRecording(const QString& videoFile = QString(), const QString& ext = QString());
+    Q_INVOKABLE void startRecording(const QString& videoFile = QString(), QString& ext = QString());
     Q_INVOKABLE void stopRecording();
 
     Q_INVOKABLE void grabImage(const QString& imageFile = QString());
