@@ -62,6 +62,7 @@ jobs:
       - name: Install minio dependencies
         run: |
           vcpkg install curl:x64-windows jsoncpp:x64-windows
+          dir /s vcpkg.cmake
 
       - name: Install Vulkan
         working-directory: ${{ runner.temp }}
