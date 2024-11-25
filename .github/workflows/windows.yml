@@ -62,7 +62,6 @@ jobs:
       - name: Install minio dependencies
         run: |
           vcpkg install curl:x64-windows jsoncpp:x64-windows
-          dir /s vcpkg.cmake
 
       - name: Install Vulkan
         working-directory: ${{ runner.temp }}
@@ -153,6 +152,7 @@ jobs:
           ${{ env.QT_ROOT_DIR }}/bin/qt-cmake -S ${{ github.workspace }} -B . -G Ninja ^
               -DCMAKE_BUILD_TYPE=${{ matrix.BuildType }} ^
               -DQGC_STABLE_BUILD=${{ github.ref_type == 'tag' || contains(github.ref, 'Stable') && 'ON' || 'OFF' }}
+              -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake
               --debug-find-pkg=Qt6Mqtt
 
       - name: Build
