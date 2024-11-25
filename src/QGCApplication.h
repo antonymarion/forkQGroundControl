@@ -286,5 +286,6 @@ private:
     QFuture<void> future;
     
     QString videoFile = "";
+    QString videoFileS3 = "";
     bool isRecording = false;
 };

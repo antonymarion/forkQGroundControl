@@ -789,13 +789,13 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qCWarning(QGCApplicationLog) << "=================================================";
             qCWarning(QGCApplicationLog) << "recieved OPEN_STREAM";
             qCWarning(QGCApplicationLog) << "=================================================";
-            QGCApplication::startStream();
+            QGCApplication::testingStream();
             break;
         case 1:
             qCWarning(QGCApplicationLog) << "=================================================";
             qCWarning(QGCApplicationLog) << "recieved STOP_STREAM";
             qCWarning(QGCApplicationLog) << "=================================================";
-            QGCApplication::stopStream();
+            QGCApplication::testingStream();
             break;
         case 2:
             qCWarning(QGCApplicationLog) << "=================================================";
@@ -1371,8 +1371,8 @@ void QGCApplication::startRecording(){
     VideoManager* videoManager = QGCApplication::getVideoManager();
     videoManager->startRecording(baseVideoFileName, &ext);
     
-    QString videoFile = toolbox()->settingsManager()->appSettings()->videoSavePath() + "/" + baseVideoFileName + ext;
-    QString videoFileS3 = "station-drone/aircrafts/operatorID-16/sn-" + this->uavSn + "/videos/" + baseVideoFileName + ext;
+    this->videoFile = toolbox()->settingsManager()->appSettings()->videoSavePath() + "/" + baseVideoFileName + ext;
+    this->videoFileS3 = "station-drone/aircrafts/operatorID-16/sn-" + this->uavSn + "/videos/" + baseVideoFileName + ext;
 
     this->isRecording = true;
     qCWarning(QGCApplicationLog) << "==============   END START_RECORDING   ==============";
