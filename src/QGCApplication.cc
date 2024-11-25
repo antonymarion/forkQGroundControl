@@ -1369,7 +1369,7 @@ void QGCApplication::startRecording(){
         return;
     }
     VideoManager* videoManager = QGCApplication::getVideoManager();
-    videoManager->startRecording(baseVideoFileName, ext);
+    videoManager->startRecording(baseVideoFileName, &ext);
     
     QString videoFile = toolbox()->settingsManager()->appSettings()->videoSavePath() + "/" + baseVideoFileName + ext;
     QString videoFileS3 = "station-drone/aircrafts/operatorID-16/sn-" + this->uavSn + "/videos/" + baseVideoFileName + ext;
