@@ -185,8 +185,6 @@ find_package(Qt6
     HINTS
         ${QT_LIBRARY_HINTS}
 )
-find_package(CURL REQUIRED)
-find_package(jsoncpp REQUIRED)
 
 # Require 6.6.3 because otherwise libQt6QuickControls2Basic.so.6 &
 # libQt6QuickControls2BasicStyleImpl.so.6 are missing.

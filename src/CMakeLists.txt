@@ -88,6 +88,7 @@ target_link_libraries(QGC
         GPS
         Joystick
         MAVLink
+        minio-cpp
         MissionManager
         # PlanView
         PositionManager
@@ -108,7 +109,6 @@ target_link_libraries(QGC
         Qt6::CorePrivate
         Qt6::Widgets
         gstqml6gl
-        minio-cpp
 )
 
 if(QGC_CUSTOM_BUILD)

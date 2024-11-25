@@ -152,7 +152,6 @@ jobs:
           ${{ env.QT_ROOT_DIR }}/bin/qt-cmake -S ${{ github.workspace }} -B . -G Ninja ^
               -DCMAKE_BUILD_TYPE=${{ matrix.BuildType }} ^
               -DQGC_STABLE_BUILD=${{ github.ref_type == 'tag' || contains(github.ref, 'Stable') && 'ON' || 'OFF' }}
-              -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake
               --debug-find-pkg=Qt6Mqtt
 
       - name: Build
