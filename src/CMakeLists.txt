@@ -108,8 +108,6 @@ target_link_libraries(QGC
         Qt6::CorePrivate
         Qt6::Widgets
         gstqml6gl
-        CURL::libcurl
-        jsoncpp_lib
         minio-cpp
 )
 
