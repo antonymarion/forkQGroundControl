@@ -59,6 +59,10 @@ jobs:
           choco install --no-progress ninja pkgconfiglite -y
           choco install --no-progress cmake --installargs 'ADD_CMAKE_TO_PATH=System' --apply-install-arguments-to-dependencies
 
+      - name: Install minio dependencies
+        run: |
+          vcpkg install curl:x64-windows jsoncpp:x64-windows
+
       - name: Install Vulkan
         working-directory: ${{ runner.temp }}
         shell: pwsh
@@ -141,10 +145,6 @@ jobs:
           cd D:\a\forkQGroundControl\forkQGroundControl\qtmqtt\build
           "C:\Program Files\CMake\bin\cmake" --build .
           "C:\Program Files\CMake\bin\cmake" --install . --verbose
-
-      - name: Setup minio dependencies
-        run: |
-          vcpkg install curl:x64-windows jsoncpp:x64-windows
 
       - name: Configure
         working-directory: ${{ runner.temp }}\shadow_build_dir
