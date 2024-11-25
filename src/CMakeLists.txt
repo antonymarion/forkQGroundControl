@@ -8,6 +8,8 @@ find_package(Qt6
         QuickWidgets
         Widgets
 )
+find_package(CURL REQUIRED)
+find_package(jsoncpp REQUIRED)
 
 qt_add_library(QGC STATIC
     CmdLineOptParser.cc
@@ -42,6 +44,7 @@ add_subdirectory(Gimbal)
 add_subdirectory(GPS)
 add_subdirectory(Joystick)
 add_subdirectory(MAVLink)
+add_subdirectory(minio-cpp)
 add_subdirectory(MissionManager)
 # add_subdirectory(PlanView)
 add_subdirectory(PositionManager)
@@ -107,6 +110,9 @@ target_link_libraries(QGC
         Qt6::CorePrivate
         Qt6::Widgets
         gstqml6gl
+        CURL::libcurl
+        jsoncpp_lib
+        minio-cpp
 )
 
 if(QGC_CUSTOM_BUILD)
