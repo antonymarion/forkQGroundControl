@@ -300,7 +300,7 @@ VideoManager::stopVideo()
 }
 
 void
-VideoManager::startRecording(const QString& videoFile, QString* usedExt = nullptr)
+VideoManager::startRecording(const QString& videoFile, QString* usedExt)
 {
     if (_app->runningUnitTests()) {
         return;
