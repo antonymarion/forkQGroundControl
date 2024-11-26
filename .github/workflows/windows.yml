@@ -145,7 +145,7 @@ jobs:
       - name: Install Minio Dependencies
         run: |
           vcpkg install curlpp
-          cd C
+          C:
           dir
 
       - name: Configure
