@@ -146,7 +146,7 @@ jobs:
         run: |
           vcpkg install curlpp
           cd C:/vcpkg
-          dir /s unofficial-curlpp-config.cmake
+          dir
 
       - name: Configure
         working-directory: ${{ runner.temp }}\shadow_build_dir
