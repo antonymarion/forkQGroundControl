@@ -152,7 +152,7 @@ jobs:
           ${{ env.QT_ROOT_DIR }}/bin/qt-cmake -S ${{ github.workspace }} -B . -G Ninja ^
               -DCMAKE_BUILD_TYPE=${{ matrix.BuildType }} ^
               -DQGC_STABLE_BUILD=${{ github.ref_type == 'tag' || contains(github.ref, 'Stable') && 'ON' || 'OFF' }}
-              --debug-find-pkg=Qt6Mqtt
+              --debug-find-pkg=unofficial-curlpp
 
       - name: Build
         working-directory: ${{ runner.temp }}\shadow_build_dir
