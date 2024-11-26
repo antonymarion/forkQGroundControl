@@ -146,7 +146,7 @@ jobs:
         run: |
           vcpkg install curlpp
           C:
-          cd vcpkg
+          cd vcpkg/installed
           dir
 
       - name: Configure
