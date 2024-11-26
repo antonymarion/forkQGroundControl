@@ -142,6 +142,10 @@ jobs:
           "C:\Program Files\CMake\bin\cmake" --build .
           "C:\Program Files\CMake\bin\cmake" --install . --verbose
 
+      - name: Install Minio Dependencies
+        run: |
+          vcpkg install curl:x64-windows
+
       - name: Configure
         working-directory: ${{ runner.temp }}\shadow_build_dir
         run: |
