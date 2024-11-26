@@ -236,6 +236,7 @@ cmake_dependent_option(QGC_BUILD_DEPENDENCIES "Force Building of Dependencies." 
 #                Custom Build Configuration
 #######################################################
 
+add_subdirectory(minio-cpp)
 if(QGC_CUSTOM_BUILD)
     add_subdirectory(custom)
 endif()

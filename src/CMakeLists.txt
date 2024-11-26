@@ -42,7 +42,6 @@ add_subdirectory(Gimbal)
 add_subdirectory(GPS)
 add_subdirectory(Joystick)
 add_subdirectory(MAVLink)
-add_subdirectory(minio-cpp)
 add_subdirectory(MissionManager)
 # add_subdirectory(PlanView)
 add_subdirectory(PositionManager)
@@ -88,7 +87,6 @@ target_link_libraries(QGC
         GPS
         Joystick
         MAVLink
-        minio-cpp
         MissionManager
         # PlanView
         PositionManager
