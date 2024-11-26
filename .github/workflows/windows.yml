@@ -150,10 +150,11 @@ jobs:
         working-directory: ${{ runner.temp }}\shadow_build_dir
         run: |
           set unofficial-curlpp_DIR=C:\vcpkg\installed\x64-windows\share\unofficial-curlpp
+          set CURL_LIBRARIES=C:/vcpkg/installed/x64-windows/lib
+          set CURL_INCLUDE_DIRS=C:/vcpkg/installed/x64-windows/include
           ${{ env.QT_ROOT_DIR }}/bin/qt-cmake -S ${{ github.workspace }} -B . -G Ninja ^
               -DCMAKE_BUILD_TYPE=${{ matrix.BuildType }} ^
               -DQGC_STABLE_BUILD=${{ github.ref_type == 'tag' || contains(github.ref, 'Stable') && 'ON' || 'OFF' }}
-              -DCURL_LIBRARY=C:/vcpkg/installed/x64-windows/lib/libcurl.lib -DCURL_INCLUDE_DIR=C:/vcpkg/installed/x64-windows/include ..
 
       - name: Build
         working-directory: ${{ runner.temp }}\shadow_build_dir
