@@ -152,7 +152,11 @@ jobs:
           set unofficial-curlpp_DIR=C:\vcpkg\installed\x64-windows\share\unofficial-curlpp
           C:
           cd vcpkg/installed/x64-windows
-          dir
+          dir share
+          dir share/unofficial-curlpp
+          dir lib/
+          dir lib/libcurl.lib
+          dir include
           ${{ env.QT_ROOT_DIR }}/bin/qt-cmake -S ${{ github.workspace }} -B . -G Ninja ^
               -DCMAKE_BUILD_TYPE=${{ matrix.BuildType }} ^
               -DQGC_STABLE_BUILD=${{ github.ref_type == 'tag' || contains(github.ref, 'Stable') && 'ON' || 'OFF' }}
