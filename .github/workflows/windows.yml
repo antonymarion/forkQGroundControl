@@ -146,7 +146,7 @@ jobs:
         run: |
           vcpkg install curlpp
           C:
-          cd vcpkg/installed/x64-windows/share
+          cd vcpkg/installed/x64-windows/share/unofficial-curlpp
           dir
 
       - name: Configure
