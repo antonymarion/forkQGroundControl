@@ -145,7 +145,7 @@ jobs:
       - name: Install Minio Dependencies
         run: |
           vcpkg install curlpp
-          set unofficial-curlpp_DIR=C:\vcpkg\installed\x64-windows\share\unofficial-curlpp\unofficial-curlpp-config.cmake
+          set unofficial-curlpp_DIR=C:\vcpkg\installed\x64-windows\share\unofficial-curlpp
 
       - name: Configure
         working-directory: ${{ runner.temp }}\shadow_build_dir
