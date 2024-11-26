@@ -145,7 +145,8 @@ jobs:
       - name: Install Minio Dependencies
         run: |
           vcpkg install curlpp
-          dir
+          cd C:/vcpkg
+          dir /s unofficial-curlppConfig.cmake
 
       - name: Configure
         working-directory: ${{ runner.temp }}\shadow_build_dir
