@@ -144,7 +144,7 @@ jobs:
 
       - name: Install Minio Dependencies
         run: |
-          vcpkg install curl:x64-windows
+          vcpkg install curlpp
           dir unofficial-curlpp-config.cmake
 
       - name: Configure
