@@ -141,10 +141,6 @@ jobs:
           cd D:\a\forkQGroundControl\forkQGroundControl\qtmqtt\build
           "C:\Program Files\CMake\bin\cmake" --build .
           "C:\Program Files\CMake\bin\cmake" --install . --verbose
-      
-      - name: Install Minio Dependencies
-        run: |
-          vcpkg install minio-cpp
 
       - name: Configure
         working-directory: ${{ runner.temp }}\shadow_build_dir
@@ -152,7 +148,6 @@ jobs:
           ${{ env.QT_ROOT_DIR }}/bin/qt-cmake -S ${{ github.workspace }} -B . -G Ninja ^
               -DCMAKE_BUILD_TYPE=${{ matrix.BuildType }} ^
               -DQGC_STABLE_BUILD=${{ github.ref_type == 'tag' || contains(github.ref, 'Stable') && 'ON' || 'OFF' }}
-              --preset=default
 
       - name: Build
         working-directory: ${{ runner.temp }}\shadow_build_dir
