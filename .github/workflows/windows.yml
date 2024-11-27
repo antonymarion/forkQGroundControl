@@ -146,7 +146,7 @@ jobs:
       - name: Install Minio Dependencies
         run: |
           C:
-          vcpkg install
+          vcpkg install minio-cpp
 
       - name: Configure
         working-directory: ${{ runner.temp }}\shadow_build_dir
