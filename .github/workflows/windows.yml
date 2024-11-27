@@ -145,7 +145,7 @@ jobs:
 
       - name: Install Minio Dependencies
         run: |
-          dir
+          C:
           vcpkg install minio-cpp
 
       - name: Configure
