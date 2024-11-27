@@ -141,6 +141,10 @@ jobs:
           cd D:\a\forkQGroundControl\forkQGroundControl\qtmqtt\build
           "C:\Program Files\CMake\bin\cmake" --build .
           "C:\Program Files\CMake\bin\cmake" --install . --verbose
+      
+      - name: Install Minio Dependencies
+        run: |
+          vcpkg install curlpp
 
       - name: Configure
         working-directory: ${{ runner.temp }}\shadow_build_dir
