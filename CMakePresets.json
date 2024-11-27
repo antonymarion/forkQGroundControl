@@ -3,11 +3,11 @@
   "configurePresets": [
     {
       "name": "vcpkg",
-      "generator": "Unix Makefiles",
+      "generator": "Windows Makefiles",
       "binaryDir": "${sourceDir}/build",
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
-        "CMAKE_PREFIX_PATH": "$env{VCPKG_ROOT}/installed/arm64-linux/share"
+        "CMAKE_PREFIX_PATH": "$env{VCPKG_ROOT}/installed/x64-windows/share"
       }
     }
   ]
