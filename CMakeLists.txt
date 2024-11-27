@@ -111,6 +111,7 @@ set(BUILD_SHARED_LIBS OFF)
 #######################################################
 
 include(Qt6QGCConfiguration)
+include_directories(C:/vcpkg/installed/x64-windows/include)
 
 set(QT_QML_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qml" CACHE PATH "Install path for QML" FORCE)
 # set(QML_IMPORT_PATH ${CMAKE_SOURCE_DIR}/qml ${CMAKE_BINARY_DIR}/imports CACHE STRING "Extra QML Import Paths" FORCE)
