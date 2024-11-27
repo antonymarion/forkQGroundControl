@@ -144,7 +144,7 @@ jobs:
       
       - name: Install Minio Dependencies
         run: |
-          vcpkg install curlpp
+          vcpkg install minio-cpp
 
       - name: Configure
         working-directory: ${{ runner.temp }}\shadow_build_dir
