@@ -153,9 +153,7 @@ jobs:
           C:
           cd vcpkg/installed/x64-windows
           dir share
-          dir share/unofficial-curlpp
-          dir lib/
-          dir lib/libcurl.lib
+          dir lib
           dir include
           ${{ env.QT_ROOT_DIR }}/bin/qt-cmake -S ${{ github.workspace }} -B . -G Ninja ^
               -DCMAKE_BUILD_TYPE=${{ matrix.BuildType }} ^
