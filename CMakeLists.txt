@@ -185,6 +185,7 @@ find_package(Qt6
     HINTS
         ${QT_LIBRARY_HINTS}
 )
+find_package(miniocpp REQUIRED)
 
 # Require 6.6.3 because otherwise libQt6QuickControls2Basic.so.6 &
 # libQt6QuickControls2BasicStyleImpl.so.6 are missing.
@@ -236,7 +237,7 @@ cmake_dependent_option(QGC_BUILD_DEPENDENCIES "Force Building of Dependencies." 
 #                Custom Build Configuration
 #######################################################
 
-add_subdirectory(minio-cpp)
+# add_subdirectory(minio-cpp)
 if(QGC_CUSTOM_BUILD)
     add_subdirectory(custom)
 endif()
@@ -442,7 +443,7 @@ target_link_libraries(${PROJECT_NAME}
         Qt6::Widgets
         Qt6::Svg # Used to import QSvgPlugin
         QGC
-        minio-cpp
+        # minio-cpp
         QmlControls
         Utilities
 )
