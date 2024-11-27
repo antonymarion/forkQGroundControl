@@ -112,20 +112,6 @@ set(BUILD_SHARED_LIBS OFF)
 
 include(Qt6QGCConfiguration)
 
-include(FetchContent)
-FetchContent_Declare(curlpp
-    GIT_REPOSITORY https://github.com/jpbarrette/curlpp.git
-    GIT_TAG v0.8.1
-)
-FetchContent_MakeAvailable(curlpp)
-
-include(FetchContent)
-FetchContent_Declare(curl
-    GIT_REPOSITORY https://github.com/curl/curl.git
-    GIT_TAG curl-8_11_0
-)
-FetchContent_MakeAvailable(curl)
-
 set(QT_QML_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qml" CACHE PATH "Install path for QML" FORCE)
 # set(QML_IMPORT_PATH ${CMAKE_SOURCE_DIR}/qml ${CMAKE_BINARY_DIR}/imports CACHE STRING "Extra QML Import Paths" FORCE)
 add_compile_definitions(QT_DISABLE_DEPRECATED_UP_TO=0x060600)
@@ -251,7 +237,8 @@ cmake_dependent_option(QGC_BUILD_DEPENDENCIES "Force Building of Dependencies." 
 #                Custom Build Configuration
 #######################################################
 
-add_subdirectory(minio-cpp)
+add_subdirectory(libs/minio-cpp)
+add_subdirectory(libs/curlpp)
 if(QGC_CUSTOM_BUILD)
     add_subdirectory(custom)
 endif()
@@ -456,8 +443,9 @@ target_link_libraries(${PROJECT_NAME}
         Qt6::Quick
         Qt6::Widgets
         Qt6::Svg # Used to import QSvgPlugin
-        QGC
+        curlpp
         minio-cpp
+        QGC
         QmlControls
         Utilities
 )
