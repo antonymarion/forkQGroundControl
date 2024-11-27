@@ -119,6 +119,13 @@ FetchContent_Declare(curlpp
 )
 FetchContent_MakeAvailable(curlpp)
 
+include(FetchContent)
+FetchContent_Declare(curl
+    GIT_REPOSITORY https://github.com/curl/curl.git
+    GIT_TAG curl-8_11_0
+)
+FetchContent_MakeAvailable(curl)
+
 set(QT_QML_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qml" CACHE PATH "Install path for QML" FORCE)
 # set(QML_IMPORT_PATH ${CMAKE_SOURCE_DIR}/qml ${CMAKE_BINARY_DIR}/imports CACHE STRING "Extra QML Import Paths" FORCE)
 add_compile_definitions(QT_DISABLE_DEPRECATED_UP_TO=0x060600)
