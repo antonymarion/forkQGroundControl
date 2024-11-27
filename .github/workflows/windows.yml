@@ -9,6 +9,7 @@ on:
       - detached_squashed
       - vehicle-camera
       - gstreamer
+      - sd
     tags:
       - 'v*'
     paths-ignore:
