@@ -903,7 +903,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
     }
 
     if(state_value != 0){
-        QCGApplication::sendEventMessage(message["instruction"].toString(), state_value);
+        QGCApplication::sendEventMessage(message["instruction"].toString(), state_value);
     }
 
     QJsonDocument doc(message);
@@ -959,12 +959,12 @@ void QGCApplication::sendInfos(){
 
 void QGCApplication::sendRemotePilote() {
     QJsonObject newResponse;
-    newResponse.insert("email", this->loggedEmail);
-    newResponse.insert("registrationNumber", this->registrationNumber);
+    newResponse.insert("email", loggedEmail);
+    newResponse.insert("registrationNumber", registrationNumber);
 
     QJsonDocument doc(newResponse);
     QString responseMessage(doc.toJson(QJsonDocument::Compact));
-    m_client->publish("REMOTE_PILOT/"+this->uavSn, responseMessage.toUtf8());
+    m_client->publish("REMOTE_PILOT/" + uavSn, responseMessage.toUtf8());
 }
 
 void QGCApplication::sendAircraftPositionInfos() {
@@ -1095,21 +1095,21 @@ void QGCApplication::setCamera(int i){
     Vehicule::cameraManager().setCurrentCamera(i);
 } */
 
-void QCGApplication::sendEventMessage(QString command, int value) {
+void QGCApplication::sendEventMessage(QString command, int value) {
     QJsonObject newResponse;
     QString state;
     if(value == 1) {
-        state = "SUCCES_"
+        state = "SUCCES_";
     }
     else { // if error message needed
-        state = "ERROR_"
+        state = "ERROR_";
     }
-    newResponse.insert("name", state+command);
-    newResponse.insert("email", this->loggedEmail);
+    newResponse.insert("name", state + command);
+    newResponse.insert("email", loggedEmail);
 
     QJsonDocument doc(newResponse);
     QString responseMessage(doc.toJson(QJsonDocument::Compact));
-    m_client->publish("EVENT/"+this->uavSn, responseMessage.toUtf8());
+    m_client->publish("EVENT/"+ uavSn, responseMessage.toUtf8());
 }
 
 QJsonObject QGCApplication::getGimbalCapabilities(){
@@ -1371,7 +1371,7 @@ int QGCApplication::startRecording(){
     this->videoFileS3 = "station-drone/aircrafts/operatorID-16/sn-" + this->uavSn + "/videos/" + baseVideoFileName + ext;
 
     this->isRecording = videoManager->recording();
-    return this->isRecording ? 1 : -1;
+    return this->isRecording ? 0 : -1;
     qCWarning(QGCApplicationLog) << "==============   END START_RECORDING   ==============";
 }
 
