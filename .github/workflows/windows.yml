@@ -7,6 +7,8 @@ on:
       - 'Stable*'
       - detached
       - detached_squashed
+      - vehicle-camera
+      - gstreamer
     tags:
       - 'v*'
     paths-ignore:
@@ -55,7 +57,7 @@ jobs:
       - name: Install Dependencies
         run: |
           choco install --no-progress ninja pkgconfiglite -y
-          choco install --no-progress cmake --installargs 'ADD_CMAKE_TO_PATH=System' --apply-install-arguments-to-dependencies
+          choco install --no-progress cmake --version=3.31.0 --installargs 'ADD_CMAKE_TO_PATH=System' --apply-install-arguments-to-dependencies
 
       - name: Install Vulkan
         working-directory: ${{ runner.temp }}
@@ -140,22 +142,12 @@ jobs:
           "C:\Program Files\CMake\bin\cmake" --build .
           "C:\Program Files\CMake\bin\cmake" --install . --verbose
 
-      - name: Setup FFmpeg
-        run: |
-          cd D:/a/_temp/Qt/6.6.3/msvc2019_64/bin
-          curl.exe -OL https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip
-          mkdir ffmpeg
-          tar -xf ffmpeg-release-essentials.zip -C ffmpeg --strip-components=1
-          dir ffmpeg
-          del ffmpeg-release-essentials.zip
-
       - name: Configure
         working-directory: ${{ runner.temp }}\shadow_build_dir
         run: |
           ${{ env.QT_ROOT_DIR }}/bin/qt-cmake -S ${{ github.workspace }} -B . -G Ninja ^
               -DCMAKE_BUILD_TYPE=${{ matrix.BuildType }} ^
               -DQGC_STABLE_BUILD=${{ github.ref_type == 'tag' || contains(github.ref, 'Stable') && 'ON' || 'OFF' }}
-              --debug-find-pkg=Qt6Mqtt
 
       - name: Build
         working-directory: ${{ runner.temp }}\shadow_build_dir

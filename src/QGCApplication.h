@@ -24,7 +24,11 @@
 #include <QtMqtt/QMqttSubscription>
 #include <QJsonObject>
 #include <QProcess>
+#include <QFuture>
 #include <gst/gst.h>
+#include <thread>
+#include <gst/app/gstappsink.h>
+#include <iostream>
 
 // These private headers are require to implement the signal compress support below
 #include <QtCore/private/qthread_p.h>
@@ -40,6 +44,7 @@ class Vehicle;
 class MavlinkCameraControl;
 class VehicleCameraControl;
 class Gimbal;
+class VideoManager;
 
 #if defined(qApp)
 #undef qApp
@@ -237,14 +242,11 @@ private:
     void resetGimbal();
     QJsonObject getGimbalCapabilities();
     QJsonArray getCameras();
-    void takePhoto();
     void setZoom(float value);
     void testingStream(); // TODO remove this
     void startStream();
-    void QProcessErrHandler(const QProcess::ProcessError &error);
-    void QProcessStarted();
-    void QProcessFinishHandler(const int &exitCode, const QProcess::ExitStatus &exitStatus);
     void stopStream();
+    void takePhoto();
     void startRecording();
     void stopRecording();
     void servoCmd(float servoId, float pwmValue);
@@ -256,6 +258,7 @@ private:
     Vehicle* getActiveVehicle();
     MavlinkCameraControl* getActiveCamera();
     Gimbal* getActiveGimbal();
+    VideoManager* getVideoManager();
     QString rtmpUrl = "";
     QString loggedEmail = "graphx.stephaneroma@gmail.com";
     QString registrationNumber = "UAS-FR-458156";
@@ -268,4 +271,21 @@ private:
     QStringList axisList;
     QProcess *streamingProcess = nullptr;
     GstElement *pipeline = nullptr;
+    GstBus *bus;
+
+    //======================================================================================================================
+    /// Our global data, serious gstreamer apps should always have this !
+    struct GoblinData {
+        GstElement *pipeline = nullptr;
+        GstElement *sinkVideo = nullptr;
+    };
+
+    void codeThreadBus(GstElement *pipeline, GoblinData &data, QString prefix);
+    bool busProcessMsg(GstElement *pipeline, GstMessage *msg, QString prefix);
+    GoblinData data;
+    QFuture<void> future;
+    
+    QString videoFile = "";
+    QString videoFileS3 = "";
+    bool isRecording = false;
 };
