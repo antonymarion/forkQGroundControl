@@ -36,8 +36,14 @@
 #include <QUuid>
 #include <QProcess>
 #include <QCoreApplication>
+#include <QtConcurrent>
+#include <QFuture>
 //#include <GStreamer.h>
 #include <gst/gst.h>
+#include <thread>
+#include <gst/app/gstappsink.h>
+#include <iostream>
+
 
 #include "Audio/AudioOutput.h"
 #include "QGCConfig.h"
@@ -460,7 +466,6 @@ QGCApplication::QGCApplication(int &argc, char* argv[], bool unitTesting)
 
     // Setup for network proxy support
     QNetworkProxyFactory::setUseSystemConfiguration(true);
-
     // Parse command line options
     bool fClearSettingsOptions = false; // Clear stored settings
     bool fClearCache = false;           // Clear parameter/airframe caches
@@ -1152,6 +1157,15 @@ Gimbal* QGCApplication::getActiveGimbal(){
     return activeGimbal;
 }
 
+VideoManager* QGCApplication::getVideoManager(){
+    VideoManager* videoManager = toolbox()->videoManager();
+    if(!videoManager || !QGCApplication::getActiveCamera()){
+        qCWarning(QGCApplicationLog) << "*****   Video manager not available   *****";
+        return nullptr;
+    }
+    return videoManager;
+}
+
 QJsonArray QGCApplication::getCameras() {
     QJsonArray cameraList;
     Vehicle* activeVehicle = QGCApplication::getActiveVehicle();
@@ -1166,18 +1180,6 @@ QJsonArray QGCApplication::getCameras() {
         cameraList.append(thisCamera);
     }
     return cameraList;
-}
-
-void QGCApplication::takePhoto(){
-    qCWarning(QGCApplicationLog) << "==============  START TAKE_PHOTO  ==============";
-    MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
-    if(!activeCamera) {
-        qCWarning(QGCApplicationLog) << "*****   No active camera   *****";
-        return;
-    }
-    activeCamera->setCameraModePhoto();
-    activeCamera->takePhoto();
-    qCWarning(QGCApplicationLog) << "==============   END TAKE_PHOTO   ==============";
 }
 
 void QGCApplication::setZoom(float value){
@@ -1205,48 +1207,93 @@ void QGCApplication::startStream(){
     qCWarning(QGCApplicationLog) << "==============  START OPEN_STREAM  ==============";
     MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
     if(!activeCamera) return;
-    /* // QString ffmpegPath = Q;
-    // QStringList arguments;
-    // arguments << "-style" << "fusion";
-
-    QProcess *streamingProcess = new QProcess(this);
-    connect(streamingProcess, &QProcess::errorOccurred, this, &QGCApplication::QProcessErrHandler);
-    connect(streamingProcess, &QProcess::started, this, &QGCApplication::QProcessStarted);
-    connect(streamingProcess, &QProcess::finished, this, &QGCApplication::QProcessFinishHandler);
-    // streamingProcess->setProgram(ffmpegPath);
-    // streamingProcess->setArguments(arguments);
-    // streamingProcess->start(); */
-    
-    GError *error = nullptr;
-
-    const gchar *pipeline_desc = "rtspsrc location=rtsp://192.168.144.25:8554/main.264 ! rtph264depay ! h264parse ! flvmux streamable=true ! rtmpsink location=rtmp://ome.stationdrone.net/app/1600FTR2STD24289930B";
-    
-    pipeline = gst_parse_launch(pipeline_desc, &error);
-
-    if(!pipeline){
-        qCWarning(QGCApplicationLog) << "==============  ERREUR GSTREAMER  ==============";
-        qCWarning(QGCApplicationLog) << error->message;
-        g_clear_error(&error);
-        return;
-    }
-
-    gst_element_set_state(pipeline, GST_STATE_PLAYING);
-    this->isStreaming = true;
     this->rtmpUrl = "rtmp://ome.stationdrone.net/app/" + this->uavSn;
+
+    // Start the bus thread
+    this->future = QtConcurrent::run([this]() {
+        const gchar* pipelineDesc = ((QString)"rtspsrc location=rtsp://192.168.144.25:8554/main.264 is-live=true latency=0 protocols=tcp ! decodebin ! x264enc bframes=0 key-int-max=60 ! flvmux streamable=true ! rtmpsink location=" + this->rtmpUrl).toStdString().c_str();
+        GError *err = nullptr;
+        this->data.pipeline = gst_parse_launch(pipelineDesc, &err);
+
+        // Play the pipeline
+        gst_element_set_state(this->data.pipeline, GST_STATE_PLAYING);
+        codeThreadBus(this->data.pipeline, this->data, (QString)"DEBUG");
+    });
+    
+
+    this->isStreaming = true;
 }
 
-void QGCApplication::QProcessErrHandler(const QProcess::ProcessError &error){
-    qCWarning(QGCApplicationLog) << "**********  STREAM ERROR  **********";
-    qCWarning(QGCApplicationLog) << error;
+//======================================================================================================================
+/// Process a single bus message, log messages, exit on error, return false on eof
+bool QGCApplication::busProcessMsg(GstElement *pipeline, GstMessage *msg, QString prefix) {
+    GstMessageType mType = GST_MESSAGE_TYPE(msg);
+    qCWarning(QGCApplicationLog) << "[" << prefix << "] : mType = " << mType << " ";
+    GError *err = nullptr;
+    gchar *dbg = nullptr;
+    switch (mType) {
+        case (GST_MESSAGE_ERROR):
+            qCWarning(QGCApplicationLog) << " ERROR !";
+            // Parse error and exit program, hard exit
+            gst_message_parse_error(msg, &err, &dbg);
+            if(err) {
+                qCWarning(QGCApplicationLog) << "ERR = " << err->message << " FROM " << GST_OBJECT_NAME(msg->src);
+                g_clear_error(&err);
+            } else {
+                qCWarning(QGCApplicationLog) << "NO ERR";
+            }
+            if(dbg) {
+                qCWarning(QGCApplicationLog) << "DBG = " << dbg;
+                g_free(dbg);
+            } else {
+                qCWarning(QGCApplicationLog) << "NO DBG";
+            }
+            return false;
+        case (GST_MESSAGE_EOS) :
+            // Soft exit on EOS
+            qCWarning(QGCApplicationLog) << " EOS !";
+            return false;
+        case (GST_MESSAGE_STATE_CHANGED):
+            // Parse state change, print extra info for pipeline only
+            qCWarning(QGCApplicationLog) << "State changed !";
+            if (GST_MESSAGE_SRC(msg) == GST_OBJECT(pipeline)) {
+                GstState sOld, sNew, sPenging;
+                gst_message_parse_state_changed(msg, &sOld, &sNew, &sPenging);
+                qCWarning(QGCApplicationLog) << "Pipeline changed from " << gst_element_state_get_name(sOld) << " to " << gst_element_state_get_name(sNew);
+            }
+            break;
+        case (GST_MESSAGE_STEP_START):
+            qCWarning(QGCApplicationLog) << "STEP START !";
+            break;
+        case (GST_MESSAGE_STREAM_STATUS):
+            qCWarning(QGCApplicationLog) << "STREAM STATUS !";
+            break;
+        case (GST_MESSAGE_ELEMENT):
+            qCWarning(QGCApplicationLog) << "MESSAGE ELEMENT !";
+            break;
+
+            // You can add more stuff here if you want
+
+        default:
+            qCWarning(QGCApplicationLog) << "default";
+    }
+    return true;
 }
 
-void QGCApplication::QProcessStarted(){
-    qCWarning(QGCApplicationLog) << "==============  STREAM STARTED  ==============";
-}
-
-void QGCApplication::QProcessFinishHandler(const int &exitCode, const QProcess::ExitStatus &exitStatus = QProcess::NormalExit){
-    qCWarning(QGCApplicationLog) << "==============  STREAM ENDED  ==============";
-    qCWarning(QGCApplicationLog) << "Code : " << exitCode << ", Status : " << exitStatus;
+//======================================================================================================================
+/// Run the message loop for one bus
+void QGCApplication::codeThreadBus(GstElement *pipeline, GoblinData &data, QString prefix) {
+    GstBus *bus = gst_element_get_bus(pipeline);
+    int res;
+    while (true) {
+        GstMessage *msg = gst_bus_timed_pop(bus, GST_CLOCK_TIME_NONE);
+        res = busProcessMsg(pipeline, msg, prefix);
+        gst_message_unref(msg);
+        if (!res)
+            break;
+    }
+    gst_object_unref(bus);
+    qCWarning(QGCApplicationLog) << "BUS THREAD FINISHED : " << prefix;
 }
 
 void QGCApplication::stopStream(){
@@ -1257,28 +1304,97 @@ void QGCApplication::stopStream(){
     this->isStreaming = false;
     this->rtmpUrl = ""; */
 
-    gst_element_set_state(pipeline, GST_STATE_NULL);
+
+    gst_element_set_state(this->data.pipeline, GST_STATE_NULL);
+    gst_object_unref(this->data.pipeline);
     this->isStreaming = false;
     this->rtmpUrl = "";
+    if(this->future.isValid() && this->future.isRunning()) {
+        this->future.cancel();
+    }
+}
+
+void QGCApplication::takePhoto(){
+    qCWarning(QGCApplicationLog) << "==============  START TAKE_PHOTO  =============="; // NEED TO UPDATE FOR OTHER CAMS
+    /* MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
+    if(!activeCamera) {
+        qCWarning(QGCApplicationLog) << "*****   No active camera   *****";
+        return;
+    }
+    activeCamera->setCameraModePhoto();
+    activeCamera->takePhoto(); */
+    
+    QString baseImageFileName = "capture_" + QDateTime::currentDateTime().toString("yyyy-MM-dd_hh.mm.ss.zzz") + ".jpg";
+    QString imageFile = toolbox()->settingsManager()->appSettings()->photoSavePath() + "/" + baseImageFileName;
+    QString imageFileS3 = "station-drone/aircrafts/operatorID-16/sn-" + this->uavSn + "/images/" + baseImageFileName;
+
+    /* GError *err = nullptr;
+    GstElement *pipelinePhoto = gst_parse_launch("rtspsrc location=rtsp://192.168.144.25:8554/main.264 num-buffers=10000000 ! decodebin ! jpegenc ! filesink name=sink", &err);
+
+    if (!pipelinePhoto) {
+        qCWarning(QGCApplicationLog) << "Erreur lors de la création du pipelinePhoto.";
+        return;
+    }
+
+    // Récupérer l'élément filesink et définir son emplacement
+    GstElement *filesink = gst_bin_get_by_name(GST_BIN(pipelinePhoto), "sink");
+    g_object_set(filesink, "location", imageFile.toStdString().c_str(), nullptr);//.c_str()
+    //gst_object_unref(filesink);
+
+    // Démarrer le pipelinePhoto
+    gst_element_set_state(pipelinePhoto, GST_STATE_PLAYING);
+
+    qCWarning(QGCApplicationLog) << "Image capturée : " << imageFile;
+    
+    gst_element_set_state(pipelinePhoto, GST_STATE_NULL);
+    gst_object_unref(pipelinePhoto);
+    gst_object_unref(filesink); */
+
+    
+    VideoManager* videoManager = QGCApplication::getVideoManager();
+    videoManager->grabImage(imageFile);
+
+    
+    qCWarning(QGCApplicationLog) << "==============   END TAKE_PHOTO   ==============";
 }
 
 void QGCApplication::startRecording(){
-    qCWarning(QGCApplicationLog) << "==============  START START_RECORDING  ==============";
-    MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
+    qCWarning(QGCApplicationLog) << "==============  START START_RECORDING  =============="; // NEED TO UPDATE FOR OTHER CAMS
+    /* MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
     if(!activeCamera) {
         qCWarning(QGCApplicationLog) << "*****   No active camera   *****";
         return;
     }
     activeCamera->setCameraModeVideo();
-    activeCamera->startVideoRecording();
+    activeCamera->startVideoRecording(); */
+    
+    QString baseVideoFileName = "video_" + QDateTime::currentDateTime().toString("yyyy-MM-dd_hh.mm.ss.zzz");
+    QString ext = QString();
+    
+    if(this->isRecording){
+        return;
+    }
+    VideoManager* videoManager = QGCApplication::getVideoManager();
+    videoManager->startRecording(baseVideoFileName, &ext);
+    
+    this->videoFile = toolbox()->settingsManager()->appSettings()->videoSavePath() + "/" + baseVideoFileName + ext;
+    this->videoFileS3 = "station-drone/aircrafts/operatorID-16/sn-" + this->uavSn + "/videos/" + baseVideoFileName + ext;
+
+    this->isRecording = true;
     qCWarning(QGCApplicationLog) << "==============   END START_RECORDING   ==============";
 }
 
 void QGCApplication::stopRecording(){
-    qCWarning(QGCApplicationLog) << "==============  START STOP_RECORDING  ==============";
-    MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
+    qCWarning(QGCApplicationLog) << "==============  START STOP_RECORDING  =============="; // NEED TO UPDATE FOR OTHER CAMS
+    /* MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
     if(!activeCamera) return;
-    activeCamera->stopVideoRecording();
+    activeCamera->stopVideoRecording(); */
+    if(!this->isRecording){
+        return;
+    }
+    VideoManager* videoManager = QGCApplication::getVideoManager();
+    videoManager->stopRecording();
+    this->isRecording = false;
     qCWarning(QGCApplicationLog) << "==============   END STOP_RECORDING   ==============";
 }
 
@@ -1837,6 +1953,12 @@ QGCImageProvider* QGCApplication::qgcImageProvider()
 
 void QGCApplication::shutdown()
 {
+    gst_element_set_state(this->data.pipeline, GST_STATE_NULL);
+    gst_object_unref(this->data.pipeline);
+    if(this->future.isValid() && this->future.isRunning()) {
+        this->future.cancel();
+        this->future.waitForFinished();
+    }
     qCDebug(QGCApplicationLog) << "Exit";
     // This is bad, but currently qobject inheritances are incorrect and cause crashes on exit without
     delete _qmlAppEngine;
