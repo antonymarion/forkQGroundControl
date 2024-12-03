@@ -238,6 +238,7 @@ private:
     void sendInfos();
     void sendRemotePilote();
     void sendAircraftPositionInfos();
+    void sendEventMessage(QString command, int value);
     void genericGimbal(QString axis, QString value);
     void moveGimbalTundra(QString value);
     void moveGimbal(QString axis, QString value);
@@ -245,12 +246,12 @@ private:
     QJsonObject getGimbalCapabilities();
     QJsonArray getCameras();
     void setZoom(float value);
-    void testingStream(); // TODO remove this
     void startStream();
     void stopStream();
-    void takePhoto();
-    void startRecording();
-    void stopRecording();
+    bool isFileEmpty(const std::string& filePath);
+    int takePhoto();
+    int startRecording();
+    int stopRecording();
     void servoCmd(float servoId, float pwmValue);
     void updateLogStateChange();
     void brokerDisconnected();

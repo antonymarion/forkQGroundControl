@@ -43,6 +43,8 @@
 #include <thread>
 #include <gst/app/gstappsink.h>
 #include <iostream>
+#include <fstream>
+
 
 
 #include "Audio/AudioOutput.h"
@@ -783,6 +785,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
     QString payload = QString(msg.payload());
     QJsonDocument d = QJsonDocument::fromJson(payload.toUtf8());
     QJsonObject message = d.object();
+    int state_value = -1;
     MavlinkCameraControl *activeCamera;
     switch (this->commandsList.indexOf(message["instruction"].toString())){
         case 0:
@@ -790,40 +793,47 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qCWarning(QGCApplicationLog) << "recieved OPEN_STREAM";
             qCWarning(QGCApplicationLog) << "=================================================";
             QGCApplication::startStream();
+            state_value = 0;
             break;
         case 1:
             qCWarning(QGCApplicationLog) << "=================================================";
             qCWarning(QGCApplicationLog) << "recieved STOP_STREAM";
             qCWarning(QGCApplicationLog) << "=================================================";
             QGCApplication::stopStream();
+            state_value = 0;
             break;
         case 2:
             qCWarning(QGCApplicationLog) << "=================================================";
             qCWarning(QGCApplicationLog) << "recieved RESET_GIMBAL";
             qCWarning(QGCApplicationLog) << "=================================================";
             QGCApplication::resetGimbal();
+            state_value = 0;
             break;
         case 3:
             qCWarning(QGCApplicationLog) << "=================================================";
             qCWarning(QGCApplicationLog) << "recieved MOVE_GIMBAL";
             qCWarning(QGCApplicationLog) << "=================================================";
             QGCApplication::genericGimbal(message["axis"].toString(), message["value"].toString());
+            state_value = 0;
             break;
         case 4:
             qCWarning(QGCApplicationLog) << "=================================================";
             qCWarning(QGCApplicationLog) << "recieved GET_CAMERAS";
             qCWarning(QGCApplicationLog) << "=================================================";
             message.insert("availableCameraListData", QGCApplication::getCameras());
+            state_value = 0;
             break;
         case 5:
             qCWarning(QGCApplicationLog) << "=================================================";
             qCWarning(QGCApplicationLog) << "recieved SET_CAMERA";
             qCWarning(QGCApplicationLog) << "=================================================";
+            state_value = 0;
             break;
         case 6:
             qCWarning(QGCApplicationLog) << "=================================================";
             qCWarning(QGCApplicationLog) << "recieved SET_CAMERA_INTRINSICS";
             qCWarning(QGCApplicationLog) << "=================================================";
+            state_value = 0;
             break;
         case 7:
             qCWarning(QGCApplicationLog) << "=================================================";
@@ -845,46 +855,55 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
                     message.insert("aperture", aperture);
                 }
             }
+            state_value = 0;
             break;
         case 8:
             qCWarning(QGCApplicationLog) << "=================================================";
             qCWarning(QGCApplicationLog) << "recieved ZOOM_CAMERA";
             qCWarning(QGCApplicationLog) << "=================================================";
             QGCApplication::setZoom(message["zoomValue"].toDouble());
+            state_value = 0;
             break;
         case 9:
             qCWarning(QGCApplicationLog) << "=================================================";
             qCWarning(QGCApplicationLog) << "recieved TAKE_PHOTO";
             qCWarning(QGCApplicationLog) << "=================================================";
-            QGCApplication::takePhoto();
+            state_value = QGCApplication::takePhoto();
             break;
         case 10:
             qCWarning(QGCApplicationLog) << "=================================================";
             qCWarning(QGCApplicationLog) << "recieved START_RECORDING";
             qCWarning(QGCApplicationLog) << "=================================================";
-            QGCApplication::startRecording();
+            state_value = QGCApplication::startRecording();
             break;
         case 11:
             qCWarning(QGCApplicationLog) << "=================================================";
             qCWarning(QGCApplicationLog) << "recieved STOP_RECORDING";
             qCWarning(QGCApplicationLog) << "=================================================";
-            QGCApplication::stopRecording();
+            state_value = QGCApplication::stopRecording();
             break;
         case 12:
             qCWarning(QGCApplicationLog) << "=================================================";
             qCWarning(QGCApplicationLog) << "recieved MAV_CMD_DO_SET_SERVO";
             qCWarning(QGCApplicationLog) << "=================================================";
             QGCApplication::servoCmd(message["param1"].toDouble(), message["param2"].toDouble()); 
+            state_value = 0;
             break; // ************** SERVO ID, SURTOUT PAS 1 2 3 4 13 14 **********************
         case 13:
             qCWarning(QGCApplicationLog) << "=================================================";
             qCWarning(QGCApplicationLog) << "recieved MOVE_GIMBAL2";
             qCWarning(QGCApplicationLog) << "=================================================";
             QGCApplication::genericGimbal(message["axis"].toString(), message["value"].toString()); 
+            state_value = 0;
             break; // ************** SERVO ID, SURTOUT PAS 1 2 3 4 13 14 **********************
         default:
             message.insert("status","KO");
             message.insert("error","KO");
+            state_value = 0;
+    }
+
+    if(state_value != 0){
+        QCGApplication::sendEventMessage(message["instruction"].toString(), state_value);
     }
 
     QJsonDocument doc(message);
@@ -938,7 +957,7 @@ void QGCApplication::sendInfos(){
     qCWarning(QGCApplicationLog) << "==============  end send infos  ==============";
 }
 
-void QGCApplication:: sendRemotePilote() {
+void QGCApplication::sendRemotePilote() {
     QJsonObject newResponse;
     newResponse.insert("email", this->loggedEmail);
     newResponse.insert("registrationNumber", this->registrationNumber);
@@ -948,7 +967,7 @@ void QGCApplication:: sendRemotePilote() {
     m_client->publish("REMOTE_PILOT/"+this->uavSn, responseMessage.toUtf8());
 }
 
-void QGCApplication:: sendAircraftPositionInfos() {
+void QGCApplication::sendAircraftPositionInfos() {
     qCWarning(QGCApplicationLog) << "============== start send position ==============";
     Vehicle* activeVehicle = QGCApplication::getActiveVehicle();
     if(!activeVehicle) {
@@ -1045,21 +1064,6 @@ void QGCApplication:: sendAircraftPositionInfos() {
 }
         /* 
     switch ((obj.getString("instruction"))){
-         case "OPEN_STREAM":
-            Log.i("openStream", "=================================================");
-            Log.i("openStream", "recieved OPEN_STREAM");
-            Log.i("openStream", "================================================="); _updateVideoUri()
-            startLiveShow(obj.getString("rtmpChannel"));
-            rtmpUrl = BaseUrl + obj.getString("rtmpChannel");
-            obj.put("url", rtmpUrl);
-            break;
-        case "STOP_STREAM":
-            Log.i("stopStream", "=================================================");
-            Log.i("stopStream", "recieved STOP_STREAM");
-            Log.i("stopStream", "=================================================");
-            stopLiveShow();
-            obj.put("url", "null");
-            break;
         case "SET_CAMERA": // TODO rework
             Log.i("setCams", "=================================================");
             Log.i("setCams", "recieved SET_CAMERA");
@@ -1091,6 +1095,22 @@ void QGCApplication::setCamera(int i){
     Vehicule::cameraManager().setCurrentCamera(i);
 } */
 
+void QCGApplication::sendEventMessage(QString command, int value) {
+    QJsonObject newResponse;
+    QString state;
+    if(value == 1) {
+        state = "SUCCES_"
+    }
+    else { // if error message needed
+        state = "ERROR_"
+    }
+    newResponse.insert("name", state+command);
+    newResponse.insert("email", this->loggedEmail);
+
+    QJsonDocument doc(newResponse);
+    QString responseMessage(doc.toJson(QJsonDocument::Compact));
+    m_client->publish("EVENT/"+this->uavSn, responseMessage.toUtf8());
+}
 
 QJsonObject QGCApplication::getGimbalCapabilities(){
     QJsonObject capabilities;
@@ -1193,16 +1213,6 @@ void QGCApplication::setZoom(float value){
     qCWarning(QGCApplicationLog) << "==============  END TAKE_PHOTO  ==============";
 }
 
-void QGCApplication::testingStream(){ // TODO remove this
-    MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
-    if(!activeCamera) return;
-    QGCVideoStreamInfo *streamInstance = activeCamera->currentStreamInstance();
-    if(!streamInstance) return;
-    qCWarning(QGCApplicationLog) << "stream name : " <<streamInstance->name();
-    qCWarning(QGCApplicationLog) << "stream uri : " <<streamInstance->uri();
-    qCWarning(QGCApplicationLog) << "stream type : " <<streamInstance->type();
-}
-
 void QGCApplication::startStream(){
     qCWarning(QGCApplicationLog) << "==============  START OPEN_STREAM  ==============";
     MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
@@ -1298,13 +1308,6 @@ void QGCApplication::codeThreadBus(GstElement *pipeline, GoblinData &data, QStri
 
 void QGCApplication::stopStream(){
     qCWarning(QGCApplicationLog) << "==============  START STOP_STREAM  ==============";
-    /* if(!streamingProcess) return;
-    streamingProcess->kill();
-    streamingProcess = nullptr;
-    this->isStreaming = false;
-    this->rtmpUrl = ""; */
-
-
     gst_element_set_state(this->data.pipeline, GST_STATE_NULL);
     gst_object_unref(this->data.pipeline);
     this->isStreaming = false;
@@ -1314,7 +1317,17 @@ void QGCApplication::stopStream(){
     }
 }
 
-void QGCApplication::takePhoto(){
+bool QGCApplication::isFileEmpty(const std::string& filePath) {
+    std::ifstream file(filePath, std::ios::binary | std::ios::ate);
+    if (!file.is_open()) {
+        qCWarning(QGCApplicationLog) << "Erreur : Impossible d'ouvrir le fichier.";
+        return false; // Retourne false pour indiquer que le fichier n'existe pas ou n'est pas accessible.
+    }
+
+    return file.tellg() == 0; // `tellg()` retourne la taille actuelle du fichier.
+}
+
+int QGCApplication::takePhoto(){
     qCWarning(QGCApplicationLog) << "==============  START TAKE_PHOTO  =============="; // NEED TO UPDATE FOR OTHER CAMS
     /* MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
     if(!activeCamera) {
@@ -1327,38 +1340,15 @@ void QGCApplication::takePhoto(){
     QString baseImageFileName = "capture_" + QDateTime::currentDateTime().toString("yyyy-MM-dd_hh.mm.ss.zzz") + ".jpg";
     QString imageFile = toolbox()->settingsManager()->appSettings()->photoSavePath() + "/" + baseImageFileName;
     QString imageFileS3 = "station-drone/aircrafts/operatorID-16/sn-" + this->uavSn + "/images/" + baseImageFileName;
-
-    /* GError *err = nullptr;
-    GstElement *pipelinePhoto = gst_parse_launch("rtspsrc location=rtsp://192.168.144.25:8554/main.264 num-buffers=10000000 ! decodebin ! jpegenc ! filesink name=sink", &err);
-
-    if (!pipelinePhoto) {
-        qCWarning(QGCApplicationLog) << "Erreur lors de la création du pipelinePhoto.";
-        return;
-    }
-
-    // Récupérer l'élément filesink et définir son emplacement
-    GstElement *filesink = gst_bin_get_by_name(GST_BIN(pipelinePhoto), "sink");
-    g_object_set(filesink, "location", imageFile.toStdString().c_str(), nullptr);//.c_str()
-    //gst_object_unref(filesink);
-
-    // Démarrer le pipelinePhoto
-    gst_element_set_state(pipelinePhoto, GST_STATE_PLAYING);
-
-    qCWarning(QGCApplicationLog) << "Image capturée : " << imageFile;
-    
-    gst_element_set_state(pipelinePhoto, GST_STATE_NULL);
-    gst_object_unref(pipelinePhoto);
-    gst_object_unref(filesink); */
-
     
     VideoManager* videoManager = QGCApplication::getVideoManager();
     videoManager->grabImage(imageFile);
-
+    return !QGCApplication::isFileEmpty(imageFile.toStdString().c_str()) ? 1 : -1;
     
     qCWarning(QGCApplicationLog) << "==============   END TAKE_PHOTO   ==============";
 }
 
-void QGCApplication::startRecording(){
+int QGCApplication::startRecording(){
     qCWarning(QGCApplicationLog) << "==============  START START_RECORDING  =============="; // NEED TO UPDATE FOR OTHER CAMS
     /* MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
     if(!activeCamera) {
@@ -1372,7 +1362,7 @@ void QGCApplication::startRecording(){
     QString ext = QString();
     
     if(this->isRecording){
-        return;
+        return -1;
     }
     VideoManager* videoManager = QGCApplication::getVideoManager();
     videoManager->startRecording(baseVideoFileName, &ext);
@@ -1380,21 +1370,24 @@ void QGCApplication::startRecording(){
     this->videoFile = toolbox()->settingsManager()->appSettings()->videoSavePath() + "/" + baseVideoFileName + ext;
     this->videoFileS3 = "station-drone/aircrafts/operatorID-16/sn-" + this->uavSn + "/videos/" + baseVideoFileName + ext;
 
-    this->isRecording = true;
+    this->isRecording = videoManager->recording();
+    return this->isRecording ? 1 : -1;
     qCWarning(QGCApplicationLog) << "==============   END START_RECORDING   ==============";
 }
 
-void QGCApplication::stopRecording(){
+int QGCApplication::stopRecording(){
     qCWarning(QGCApplicationLog) << "==============  START STOP_RECORDING  =============="; // NEED TO UPDATE FOR OTHER CAMS
     /* MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
     if(!activeCamera) return;
     activeCamera->stopVideoRecording(); */
     if(!this->isRecording){
-        return;
+        return -1;
     }
     VideoManager* videoManager = QGCApplication::getVideoManager();
     videoManager->stopRecording();
-    this->isRecording = false;
+    this->isRecording = videoManager->recording();
+    return !this->isRecording && !QGCApplication::isFileEmpty(this->videoFile.toStdString().c_str()) ? 1 : -1;
+
     qCWarning(QGCApplicationLog) << "==============   END STOP_RECORDING   ==============";
 }
 
