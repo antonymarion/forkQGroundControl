@@ -25,9 +25,3 @@
 [submodule "resources/SDL_GameControllerDB"]
 	path = resources/SDL_GameControllerDB
 	url = https://github.com/mdqinc/SDL_GameControllerDB.git
-[submodule "libs/minio-cpp"]
-	path = libs/minio-cpp
-	url = https://github.com/minio/minio-cpp.git
-[submodule "libs/curlpp"]
-	path = libs/curlpp
-	url = https://github.com/jpbarrette/curlpp.git
