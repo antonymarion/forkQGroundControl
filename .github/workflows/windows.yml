@@ -7,8 +7,6 @@ on:
       - 'Stable*'
       - detached
       - detached_squashed
-      - vehicle-camera
-      - gstreamer
     tags:
       - 'v*'
     paths-ignore:
