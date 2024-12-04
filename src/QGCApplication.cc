@@ -756,6 +756,11 @@ void QGCApplication::init()
 
     timer->start(2000);
 
+    // Setup Vector control TIMER
+    timerVector = new QTimer(this);
+
+    QObject::connect(timerVector, &QTimer::timeout, this, &QGCApplication::sendVectorCommand);
+
 }
 
 void QGCApplication::updateLogStateChange()
@@ -901,7 +906,17 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
                 qCWarning(QGCApplicationLog) << "*****   No vehicle available   *****";
                 break;
             };
-            _vehicle->virtualTabletJoystickValue(message["roll"].toDouble(), message["pitch"].toDouble(), message["yaw"].toDouble(), message["thrust"].toDouble()); 
+            if(!timerVector) {
+                qCWarning(QGCApplicationLog) << "*****   Timer not available   *****";
+                break;
+            };
+            roll = message["roll"].toDouble();
+            pitch = message["pitch"].toDouble();
+            yaw = message["yaw"].toDouble();
+            thrust = message["thrust"].toDouble();
+            if(!timerVector.isActive()){
+                timerVector->start(40);
+            }
             state_value = 0;
             break;
         default:
@@ -1434,6 +1449,10 @@ void QGCApplication::moveGimbal(QString axis, QString value) {
             break;
     }
     qCWarning(QGCApplicationLog) << "==============   END MOVE_GIMBAL   ==============";
+}
+
+void QGCApplication::vectorControl() {
+    _vehicle->virtualTabletJoystickValue(roll, pitch, yaw, thrust);
 }
 
 void QGCApplication::servoCmd(float servoId, float pwmValue){

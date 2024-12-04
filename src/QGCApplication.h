@@ -242,6 +242,7 @@ private:
     void genericGimbal(QString axis, QString value);
     void moveGimbalTundra(QString value);
     void moveGimbal(QString axis, QString value);
+    void vectorControl();
     void resetGimbal();
     QJsonObject getGimbalCapabilities();
     QJsonArray getCameras();
@@ -278,6 +279,11 @@ private:
     QProcess *streamingProcess = nullptr;
     GstElement *pipeline = nullptr;
     GstBus *bus;
+    QTimer *timerVector = nullptr;
+    double roll = 0;
+    double pitch = 0;
+    double yaw = 0;
+    double thrust = 0;
 
     //======================================================================================================================
     /// Our global data, serious gstreamer apps should always have this !
