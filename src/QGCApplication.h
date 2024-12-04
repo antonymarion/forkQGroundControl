@@ -260,7 +260,7 @@ private:
     void updateMessage(const QMqttMessage &msg);
     void updateStatus(QMqttSubscription::SubscriptionState state);
     void _setActiveVehicle  (Vehicle* vehicle);
-    void _setIsFlying();
+    void _setIsFlying(bool flying);
     void _setActiveGimbal();
     void _setActiveCamera();
     QString rtmpUrl = "";
