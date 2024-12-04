@@ -258,7 +258,7 @@ private:
     void brokerConnected();
     void updateMessage(const QMqttMessage &msg);
     void updateStatus(QMqttSubscription::SubscriptionState state);
-    Vehicle* getActiveVehicle();
+    void _setActiveVehicle  (Vehicle* vehicle);
     MavlinkCameraControl* getActiveCamera();
     Gimbal* getActiveGimbal();
     VideoManager* getVideoManager();
@@ -274,6 +274,7 @@ private:
     QStringList commandsList;
     QStringList aircraftList;
     QStringList axisList;
+    Vehicle* _vehicle{nullptr};
     QProcess *streamingProcess = nullptr;
     GstElement *pipeline = nullptr;
     GstBus *bus;

@@ -727,7 +727,7 @@ void QGCApplication::init()
 
     // Setup switch/case lists
     axisList << "pitch" << "yaw" << "roll";
-    this->commandsList << "OPEN_STREAM" << "STOP_STREAM" << "RESET_GIMBAL" << "MOVE_GIMBAL" << "GET_CAMERAS" << "SET_CAMERA" << "SET_CAMERA_INTRINSICS" << "GET_CAMERA" << "ZOOM_CAMERA" << "TAKE_PHOTO" << "START_RECORDING" << "STOP_RECORDING" << "MAV_CMD_DO_SET_SERVO" << "MOVE_GIMBAL2";
+    this->commandsList << "OPEN_STREAM" << "STOP_STREAM" << "RESET_GIMBAL" << "MOVE_GIMBAL" << "GET_CAMERAS" << "SET_CAMERA" << "SET_CAMERA_INTRINSICS" << "GET_CAMERA" << "ZOOM_CAMERA" << "TAKE_PHOTO" << "START_RECORDING" << "STOP_RECORDING" << "MAV_CMD_DO_SET_SERVO" << "MOVE_VECTOR";
     this->aircraftList << "Tundra 2";
     // Setup MqttClient
     m_client = new QMqttClient(this);
@@ -744,6 +744,10 @@ void QGCApplication::init()
     connect(m_client, &QMqttClient::disconnected, this, &QGCApplication::brokerDisconnected);
     connect(m_client, &QMqttClient::connected, this, &QGCApplication::brokerConnected);
     m_client->connectToHost();
+
+    auto *manager = qgcApp()->toolbox()->multiVehicleManager();
+    connect(manager, &MultiVehicleManager::activeVehicleChanged, this, &QGCApplication::_setActiveVehicle);
+    _setActiveVehicle(manager->activeVehicle());
 
     // Setup Position & Remote Pilote TIMER
     QTimer *timer = new QTimer(this);
@@ -891,11 +895,15 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             break; // ************** SERVO ID, SURTOUT PAS 1 2 3 4 13 14 **********************
         case 13:
             qCWarning(QGCApplicationLog) << "=================================================";
-            qCWarning(QGCApplicationLog) << "recieved MOVE_GIMBAL2";
+            qCWarning(QGCApplicationLog) << "recieved MOVE_VECTOR";
             qCWarning(QGCApplicationLog) << "=================================================";
-            QGCApplication::genericGimbal(message["axis"].toString(), message["value"].toString()); 
+            if(!_vehicle) {
+                qCWarning(QGCApplicationLog) << "*****   No vehicle available   *****";
+                break;
+            };
+            _vehicle->virtualTabletJoystickValue(message["roll"].toDouble(), message["pitch"].toDouble(), message["yaw"].toDouble(), message["thrust"].toDouble()); 
             state_value = 0;
-            break; // ************** SERVO ID, SURTOUT PAS 1 2 3 4 13 14 **********************
+            break;
         default:
             message.insert("status","KO");
             message.insert("error","KO");
@@ -969,8 +977,7 @@ void QGCApplication::sendRemotePilote() {
 
 void QGCApplication::sendAircraftPositionInfos() {
     qCWarning(QGCApplicationLog) << "============== start send position ==============";
-    Vehicle* activeVehicle = QGCApplication::getActiveVehicle();
-    if(!activeVehicle) {
+    if(!_vehicle) {
         qCWarning(QGCApplicationLog) << "*****   No vehicle available   *****";
         return;
     };
@@ -979,23 +986,23 @@ void QGCApplication::sendAircraftPositionInfos() {
     newResponse.insert("registrationNumber", this->registrationNumber);
     newResponse.insert("emailRemotePilot", this->loggedEmail);
     newResponse.insert("isStreaming", this->isStreaming);
-    newResponse.insert("system", activeVehicle->firmwareTypeString());
+    newResponse.insert("system", _vehicle->firmwareTypeString());
     newResponse.insert("systemVersion", "V1"); // TODO ???
     newResponse.insert("simulated", false);
     newResponse.insert("systemOS", "Android"); // TODO change to include Windows
-    newResponse.insert("productType", activeVehicle->vehicleTypeString());
+    newResponse.insert("productType", _vehicle->vehicleTypeString());
     newResponse.insert("rtmpUrl", this->rtmpUrl);
-    newResponse.insert("latitude", activeVehicle->coordinate().latitude());
-    newResponse.insert("longitude", activeVehicle->coordinate().longitude());
-    newResponse.insert("altitude", activeVehicle->coordinate().altitude());
-    newResponse.insert("isFlying", activeVehicle->flying());
-    newResponse.insert("gpsSatelliteCount", qobject_cast<VehicleGPSFactGroup*>(activeVehicle->gpsFactGroup())->count()->rawValueString());
-    newResponse.insert("firmwareVersionUav", activeVehicle->firmwarePatchVersion());
+    newResponse.insert("latitude", _vehicle->coordinate().latitude());
+    newResponse.insert("longitude", _vehicle->coordinate().longitude());
+    newResponse.insert("altitude", _vehicle->coordinate().altitude());
+    newResponse.insert("isFlying", _vehicle->flying());
+    newResponse.insert("gpsSatelliteCount", qobject_cast<VehicleGPSFactGroup*>(_vehicle->gpsFactGroup())->count()->rawValueString());
+    newResponse.insert("firmwareVersionUav", _vehicle->firmwarePatchVersion());
     newResponse.insert("firmwareVersion", this->_buildVersion);
-    newResponse.insert("velocity", qobject_cast<VehicleFactGroup*>(activeVehicle->vehicleFactGroup())->airSpeed()->rawValueString());
+    newResponse.insert("velocity", qobject_cast<VehicleFactGroup*>(_vehicle->vehicleFactGroup())->airSpeed()->rawValueString());
     
     
-    bool hasCamera = activeVehicle->cameraManager()->cameras()->count() != 0;
+    bool hasCamera = _vehicle->cameraManager()->cameras()->count() != 0;
     newResponse.insert("hasCamera", hasCamera);
     if(hasCamera) {
         MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
@@ -1013,10 +1020,10 @@ void QGCApplication::sendAircraftPositionInfos() {
         }
     }
 
-    bool hasGimbal = activeVehicle->gimbalController()->gimbals()->count() != 0;
+    bool hasGimbal = _vehicle->gimbalController()->gimbals()->count() != 0;
     newResponse.insert("hasGimbal", hasGimbal);
     if(hasGimbal) {
-        Gimbal *activeGimbal = activeVehicle->gimbalController()->activeGimbal();
+        Gimbal *activeGimbal = _vehicle->gimbalController()->activeGimbal();
         if(activeGimbal) {
             qCWarning(QGCApplicationLog) << "============== current gimbal values ==============";
             QJsonObject currentState;
@@ -1030,7 +1037,7 @@ void QGCApplication::sendAircraftPositionInfos() {
             newResponse.insert("gimbal", currentState);
         }
     }
-    QmlObjectListModel* batteries = activeVehicle->batteries();
+    QmlObjectListModel* batteries = _vehicle->batteries();
     int res = 0;
     for (int i=0; i<batteries->count(); i++) {
         VehicleBatteryFactGroup* battery = qobject_cast<VehicleBatteryFactGroup*>(batteries->get(i));
@@ -1134,28 +1141,18 @@ QJsonObject QGCApplication::getGimbalCapabilities(){
     return capabilities;
 }
 
-Vehicle* QGCApplication::getActiveVehicle(){
-    MultiVehicleManager* vehicleManager = toolbox()->multiVehicleManager();
-    if(vehicleManager->vehicles()->count() == 0)  {
-        qCWarning(QGCApplicationLog) << "*****   No vehicle found   *****";
-        return nullptr;
-    }
-    Vehicle* activeVehicle = vehicleManager->activeVehicle();
-    if(!activeVehicle) {
-        qCWarning(QGCApplicationLog) << "*****   No active vehicle   *****";
-        return nullptr;
-    }
-    return activeVehicle;
+
+void QGCApplication::_setActiveVehicle(Vehicle* vehicle) {
+    _vehicle = vehicle;
 }
 
 MavlinkCameraControl* QGCApplication::getActiveCamera(){
-    Vehicle* activeVehicle = QGCApplication::getActiveVehicle();
-    if(!activeVehicle || activeVehicle->cameraManager()->cameras()->count() <= 0) {
+    if(!_vehicle || _vehicle->cameraManager()->cameras()->count() <= 0) {
         qCWarning(QGCApplicationLog) << "*****   No camera available   *****";
         return nullptr;
     }
-    QmlObjectListModel *cameras = activeVehicle->cameraManager()->cameras();
-    MavlinkCameraControl *activeCamera = qobject_cast<MavlinkCameraControl*>(cameras->get((activeVehicle->cameraManager()->currentCamera())));
+    QmlObjectListModel *cameras = _vehicle->cameraManager()->cameras();
+    MavlinkCameraControl *activeCamera = qobject_cast<MavlinkCameraControl*>(cameras->get((_vehicle->cameraManager()->currentCamera())));
     if(!activeCamera) {
         qCWarning(QGCApplicationLog) << "*****   No active camera   *****";
         return nullptr;
@@ -1164,12 +1161,11 @@ MavlinkCameraControl* QGCApplication::getActiveCamera(){
 }
 
 Gimbal* QGCApplication::getActiveGimbal(){
-    Vehicle* activeVehicle = QGCApplication::getActiveVehicle();
-    if(!activeVehicle || activeVehicle->gimbalController()->gimbals()->count() <= 0) {
+    if(!_vehicle || _vehicle->gimbalController()->gimbals()->count() <= 0) {
         qCWarning(QGCApplicationLog) << "*****   No gimbal available   *****";
         return nullptr;
     }
-    Gimbal *activeGimbal = activeVehicle->gimbalController()->activeGimbal();
+    Gimbal *activeGimbal = _vehicle->gimbalController()->activeGimbal();
     if(!activeGimbal) {
         qCWarning(QGCApplicationLog) << "*****   No active gimbal   *****";
         return nullptr;
@@ -1188,9 +1184,8 @@ VideoManager* QGCApplication::getVideoManager(){
 
 QJsonArray QGCApplication::getCameras() {
     QJsonArray cameraList;
-    Vehicle* activeVehicle = QGCApplication::getActiveVehicle();
-    if(!activeVehicle || activeVehicle->cameraManager()->cameras()->count() <= 0) return cameraList;
-    QmlObjectListModel *cameras = activeVehicle->cameraManager()->cameras();
+    if(!_vehicle || _vehicle->cameraManager()->cameras()->count() <= 0) return cameraList;
+    QmlObjectListModel *cameras = _vehicle->cameraManager()->cameras();
     for (int i = 0; i < cameras->count(); i++) {
         qCWarning(QGCApplicationLog) << "*****   Here   *****";
         MavlinkCameraControl *camera = qobject_cast<MavlinkCameraControl*>(cameras->get(i));
@@ -1442,8 +1437,7 @@ void QGCApplication::moveGimbal(QString axis, QString value) {
 }
 
 void QGCApplication::servoCmd(float servoId, float pwmValue){
-    Vehicle* activeVehicle = QGCApplication::getActiveVehicle();
-    if(!activeVehicle) {
+    if(!_vehicle) {
         qCWarning(QGCApplicationLog) << "*****   No vehicle found   *****";
         return;
     }
@@ -1459,8 +1453,8 @@ void QGCApplication::servoCmd(float servoId, float pwmValue){
     // @param param1 to param7 : Optional parameters to send with the MAV_CMD.
     
     // Signals: mavCommandResult emitted on success or failure of the command.
-    activeVehicle->sendMavCommand(
-        activeVehicle->defaultComponentId(),  // compId: Default vehicle component ID
+    _vehicle->sendMavCommand(
+        _vehicle->defaultComponentId(),  // compId: Default vehicle component ID
         MAV_CMD_DO_SET_SERVO,            // command: MAV_CMD to set servo
         true,                            // showError: Display error if command fails
         servoId,                         // param1: Specify which servo to set (e.g., 1)
