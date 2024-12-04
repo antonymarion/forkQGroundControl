@@ -759,7 +759,7 @@ void QGCApplication::init()
     // Setup Vector control TIMER
     timerVector = new QTimer(this);
 
-    QObject::connect(timerVector, &QTimer::timeout, this, &QGCApplication::sendVectorCommand);
+    QObject::connect(timerVector, &QTimer::timeout, this, &QGCApplication::vectorControl);
 
 }
 
