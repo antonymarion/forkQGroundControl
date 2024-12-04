@@ -914,7 +914,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             pitch = message["pitch"].toDouble();
             yaw = message["yaw"].toDouble();
             thrust = message["thrust"].toDouble();
-            if(!timerVector.isActive()){
+            if(!timerVector->isActive()){
                 timerVector->start(40);
             }
             state_value = 0;
