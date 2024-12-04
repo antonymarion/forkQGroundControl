@@ -260,9 +260,9 @@ private:
     void updateMessage(const QMqttMessage &msg);
     void updateStatus(QMqttSubscription::SubscriptionState state);
     void _setActiveVehicle  (Vehicle* vehicle);
-    MavlinkCameraControl* getActiveCamera();
-    Gimbal* getActiveGimbal();
-    VideoManager* getVideoManager();
+    void _setIsFlying();
+    void _setActiveGimbal();
+    void _setActiveCamera();
     QString rtmpUrl = "";
     QString loggedEmail = "graphx.stephaneroma@gmail.com";
     QString registrationNumber = "UAS-FR-458156";
@@ -275,7 +275,11 @@ private:
     QStringList commandsList;
     QStringList aircraftList;
     QStringList axisList;
+    bool _isFlying;
     Vehicle* _vehicle{nullptr};
+    VideoManager* _videoManager{nullptr};
+    Gimbal* _activeGimbal{nullptr};
+    MavlinkCameraControl* _activeCamera{nullptr};
     QProcess *streamingProcess = nullptr;
     GstElement *pipeline = nullptr;
     GstBus *bus;
