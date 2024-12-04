@@ -727,7 +727,7 @@ void QGCApplication::init()
 
     // Setup switch/case lists
     axisList << "pitch" << "yaw" << "roll";
-    this->commandsList << "OPEN_STREAM" << "STOP_STREAM" << "RESET_GIMBAL" << "MOVE_GIMBAL" << "GET_CAMERAS" << "SET_CAMERA" << "SET_CAMERA_INTRINSICS" << "GET_CAMERA" << "ZOOM_CAMERA" << "TAKE_PHOTO" << "START_RECORDING" << "STOP_RECORDING" << "MAV_CMD_DO_SET_SERVO" << "MOVE_VECTOR";
+    this->commandsList << "OPEN_STREAM" << "STOP_STREAM" << "RESET_GIMBAL" << "MOVE_GIMBAL" << "GET_CAMERAS" << "SET_CAMERA" << "SET_CAMERA_INTRINSICS" << "GET_CAMERA" << "ZOOM_CAMERA" << "TAKE_PHOTO" << "START_RECORDING" << "STOP_RECORDING" << "MAV_CMD_DO_SET_SERVO" << "MOVE_VECTOR" << "TAKE_OFF" << "RETURN_TO_HOME" << "VERTICAL_LANDING" << "FLYING_TERMINATION_SYSTEM";
     this->aircraftList << "Tundra 2";
     // Setup MqttClient
     m_client = new QMqttClient(this);
@@ -917,6 +917,34 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             if(!timerVector->isActive()){
                 timerVector->start(40);
             }
+            state_value = 0;
+            break;
+        case 14:
+            qCWarning(QGCApplicationLog) << "=================================================";
+            qCWarning(QGCApplicationLog) << "recieved TAKE_OFF";
+            qCWarning(QGCApplicationLog) << "=================================================";
+            _vehicle->guidedModeTakeoff(1);
+            state_value = 0;
+            break;
+        case 15:
+            qCWarning(QGCApplicationLog) << "=================================================";
+            qCWarning(QGCApplicationLog) << "recieved RETURN_TO_HOME";
+            qCWarning(QGCApplicationLog) << "=================================================";
+            _vehicle->guidedModeRTL(false);
+            state_value = 0;
+            break;
+        case 16:
+            qCWarning(QGCApplicationLog) << "=================================================";
+            qCWarning(QGCApplicationLog) << "recieved VERTICAL_LANDING";
+            qCWarning(QGCApplicationLog) << "=================================================";
+            _vehicle->guidedModeLand();
+            state_value = 0;
+            break;
+        case 17:
+            qCWarning(QGCApplicationLog) << "=================================================";
+            qCWarning(QGCApplicationLog) << "recieved FLYING_TERMINATION_SYSTEM";
+            qCWarning(QGCApplicationLog) << "=================================================";
+            _vehicle->emergencyStop();
             state_value = 0;
             break;
         default:
