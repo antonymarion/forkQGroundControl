@@ -35,7 +35,7 @@ Item {
         repeat:     true
         onTriggered: {
             if (_activeVehicle && _initialConnectComplete) {
-                _activeVehicle.virtualTabletJoystickValue(rightStick.xAxis, rightStick.yAxis, leftStick.xAxis, leftStick.yAxis)
+                _activeVehicle.virtualTabletJoystickValue(rightStick.xAxis, rightStick.yAxis, leftStick.xAxis, leftStick.yAxis, "JOYSTICKS")
             }
             leftYAxisValue = leftStick.yAxis // We keep Y axis value from the throttle stick for using it while there is a resize
         }

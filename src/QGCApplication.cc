@@ -1459,7 +1459,7 @@ void QGCApplication::moveGimbal(QString axis, QString value)
 
 void QGCApplication::vectorControl()
 {
-    _vehicle->virtualTabletJoystickValue(roll, pitch, yaw, thrust);
+    _vehicle->virtualTabletJoystickValue(roll, pitch, yaw, thrust, "FRONT");
 }
 
 bool QGCApplication::isFileEmpty(const std::string& filePath)
