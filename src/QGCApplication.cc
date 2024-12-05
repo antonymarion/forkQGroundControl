@@ -725,10 +725,6 @@ void QGCApplication::init()
         AudioOutput::instance()->setMuted(true);
     }
 
-    // Setup switch/case lists
-    axisList << "pitch" << "yaw" << "roll";
-    this->commandsList << "OPEN_STREAM" << "STOP_STREAM" << "RESET_GIMBAL" << "MOVE_GIMBAL" << "GET_CAMERAS" << "SET_CAMERA" << "SET_CAMERA_INTRINSICS" << "GET_CAMERA" << "ZOOM_CAMERA" << "TAKE_PHOTO" << "START_RECORDING" << "STOP_RECORDING" << "MAV_CMD_DO_SET_SERVO" << "MOVE_VECTOR" << "TAKE_OFF" << "RETURN_TO_HOME" << "VERTICAL_LANDING" << "FLYING_TERMINATION_SYSTEM";
-    this->aircraftList << "Tundra 2";
     // Setup MqttClient
     m_client = new QMqttClient(this);
     m_client->setHostname("152.228.246.204");
@@ -772,12 +768,11 @@ void QGCApplication::updateLogStateChange()
 
 void QGCApplication::brokerConnected()
 {
-
     // Setup Subscription
     QString topic = "REQUEST/+/" + this->uavSn + "/+";
     QMqttSubscription *subscription = m_client->subscribe(topic, 1);
     if(!subscription) {
-        qCWarning(QGCApplicationLog) << "============== here ==============";
+        qCWarning(QGCApplicationLog) << "***** Can't connect with Mqtt *****";
     }
     QObject::connect(subscription, &QMqttSubscription::messageReceived, this, &QGCApplication::updateMessage);
 
@@ -970,30 +965,92 @@ void QGCApplication::updateStatus(QMqttSubscription::SubscriptionState state)
 {
     switch (state) {
     case QMqttSubscription::Unsubscribed:
-        qCDebug(QGCApplicationLog) << "Unsubscribed";
+        qCWarning(QGCApplicationLog) << "Unsubscribed";
         break;
     case QMqttSubscription::SubscriptionPending:
-        qCDebug(QGCApplicationLog) << "Pending";
+        qCWarning(QGCApplicationLog) << "Pending";
         break;
     case QMqttSubscription::Subscribed:
-        qCDebug(QGCApplicationLog) << "Subscribed";
+        qCWarning(QGCApplicationLog) << "Subscribed";
         break;
     case QMqttSubscription::Error:
-        qCDebug(QGCApplicationLog) << "Error";
+        qCWarning(QGCApplicationLog) << "Error";
         break;
     case QMqttSubscription::UnsubscriptionPending:
-        qCDebug(QGCApplicationLog) << "Pending Unsubscription";
+        qCWarning(QGCApplicationLog) << "Pending Unsubscription";
         break;
     default:
-        qCDebug(QGCApplicationLog) << "--Unknown--";
+        qCWarning(QGCApplicationLog) << "--Unknown--";
         break;
     }
 }
 
-void QGCApplication::sendInfos(){
+void QGCApplication::sendEventMessage(QString command, int value)
+{
+    QJsonObject newResponse;
+    QString state = value == 1 ? "SUCCES_" : "ERROR_";
+    newResponse.insert("name", state + command);
+    newResponse.insert("email", loggedEmail);
 
-    qCWarning(QGCApplicationLog) << "============== start send infos ==============";
+    QJsonDocument doc(newResponse);
+    QString responseMessage(doc.toJson(QJsonDocument::Compact));
+    m_client->publish("EVENT/"+ uavSn, responseMessage.toUtf8());
+}
 
+void QGCApplication::_setActiveVehicle(Vehicle* vehicle)
+{
+    _vehicle = vehicle;
+
+    if(!_vehicle) {
+        qCWarning(QGCApplicationLog) << "*****   No vehicle available   *****";
+        return;
+    }
+
+    QObject::connect(_vehicle, &Vehicle::flyingChanged, this, &QGCApplication::_setIsFlying);
+
+
+    if(_vehicle->cameraManager()->cameras()->count() > 0) {
+        QGCCameraManager* cameraManager = _vehicle->cameraManager();
+        QObject::connect(cameraManager, &QGCCameraManager::currentCameraChanged, this, &QGCApplication::_setActiveCamera);
+    }
+    else{
+        qCWarning(QGCApplicationLog) << "*****   No camera on vehicle   *****";
+    }
+
+    if(_vehicle->gimbalController()->gimbals()->count() > 0) {
+        GimbalController* gimbalController = _vehicle->gimbalController();
+        QObject::connect(gimbalController, &GimbalController::activeGimbalChanged, this, &QGCApplication::_setActiveGimbal);
+    }
+    else {
+        qCWarning(QGCApplicationLog) << "*****   No gimbal on vehicle   *****";
+    }
+}
+
+void QGCApplication::_setIsFlying(bool flying)
+{
+    _isFlying = flying;
+
+    if(_isFlying && !timerVector->isActive()){
+        timerVector->start(40);
+    }
+    
+    if(!_isFlying && timerVector->isActive()){
+        timerVector->stop();
+    }
+}
+
+void QGCApplication::_setActiveGimbal()
+{
+    _activeGimbal = _vehicle->gimbalController()->activeGimbal();
+}
+
+void QGCApplication::_setActiveCamera()
+{
+    _activeCamera = _vehicle->cameraManager()->currentCameraInstance();
+}
+
+void QGCApplication::sendInfos()
+{
     if(!m_client) {
         qCWarning(QGCApplicationLog) << "*****   Mqtt not available   *****";
         return;
@@ -1002,10 +1059,11 @@ void QGCApplication::sendInfos(){
     QGCApplication::sendAircraftPositionInfos();
     QGCApplication::sendRemotePilote();
     
-    qCWarning(QGCApplicationLog) << "==============  end send infos  ==============";
+    qCWarning(QGCApplicationLog) << "==============  Infos sent  ==============";
 }
 
-void QGCApplication::sendRemotePilote() {
+void QGCApplication::sendRemotePilote()
+{
     QJsonObject newResponse;
     newResponse.insert("email", loggedEmail);
     newResponse.insert("registrationNumber", registrationNumber);
@@ -1024,22 +1082,22 @@ void QGCApplication::sendAircraftPositionInfos() {
 
     QJsonObject newResponse;
     newResponse.insert("registrationNumber", this->registrationNumber);
-    newResponse.insert("emailRemotePilot", this->loggedEmail);
-    newResponse.insert("isStreaming", this->isStreaming);
-    newResponse.insert("system", _vehicle->firmwareTypeString());
-    newResponse.insert("systemVersion", "V1"); // TODO ???
-    newResponse.insert("simulated", false);
-    newResponse.insert("systemOS", "Android"); // TODO change to include Windows
-    newResponse.insert("productType", _vehicle->vehicleTypeString());
-    newResponse.insert("rtmpUrl", this->rtmpUrl);
-    newResponse.insert("latitude", _vehicle->coordinate().latitude());
-    newResponse.insert("longitude", _vehicle->coordinate().longitude());
-    newResponse.insert("altitude", _vehicle->coordinate().altitude());
-    newResponse.insert("isFlying", _isFlying);
-    newResponse.insert("gpsSatelliteCount", qobject_cast<VehicleGPSFactGroup*>(_vehicle->gpsFactGroup())->count()->rawValueString());
+    newResponse.insert("emailRemotePilot",   this->loggedEmail);
+    newResponse.insert("isStreaming",        this->isStreaming);
+    newResponse.insert("system",             _vehicle->firmwareTypeString());
+    newResponse.insert("systemVersion",      "V1"); // TODO ???
+    newResponse.insert("simulated",          false);
+    newResponse.insert("systemOS",           "Windows"); // TODO change to include Android
+    newResponse.insert("productType",        _vehicle->vehicleTypeString());
+    newResponse.insert("rtmpUrl",            this->rtmpUrl);
+    newResponse.insert("latitude",           _vehicle->coordinate().latitude());
+    newResponse.insert("longitude",          _vehicle->coordinate().longitude());
+    newResponse.insert("altitude",           _vehicle->coordinate().altitude());
+    newResponse.insert("isFlying",           _isFlying);
+    newResponse.insert("gpsSatelliteCount",  qobject_cast<VehicleGPSFactGroup*>(_vehicle->gpsFactGroup())->count()->rawValueString());
     newResponse.insert("firmwareVersionUav", _vehicle->firmwarePatchVersion());
-    newResponse.insert("firmwareVersion", this->_buildVersion);
-    newResponse.insert("velocity", qobject_cast<VehicleFactGroup*>(_vehicle->vehicleFactGroup())->airSpeed()->rawValueString());
+    newResponse.insert("firmwareVersion",    this->_buildVersion);
+    newResponse.insert("velocity",           qobject_cast<VehicleFactGroup*>(_vehicle->vehicleFactGroup())->airSpeed()->rawValueString());
     
     
     bool hasCamera = _vehicle->cameraManager()->cameras()->count() != 0;
@@ -1048,13 +1106,13 @@ void QGCApplication::sendAircraftPositionInfos() {
         if(_activeCamera) {
             qCWarning(QGCApplicationLog) << "============== current camera values ==============";
             newResponse.insert("sensorName", _activeCamera->modelName());
-            newResponse.insert("hasZoom", _activeCamera->hasZoom());
+            newResponse.insert("hasZoom",    _activeCamera->hasZoom());
             if(_activeCamera->modelName() != "Caméra intégrée Tundra II"){
                 QJsonObject currentValues;
-                currentValues.insert("ISO", _activeCamera->iso()->rawValueString());
+                currentValues.insert("ISO",          _activeCamera->iso()->rawValueString());
                 currentValues.insert("whiteBalance", _activeCamera->wb()->rawValueString());
-                currentValues.insert("aperture", _activeCamera->aperture()->rawValueString());
-                newResponse.insert("intrinsics", currentValues);
+                currentValues.insert("aperture",     _activeCamera->aperture()->rawValueString());
+                newResponse.insert("intrinsics",     currentValues);
             }
         }
     }
@@ -1066,13 +1124,13 @@ void QGCApplication::sendAircraftPositionInfos() {
             qCWarning(QGCApplicationLog) << "============== current gimbal values ==============";
             QJsonObject currentState;
             QJsonObject attitude;
-            attitude.insert("yaw", _activeGimbal->absoluteYaw()->rawValueString());
-            attitude.insert("pitch", _activeGimbal->absolutePitch()->rawValueString());
-            attitude.insert("roll", _activeGimbal->absoluteRoll()->rawValueString());
+            attitude.insert("yaw",                _activeGimbal->absoluteYaw()->rawValueString());
+            attitude.insert("pitch",              _activeGimbal->absolutePitch()->rawValueString());
+            attitude.insert("roll",               _activeGimbal->absoluteRoll()->rawValueString());
             currentState.insert("KeyGimbalReset", "null");
-            currentState.insert("attitude", attitude);
+            currentState.insert("attitude",       attitude);
             currentState.insert("keyYawRelativeToAircraftHeading", _activeGimbal->bodyYaw()->rawValueString()); // TODO
-            newResponse.insert("gimbal", currentState);
+            newResponse.insert("gimbal",          currentState);
         }
     }
     QmlObjectListModel* batteries = _vehicle->batteries();
@@ -1086,11 +1144,10 @@ void QGCApplication::sendAircraftPositionInfos() {
     QJsonDocument doc(newResponse);
     QString responseMessage(doc.toJson(QJsonDocument::Compact));
     m_client->publish("POSITION/"+this->uavSn, responseMessage.toUtf8());
-   
-
-    // Might not do that
-    
-    /* newResponse.insert("batteryPowerPercentRC", batteryRCLevel); // TODO
+}
+        /* 
+            // Might not do that
+        newResponse.insert("batteryPowerPercentRC", batteryRCLevel); // TODO
     newResponse.insert("batteryBehavior",batteryBehavior); // TODO
     currentValues.insert("sharpness", Vehicule::cameraManager().currentCameraInstance().); // TODO
     currentValues.insert("orientation", Vehicule::cameraManager().currentCameraInstance().); // TODO
@@ -1105,9 +1162,7 @@ void QGCApplication::sendAircraftPositionInfos() {
             obj.put("photoFileFormatList", CameraUtil.photoFormats);
             obj.put("videoFileFormatList", CameraUtil.videoFormats);
             obj.put("streamSource", CameraUtil.streamSource);
-            obj.put("zoomRatiosRange", new int[]{1});*/
-}
-        /* 
+            obj.put("zoomRatiosRange", new int[]{1});
     switch ((obj.getString("instruction"))){
         case "SET_CAMERA": // TODO rework
             Log.i("setCams", "=================================================");
@@ -1140,98 +1195,12 @@ void QGCApplication::setCamera(int i){
     Vehicule::cameraManager().setCurrentCamera(i);
 } */
 
-void QGCApplication::sendEventMessage(QString command, int value) {
-    QJsonObject newResponse;
-    QString state;
-    if(value == 1) {
-        state = "SUCCES_";
-    }
-    else { // if error message needed
-        state = "ERROR_";
-    }
-    newResponse.insert("name", state + command);
-    newResponse.insert("email", loggedEmail);
-
-    QJsonDocument doc(newResponse);
-    QString responseMessage(doc.toJson(QJsonDocument::Compact));
-    m_client->publish("EVENT/"+ uavSn, responseMessage.toUtf8());
-}
-
-QJsonObject QGCApplication::getGimbalCapabilities(){
-    QJsonObject capabilities;
-    if(_activeGimbal) {
-        QJsonObject yawCap;
-        QJsonObject pitchCap;
-        QJsonObject rollCap;
-        qCWarning(QGCApplicationLog) << "minYaw : " << _activeGimbal->absoluteYaw()->cookedMinString();
-        qCWarning(QGCApplicationLog) << "maxYaw : " << _activeGimbal->absoluteYaw()->cookedMaxString();
-        yawCap.insert("min",_activeGimbal->bodyYaw()->cookedMinString());
-        yawCap.insert("max",_activeGimbal->bodyYaw()->cookedMaxString());
-        pitchCap.insert("min",_activeGimbal->absolutePitch()->cookedMinString());
-        pitchCap.insert("max",_activeGimbal->absolutePitch()->cookedMaxString());
-        rollCap.insert("min",_activeGimbal->absoluteRoll()->cookedMinString());
-        rollCap.insert("max",_activeGimbal->absoluteRoll()->cookedMaxString());
-        capabilities.insert("yaw",yawCap);
-        capabilities.insert("pitch",pitchCap);
-        capabilities.insert("roll",rollCap);
-    }
-    return capabilities;
-}
-
-void QGCApplication::_setActiveVehicle(Vehicle* vehicle) {
-    _vehicle = vehicle;
-
-    if(!_vehicle) {
-        qCWarning(QGCApplicationLog) << "*****   No vehicle available   *****";
-        return;
-    }
-
-    QObject::connect(_vehicle, &Vehicle::flyingChanged, this, &QGCApplication::_setIsFlying);
-
-
-    if(_vehicle->cameraManager()->cameras()->count() > 0) {
-        QGCCameraManager* cameraManager = _vehicle->cameraManager();
-        QObject::connect(cameraManager, &QGCCameraManager::currentCameraChanged, this, &QGCApplication::_setActiveCamera);
-    }
-    else{
-        qCWarning(QGCApplicationLog) << "*****   No camera on vehicle   *****";
-    }
-
-    if(_vehicle->gimbalController()->gimbals()->count() > 0) {
-        GimbalController* gimbalController = _vehicle->gimbalController();
-        QObject::connect(gimbalController, &GimbalController::activeGimbalChanged, this, &QGCApplication::_setActiveGimbal);
-    }
-    else {
-        qCWarning(QGCApplicationLog) << "*****   No gimbal on vehicle   *****";
-    }
-}
-
-void QGCApplication::_setIsFlying(bool flying) {
-    _isFlying = flying;
-
-    if(_isFlying && !timerVector->isActive()){
-        timerVector->start(40);
-    }
-    
-    if(!_isFlying && timerVector->isActive()){
-        timerVector->stop();
-    }
-}
-
-void QGCApplication::_setActiveGimbal() {
-    _activeGimbal = _vehicle->gimbalController()->activeGimbal();
-}
-
-void QGCApplication::_setActiveCamera() {
-    _activeCamera = _vehicle->cameraManager()->currentCameraInstance();
-}
-
-QJsonArray QGCApplication::getCameras() {
+QJsonArray QGCApplication::getCameras()
+{
     QJsonArray cameraList;
     if(!_vehicle || _vehicle->cameraManager()->cameras()->count() <= 0) return cameraList;
     QmlObjectListModel *cameras = _vehicle->cameraManager()->cameras();
     for (int i = 0; i < cameras->count(); i++) {
-        qCWarning(QGCApplicationLog) << "*****   Here   *****";
         MavlinkCameraControl *camera = qobject_cast<MavlinkCameraControl*>(cameras->get(i));
         QJsonObject thisCamera;
         thisCamera.insert("index",i);
@@ -1241,18 +1210,40 @@ QJsonArray QGCApplication::getCameras() {
     return cameraList;
 }
 
-void QGCApplication::setZoom(float value){
-    qCWarning(QGCApplicationLog) << "==============  START TAKE_PHOTO  ==============";
+QJsonObject QGCApplication::getGimbalCapabilities()
+{
+    QJsonObject capabilities;
+    if(_activeGimbal) {
+        QJsonObject yawCap;
+        QJsonObject pitchCap;
+        QJsonObject rollCap;
+        qCWarning(QGCApplicationLog) << "minYaw : " << _activeGimbal->absoluteYaw()->cookedMinString();
+        qCWarning(QGCApplicationLog) << "maxYaw : " << _activeGimbal->absoluteYaw()->cookedMaxString();
+        yawCap.insert("min",          _activeGimbal->bodyYaw()->cookedMinString());
+        yawCap.insert("max",          _activeGimbal->bodyYaw()->cookedMaxString());
+        pitchCap.insert("min",        _activeGimbal->absolutePitch()->cookedMinString());
+        pitchCap.insert("max",        _activeGimbal->absolutePitch()->cookedMaxString());
+        rollCap.insert("min",         _activeGimbal->absoluteRoll()->cookedMinString());
+        rollCap.insert("max",         _activeGimbal->absoluteRoll()->cookedMaxString());
+        capabilities.insert("yaw",    yawCap);
+        capabilities.insert("pitch",  pitchCap);
+        capabilities.insert("roll",   rollCap);
+    }
+    return capabilities;
+}
+
+void QGCApplication::setZoom(float value)
+{
     if(!_activeCamera) {
         qCWarning(QGCApplicationLog) << "*****   No active camera   *****";
         return;
     }
     _activeCamera->setZoomLevel(value);
-    qCWarning(QGCApplicationLog) << "==============  END TAKE_PHOTO  ==============";
+    qCWarning(QGCApplicationLog) << "==============  SET_ZOOM  ==============";
 }
 
-void QGCApplication::startStream(){
-    qCWarning(QGCApplicationLog) << "==============  START OPEN_STREAM  ==============";
+void QGCApplication::startStream()
+{
     if(!_activeCamera) return;
     this->rtmpUrl = "rtmp://ome.stationdrone.net/app/" + this->uavSn;
 
@@ -1267,13 +1258,14 @@ void QGCApplication::startStream(){
         codeThreadBus(this->data.pipeline, this->data, (QString)"DEBUG");
     });
     
-
     this->isStreaming = true;
+    qCWarning(QGCApplicationLog) << "==============  OPEN_STREAM  ==============";
 }
 
 //======================================================================================================================
 /// Process a single bus message, log messages, exit on error, return false on eof
-bool QGCApplication::busProcessMsg(GstElement *pipeline, GstMessage *msg, QString prefix) {
+bool QGCApplication::busProcessMsg(GstElement *pipeline, GstMessage *msg, QString prefix)
+{
     GstMessageType mType = GST_MESSAGE_TYPE(msg);
     qCWarning(QGCApplicationLog) << "[" << prefix << "] : mType = " << mType << " ";
     GError *err = nullptr;
@@ -1318,9 +1310,6 @@ bool QGCApplication::busProcessMsg(GstElement *pipeline, GstMessage *msg, QStrin
         case (GST_MESSAGE_ELEMENT):
             qCWarning(QGCApplicationLog) << "MESSAGE ELEMENT !";
             break;
-
-            // You can add more stuff here if you want
-
         default:
             qCWarning(QGCApplicationLog) << "default";
     }
@@ -1329,7 +1318,8 @@ bool QGCApplication::busProcessMsg(GstElement *pipeline, GstMessage *msg, QStrin
 
 //======================================================================================================================
 /// Run the message loop for one bus
-void QGCApplication::codeThreadBus(GstElement *pipeline, GoblinData &data, QString prefix) {
+void QGCApplication::codeThreadBus(GstElement *pipeline, GoblinData &data, QString prefix)
+{
     GstBus *bus = gst_element_get_bus(pipeline);
     int res;
     while (true) {
@@ -1343,8 +1333,8 @@ void QGCApplication::codeThreadBus(GstElement *pipeline, GoblinData &data, QStri
     qCWarning(QGCApplicationLog) << "BUS THREAD FINISHED : " << prefix;
 }
 
-void QGCApplication::stopStream(){
-    qCWarning(QGCApplicationLog) << "==============  START STOP_STREAM  ==============";
+void QGCApplication::stopStream()
+{
     gst_element_set_state(this->data.pipeline, GST_STATE_NULL);
     gst_object_unref(this->data.pipeline);
     this->isStreaming = false;
@@ -1352,20 +1342,11 @@ void QGCApplication::stopStream(){
     if(this->future.isValid() && this->future.isRunning()) {
         this->future.cancel();
     }
+    qCWarning(QGCApplicationLog) << "==============  STOP_STREAM  ==============";
 }
 
-bool QGCApplication::isFileEmpty(const std::string& filePath) {
-    std::ifstream file(filePath, std::ios::binary | std::ios::ate);
-    if (!file.is_open()) {
-        qCWarning(QGCApplicationLog) << "Erreur : Impossible d'ouvrir le fichier.";
-        return false; // Retourne false pour indiquer que le fichier n'existe pas ou n'est pas accessible.
-    }
-
-    return file.tellg() == 0; // `tellg()` retourne la taille actuelle du fichier.
-}
-
-int QGCApplication::takePhoto(){
-    qCWarning(QGCApplicationLog) << "==============  START TAKE_PHOTO  =============="; // NEED TO UPDATE FOR OTHER CAMS
+int QGCApplication::takePhoto()
+{
     /*
     if(!_activeCamera) {
         qCWarning(QGCApplicationLog) << "*****   No active camera   *****";
@@ -1381,11 +1362,11 @@ int QGCApplication::takePhoto(){
     _videoManager->grabImage(imageFile);
     return !QGCApplication::isFileEmpty(imageFile.toStdString().c_str()) ? 1 : -1;
     
-    qCWarning(QGCApplicationLog) << "==============   END TAKE_PHOTO   ==============";
+    qCWarning(QGCApplicationLog) << "==============   TAKE_PHOTO   =============="; // NEED TO UPDATE FOR OTHER CAMS
 }
 
-int QGCApplication::startRecording(){
-    qCWarning(QGCApplicationLog) << "==============  START START_RECORDING  =============="; // NEED TO UPDATE FOR OTHER CAMS
+int QGCApplication::startRecording()
+{
     /*
     if(!_activeCamera) {
         qCWarning(QGCApplicationLog) << "*****   No active camera   *****";
@@ -1407,11 +1388,11 @@ int QGCApplication::startRecording(){
 
     this->isRecording = _videoManager->recording();
     return this->isRecording ? 0 : -1;
-    qCWarning(QGCApplicationLog) << "==============   END START_RECORDING   ==============";
+    qCWarning(QGCApplicationLog) << "==============   START_RECORDING   =============="; // NEED TO UPDATE FOR OTHER CAMS
 }
 
-int QGCApplication::stopRecording(){
-    qCWarning(QGCApplicationLog) << "==============  START STOP_RECORDING  =============="; // NEED TO UPDATE FOR OTHER CAMS
+int QGCApplication::stopRecording()
+{
     /* 
     if(!_activeCamera) return;
     _activeCamera->stopVideoRecording(); */
@@ -1422,20 +1403,21 @@ int QGCApplication::stopRecording(){
     this->isRecording = _videoManager->recording();
     return !this->isRecording && !QGCApplication::isFileEmpty(this->videoFile.toStdString().c_str()) ? 1 : -1;
 
-    qCWarning(QGCApplicationLog) << "==============   END STOP_RECORDING   ==============";
+    qCWarning(QGCApplicationLog) << "==============   STOP_RECORDING   =============="; // NEED TO UPDATE FOR OTHER CAMS
 }
 
-void QGCApplication::resetGimbal() {
-    qCWarning(QGCApplicationLog) << "==============  START RESET_GIMBAL  ==============";
+void QGCApplication::resetGimbal()
+{
     if(!_activeGimbal) return;
 
     _activeGimbal->setAbsolutePitch(0);
     _activeGimbal->setBodyYaw(0);
     _activeGimbal->setAbsoluteRoll(0);
-    qCWarning(QGCApplicationLog) << "==============   END RESET_GIMBAL   ==============";
+    qCWarning(QGCApplicationLog) << "==============   RESET_GIMBAL   ==============";
 }
 
-void QGCApplication::genericGimbal(QString axis, QString value){
+void QGCApplication::genericGimbal(QString axis, QString value)
+{
     switch (this->aircraftList.indexOf(this->productName)){
         case 0:
             QGCApplication::moveGimbalTundra(value);
@@ -1443,41 +1425,56 @@ void QGCApplication::genericGimbal(QString axis, QString value){
         default:
             QGCApplication::moveGimbal(axis, value);
     }
+    qCWarning(QGCApplicationLog) << "==============   MOVE_GIMBAL   ==============";
 }
 
-void QGCApplication::moveGimbalTundra(QString value){
+void QGCApplication::moveGimbalTundra(QString value)
+{
     if(value == "+") QGCApplication::servoCmd(9, 1801);
     if(value == "-") QGCApplication::servoCmd(9, 1201);
     if(value == "0") QGCApplication::servoCmd(9, 1501);
-    
 }
 
-void QGCApplication::moveGimbal(QString axis, QString value) {
-    qCWarning(QGCApplicationLog) << "==============  START MOVE_GIMBAL  ==============";
+void QGCApplication::moveGimbal(QString axis, QString value)
+{
     if(!_activeGimbal) return;
 
     switch (axisList.indexOf(axis)) {
         case 0:
-            qCWarning(QGCApplicationLog) << "==============   MOVE_GIMBAL CASE PITCH  ==============";
+            qCWarning(QGCApplicationLog) << "=====   PITCH CHANGED  =====";
             _activeGimbal->setAbsolutePitch(value.toFloat());
             break;
         case 1:
-            qCWarning(QGCApplicationLog) << "==============   MOVE_GIMBAL CASE YAW   ==============";
+            qCWarning(QGCApplicationLog) << "=====   YAW CHANGED   =====";
             _activeGimbal->setBodyYaw(value.toFloat());
             break;
         case 2:
-            qCWarning(QGCApplicationLog) << "==============   MOVE_GIMBAL CASE ROLL   ==============";
+            qCWarning(QGCApplicationLog) << "=====   ROLL CHANGED   =====";
             _activeGimbal->setAbsoluteRoll(value.toFloat());
             break;
+        default:
+            qCWarning(QGCApplicationLog) << "*****   INVALID AXIS   *****";
     }
-    qCWarning(QGCApplicationLog) << "==============   END MOVE_GIMBAL   ==============";
 }
 
-void QGCApplication::vectorControl() {
+void QGCApplication::vectorControl()
+{
     _vehicle->virtualTabletJoystickValue(roll, pitch, yaw, thrust);
 }
 
-void QGCApplication::servoCmd(float servoId, float pwmValue){
+bool QGCApplication::isFileEmpty(const std::string& filePath)
+{
+    std::ifstream file(filePath, std::ios::binary | std::ios::ate);
+    if (!file.is_open()) {
+        qCWarning(QGCApplicationLog) << "Erreur : Impossible d'ouvrir le fichier.";
+        return false; // Retourne false pour indiquer que le fichier n'existe pas ou n'est pas accessible.
+    }
+
+    return file.tellg() == 0; // `tellg()` retourne la taille actuelle du fichier.
+}
+
+void QGCApplication::servoCmd(float servoId, float pwmValue)
+{
     if(!_vehicle) {
         qCWarning(QGCApplicationLog) << "*****   No vehicle found   *****";
         return;

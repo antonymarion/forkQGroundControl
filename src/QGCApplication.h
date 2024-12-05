@@ -235,72 +235,99 @@ private:
     friend class UnitTest;
 
 
+    // MQTT
+    void updateLogStateChange();
+    void brokerDisconnected  ();
+    void brokerConnected     ();
+    void updateMessage       (const QMqttMessage &msg);
+    void updateStatus        (QMqttSubscription::SubscriptionState state);
+    void sendEventMessage    (QString command, int value);
+
+    // Send info timer
     void sendInfos();
     void sendRemotePilote();
     void sendAircraftPositionInfos();
-    void sendEventMessage(QString command, int value);
-    void genericGimbal(QString axis, QString value);
-    void moveGimbalTundra(QString value);
-    void moveGimbal(QString axis, QString value);
-    void vectorControl();
-    void resetGimbal();
-    QJsonObject getGimbalCapabilities();
-    QJsonArray getCameras();
-    void setZoom(float value);
-    void startStream();
-    void stopStream();
-    bool isFileEmpty(const std::string& filePath);
-    int takePhoto();
-    int startRecording();
-    int stopRecording();
-    void servoCmd(float servoId, float pwmValue);
-    void updateLogStateChange();
-    void brokerDisconnected();
-    void brokerConnected();
-    void updateMessage(const QMqttMessage &msg);
-    void updateStatus(QMqttSubscription::SubscriptionState state);
-    void _setActiveVehicle  (Vehicle* vehicle);
-    void _setIsFlying(bool flying);
-    void _setActiveGimbal();
-    void _setActiveCamera();
-    QString rtmpUrl = "";
-    QString loggedEmail = "graphx.stephaneroma@gmail.com";
-    QString registrationNumber = "UAS-FR-458156";
-    QString uavSn = "1600FTR2STD24289930B";
-    QString productName = "Tundra 2";
-    bool isStreaming = false;
-    int countdown = 10;
-    bool reset = true;
-    QMqttClient *m_client = nullptr;
-    QStringList commandsList;
-    QStringList aircraftList;
-    QStringList axisList;
-    bool _isFlying;
-    Vehicle* _vehicle{nullptr};
-    VideoManager* _videoManager{nullptr};
-    Gimbal* _activeGimbal{nullptr};
-    MavlinkCameraControl* _activeCamera{nullptr};
-    QProcess *streamingProcess = nullptr;
-    GstElement *pipeline = nullptr;
-    GstBus *bus;
-    QTimer *timerVector = nullptr;
-    double roll = 0;
-    double pitch = 0;
-    double yaw = 0;
-    double thrust = 0;
 
+    // Vehicles signal receivers
+    void _setActiveVehicle  (Vehicle* vehicle);
+    void _setIsFlying       (bool flying);
+    void _setActiveGimbal   ();
+    void _setActiveCamera   ();
+
+    // Station Commands
+    QJsonArray   getCameras        ();
+    QJsonObject  getGimbalCapabilities();
+    void         setZoom           (float value);
+    void         startStream       ();
+    void         stopStream        ();
+    int          takePhoto         ();
+    int          startRecording    ();
+    int          stopRecording     ();
+    void         resetGimbal       ();
+    void         genericGimbal     (QString axis, QString value);
+    void         moveGimbalTundra  (QString value);
+    void         moveGimbal        (QString axis, QString value);
+    void         vectorControl     ();
+
+    // Utilities
+    bool isFileEmpty(const std::string& filePath);
+    void servoCmd   (float servoId, float pwmValue);
+
+    QString               rtmpUrl             = "";                      // streaming URL
+    QString               loggedEmail         = "graphx.stephaneroma@gmail.com";  // Remote pilote logged email
+    QString               registrationNumber  = "UAS-FR-458156";         // Aircraft registration number
+    QString               uavSn               = "1600FTR2STD24289930B";  // Aircraft serial number
+    QString               productName         = "Tundra 2";              // Aircraft name
+    bool                  isStreaming         = false;                   // is currently streaming on rtmp URL
+    QMqttClient*          m_client            = nullptr;                 // mqtt client
+    bool                  _isFlying;                                     // is aircraft currently flying
+    Vehicle*              _vehicle{nullptr};                             // current vehicle
+    VideoManager*         _videoManager{nullptr};
+    Gimbal*               _activeGimbal{nullptr};
+    MavlinkCameraControl* _activeCamera{nullptr};
+    QTimer*               timerVector = nullptr;                         // send vector command timer
+    QStringList           aircraftList        = { "Tundra 2" };          // special aircraft list
+    QStringList           axisList            = { "pitch", "yaw", "roll", "thrust" }; // global axis list
+    QStringList           commandsList        = {                        // front-end commmand list
+        "OPEN_STREAM",
+        "STOP_STREAM",
+        "RESET_GIMBAL",
+        "MOVE_GIMBAL",
+        "GET_CAMERAS",
+        "SET_CAMERA",
+        "SET_CAMERA_INTRINSICS",
+        "GET_CAMERA",
+        "ZOOM_CAMERA",
+        "TAKE_PHOTO",
+        "START_RECORDING",
+        "STOP_RECORDING",
+        "MAV_CMD_DO_SET_SERVO",
+        "MOVE_VECTOR",
+        "TAKE_OFF",
+        "RETURN_TO_HOME",
+        "VERTICAL_LANDING",
+        "FLYING_TERMINATION_SYSTEM"
+    };
+
+    // Vector neutral joysticks
+    double roll   = 0;
+    double pitch  = 0;
+    double yaw    = 0;
+    double thrust = 0.5; // interface slider command
+
+    // Gstreamer
     //======================================================================================================================
     /// Our global data, serious gstreamer apps should always have this !
     struct GoblinData {
         GstElement *pipeline = nullptr;
         GstElement *sinkVideo = nullptr;
     };
-
     void codeThreadBus(GstElement *pipeline, GoblinData &data, QString prefix);
     bool busProcessMsg(GstElement *pipeline, GstMessage *msg, QString prefix);
     GoblinData data;
     QFuture<void> future;
-    
+    GstElement *pipeline = nullptr;
+    GstBus *bus;
     QString videoFile = "";
     QString videoFileS3 = "";
     bool isRecording = false;
