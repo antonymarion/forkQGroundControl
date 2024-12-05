@@ -988,7 +988,7 @@ void QGCApplication::updateStatus(QMqttSubscription::SubscriptionState state)
 void QGCApplication::sendEventMessage(QString command, int value)
 {
     QJsonObject newResponse;
-    QString state = value == 1 ? "SUCCES_" : "ERROR_";
+    QString state = value == 1 ? "SUCCESS_" : "ERROR_";
     newResponse.insert("name", state + command);
     newResponse.insert("email", loggedEmail);
 
@@ -1387,6 +1387,7 @@ int QGCApplication::startRecording()
     this->videoFileS3 = "station-drone/aircrafts/operatorID-16/sn-" + this->uavSn + "/videos/" + baseVideoFileName + ext;
 
     this->isRecording = _videoManager->recording();
+    qCWarning(QGCApplicationLog) << this->isRecording;
     return this->isRecording ? 0 : -1;
     qCWarning(QGCApplicationLog) << "==============   START_RECORDING   =============="; // NEED TO UPDATE FOR OTHER CAMS
 }
@@ -1401,6 +1402,7 @@ int QGCApplication::stopRecording()
     }
     _videoManager->stopRecording();
     this->isRecording = _videoManager->recording();
+    qCWarning(QGCApplicationLog) << this->videoFile;
     return !this->isRecording && !QGCApplication::isFileEmpty(this->videoFile.toStdString().c_str()) ? 1 : -1;
 
     qCWarning(QGCApplicationLog) << "==============   STOP_RECORDING   =============="; // NEED TO UPDATE FOR OTHER CAMS

@@ -1906,7 +1906,7 @@ void Vehicle::_remoteControlRSSIChanged(uint8_t rssi)
 
 void Vehicle::virtualTabletJoystickValue(double roll, double pitch, double yaw, double thrust, QString str)
 {
-    qCWarning(QGCApplicationLog) << "*****   " << str << "   *****";
+    qCWarning(VehicleLog) << "*****   " << str << "   *****";
     // The following if statement prevents the virtualTabletJoystick from sending values if the standard joystick is enabled
     if (!_joystickEnabled) {
         sendJoystickDataThreadSafe(
