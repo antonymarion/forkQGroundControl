@@ -296,7 +296,7 @@ public:
     /// Resets link status counters
     Q_INVOKABLE void resetCounters  ();
 
-    Q_INVOKABLE void virtualTabletJoystickValue(double roll, double pitch, double yaw, double thrust);
+    Q_INVOKABLE void virtualTabletJoystickValue(double roll, double pitch, double yaw, double thrust, QString str);
 
     /// Command vehicle to return to launch
     Q_INVOKABLE void guidedModeRTL(bool smartRTL);
