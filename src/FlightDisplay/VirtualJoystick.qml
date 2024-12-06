@@ -26,6 +26,7 @@ Item {
     property bool  _initialConnectComplete:   _activeVehicle ? _activeVehicle.initialConnectComplete : false
     property real  leftYAxisValue:            autoCenterThrottle ? height / 2 : height
     property var   calibration:               false
+    property var   hasControl:                false
     property var   uiTotalWidth
     property var   uiRealX
         
@@ -35,7 +36,18 @@ Item {
         repeat:     true
         onTriggered: {
             if (_activeVehicle && _initialConnectComplete) {
-                _activeVehicle.virtualTabletJoystickValue(rightStick.xAxis, rightStick.yAxis, leftStick.xAxis, leftStick.yAxis, "JOYSTICKS")
+                // if all value 0 do not run this, else use qgcapp function to stop the timer and set overtake to true
+                var rx : rightStick.xAxis
+                var ry : rightStick.yAxis
+                var lx : leftStick.xAxis
+                var ly : leftStick.yAxis
+                if(rx != 0 || ry !=0 || lx != 0 || ly != 0.5){
+                    if(!hasControl){
+                        hasControl = true;
+                        QGroundControl.vectorControlOverride();
+                    }
+                    _activeVehicle.virtualTabletJoystickValue(rx, ry, lx, ly, "JOYSTICKS")
+                }
             }
             leftYAxisValue = leftStick.yAxis // We keep Y axis value from the throttle stick for using it while there is a resize
         }

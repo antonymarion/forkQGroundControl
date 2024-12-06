@@ -118,6 +118,8 @@ public:
     static QString cachedParameterMetaDataFile(void);
     static QString cachedAirframeMetaDataFile(void);
 
+    void vectorControlOverride(); // Take over station control
+
 public slots:
     /// You can connect to this slot to show an information message box from a different thread.
     void informationMessageBoxOnMainThread(const QString& title, const QString& msg);
@@ -281,6 +283,7 @@ private:
     bool                  isStreaming         = false;                   // is currently streaming on rtmp URL
     QMqttClient*          m_client            = nullptr;                 // mqtt client
     bool                  _isFlying;                                     // is aircraft currently flying
+    bool                  canControl          = true;                    // false if remote piltoe override commands
     Vehicle*              _vehicle{nullptr};                             // current vehicle
     VideoManager*         _videoManager{nullptr};
     Gimbal*               _activeGimbal{nullptr};

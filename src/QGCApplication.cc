@@ -1030,7 +1030,7 @@ void QGCApplication::_setIsFlying(bool flying)
 {
     _isFlying = flying;
 
-    if(_isFlying && !timerVector->isActive()){
+    if(_isFlying && !timerVector->isActive() && canControl){
         timerVector->start(40);
     }
     
@@ -1462,6 +1462,13 @@ void QGCApplication::moveGimbal(QString axis, QString value)
 void QGCApplication::vectorControl()
 {
     _vehicle->virtualTabletJoystickValue(roll, pitch, yaw, thrust, "FRONT");
+}
+
+void QGCApplication::vectorControlOverride(){
+    canControl = false;
+    if(timerVector->isActive()){
+        timerVector->stop();
+    }
 }
 
 bool QGCApplication::isFileEmpty(const std::string& filePath)
