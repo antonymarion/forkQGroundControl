@@ -1254,6 +1254,11 @@ void QGCApplication::setZoom(float value)
 
 void QGCApplication::startStream()
 {
+    if(this->future.isValid() && this->future.isRunning()) {
+        qCWarning(QGCApplicationLog) << "*****   Stream already active  *****";
+        return;
+    }
+
     if(!_activeCamera) {
         qCWarning(QGCApplicationLog) << "*****   No active camera  *****";
         return;
