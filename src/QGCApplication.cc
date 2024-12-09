@@ -746,6 +746,8 @@ void QGCApplication::init()
     _setActiveVehicle(manager->activeVehicle());
 
     _videoManager = toolbox()->videoManager();
+    connect(_videoManager, &VideoManager::recordingChanged, this, &QGCApplication::_notifyRecording);
+    _notifyRecording();
 
     // Setup Position & Remote Pilote TIMER
     QTimer *timer = new QTimer(this);
@@ -1050,6 +1052,11 @@ void QGCApplication::_setActiveGimbal()
 void QGCApplication::_setActiveCamera()
 {
     _activeCamera = _vehicle->cameraManager()->currentCameraInstance();
+}
+
+void QGCApplication::_notifyRecording(){
+    _recording = _videoManager->recording();
+    qCWarning(QGCApplicationLog) << "recording notification : "+_recording;
 }
 
 void QGCApplication::sendInfos()
@@ -1392,7 +1399,7 @@ int QGCApplication::startRecording()
     this->videoFile = toolbox()->settingsManager()->appSettings()->videoSavePath() + "/" + baseVideoFileName + "." + ext;
     this->videoFileS3 = "station-drone/aircrafts/operatorID-16/sn-" + this->uavSn + "/videos/" + baseVideoFileName + "." + ext;
 
-    this->isRecording = _videoManager->recording();
+    this->isRecording = true;
     qCWarning(QGCApplicationLog) << this->isRecording;
     return this->isRecording ? 0 : -1;
     qCWarning(QGCApplicationLog) << "==============   START_RECORDING   =============="; // NEED TO UPDATE FOR OTHER CAMS
@@ -1407,7 +1414,7 @@ int QGCApplication::stopRecording()
         return -1;
     }
     _videoManager->stopRecording();
-    this->isRecording = _videoManager->recording();
+    this->isRecording = false;
     qCWarning(QGCApplicationLog) << this->videoFile;
     return !this->isRecording && !QGCApplication::isFileEmpty(this->videoFile.toStdString().c_str()) ? 1 : -1;
 
