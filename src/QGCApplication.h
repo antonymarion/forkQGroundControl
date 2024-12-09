@@ -255,6 +255,7 @@ private:
     void _setIsFlying       (bool flying);
     void _setActiveGimbal   ();
     void _setActiveCamera   ();
+    void _notifyRecording();
 
     // Station Commands
     QJsonArray   getCameras        ();
