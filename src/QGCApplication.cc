@@ -1007,7 +1007,7 @@ void QGCApplication::_setActiveVehicle(Vehicle* vehicle)
     }
 
     QObject::connect(_vehicle, &Vehicle::flyingChanged, this, &QGCApplication::_setIsFlying);
-
+    _setIsFlying(_vehicle->flying());
 
     if(_vehicle->cameraManager()->cameras()->count() > 0) {
         QGCCameraManager* cameraManager = _vehicle->cameraManager();
