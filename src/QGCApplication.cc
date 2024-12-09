@@ -1388,8 +1388,8 @@ int QGCApplication::startRecording()
     }
     _videoManager->startRecording(baseVideoFileName, &ext);
     
-    this->videoFile = toolbox()->settingsManager()->appSettings()->videoSavePath() + "/" + baseVideoFileName + ext;
-    this->videoFileS3 = "station-drone/aircrafts/operatorID-16/sn-" + this->uavSn + "/videos/" + baseVideoFileName + ext;
+    this->videoFile = toolbox()->settingsManager()->appSettings()->videoSavePath() + "/" + baseVideoFileName + "." + ext;
+    this->videoFileS3 = "station-drone/aircrafts/operatorID-16/sn-" + this->uavSn + "/videos/" + baseVideoFileName + "." + ext;
 
     this->isRecording = _videoManager->recording();
     qCWarning(QGCApplicationLog) << this->isRecording;
