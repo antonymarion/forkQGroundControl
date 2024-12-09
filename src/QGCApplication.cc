@@ -1031,6 +1031,7 @@ void QGCApplication::_setActiveVehicle(Vehicle* vehicle)
 void QGCApplication::_setIsFlying(bool flying)
 {
     _isFlying = flying;
+    canControl = flying;
 
     if(_isFlying && !timerVector->isActive() && canControl){
         timerVector->start(40);
@@ -1380,7 +1381,7 @@ int QGCApplication::startRecording()
     _activeCamera->setCameraModeVideo();
     _activeCamera->startVideoRecording(); */
     
-    QString baseVideoFileName = "video_" + QDateTime::currentDateTime().toString("yyyy-MM-dd_hh.mm.ss.zzz");
+    QString baseVideoFileName = "video_" + QDateTime::currentDateTime().toString("yyyy-MM-dd_hh.mm.ss");
     QString ext = QString();
     
     if(this->isRecording){

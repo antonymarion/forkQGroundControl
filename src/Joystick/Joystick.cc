@@ -623,16 +623,21 @@ void Joystick::_handleAxis()
                 pitch = -_exponential*powf(pitch,3) + (1+_exponential)*pitch;
                 yaw =   -_exponential*powf(yaw,  3) + (1+_exponential)*yaw;
             }
-
+            float t_moeu; // margin error up
+            float t_moed; // margin error down
             // Adjust throttle to 0:1 range
             if (_throttleMode == ThrottleModeCenterZero && _activeVehicle->supportsThrottleModeCenterZero()) {
                 if (!_activeVehicle->supportsNegativeThrust() || !_negativeThrust) {
+                    t_moeu =  0.1;
+                    t_moed =  -0.1;
                     throttle = std::max(0.0f, throttle);
                 }
             } else {
+                t_moeu =  0.55;
+                t_moed =  0.45;
                 throttle = (throttle + 1.0f) / 2.0f;
             }
-            qCWarning(JoystickValuesLog) << "name:roll:pitch:yaw:throttle:gimbalPitch:gimbalYaw" << name() << roll << -pitch << yaw << throttle << gimbalPitch << gimbalYaw;
+            qCDebug(JoystickValuesLog) << "name:roll:pitch:yaw:throttle:gimbalPitch:gimbalYaw" << name() << roll << -pitch << yaw << throttle << gimbalPitch << gimbalYaw;
             // NOTE: The buttonPressedBits going to MANUAL_CONTROL are currently used by ArduSub (and it only handles 16 bits)
             // Set up button bitmap
             quint64 buttonPressedBits = 0;  // Buttons pressed for manualControl signal
@@ -646,7 +651,16 @@ void Joystick::_handleAxis()
             emit axisValues(roll, pitch, yaw, throttle);
 
             uint16_t shortButtons = static_cast<uint16_t>(buttonPressedBits & 0xFFFF);
-            _activeVehicle->sendJoystickDataThreadSafe(roll, pitch, yaw, throttle, shortButtons, "JOYSTICKS");
+            if(_isOverriding || roll < -0.1 || roll > 0.1 ||  pitch < -0.1 ||  pitch > 0.1 || yaw < -0.1 || yaw > 0.1 || throttle < t_moed || throttle > t_moeu){
+                qCWarning(JoystickValuesLog) << "JOYSTICK       ACTIVE";
+                qCWarning(JoystickValuesLog) << "name:roll:pitch:yaw:throttle:gimbalPitch:gimbalYaw" << name() << roll << -pitch << yaw << throttle << gimbalPitch << gimbalYaw;
+                _activeVehicle->sendJoystickDataThreadSafe(roll, pitch, yaw, throttle, shortButtons, "JOYSTICKS");
+                if(!_isOverriding) {
+                    _isOverriding = true;
+                    qgcApp()->vectorControlOverride();
+                }
+                if(!_activeVehicle->flying()) _isOverriding = false;
+            }
         }
     }
 }
