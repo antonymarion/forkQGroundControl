@@ -1479,7 +1479,13 @@ void QGCApplication::moveGimbal(QString axis, QString value)
 
 void QGCApplication::vectorControl()
 {
-    _vehicle->virtualTabletJoystickValue(roll, pitch, yaw, thrust, "FRONT");
+    _vehicle->sendJoystickDataThreadSafe(
+                    static_cast<float>(roll),
+                    static_cast<float>(pitch),
+                    static_cast<float>(yaw),
+                    static_cast<float>(thrust),
+                    0,
+                    "FRONT");
 }
 
 void QGCApplication::vectorControlOverride(){
