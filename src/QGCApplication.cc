@@ -1465,6 +1465,7 @@ void QGCApplication::vectorControl()
 }
 
 void QGCApplication::vectorControlOverride(){
+    qCWarning(QGCApplicationLog) << "=====   RECEIVED OVERRIDE  =====";
     canControl = false;
     if(timerVector->isActive()){
         timerVector->stop();
