@@ -1012,6 +1012,7 @@ void QGCApplication::_setActiveVehicle(Vehicle* vehicle)
     if(_vehicle->cameraManager()->cameras()->count() > 0) {
         QGCCameraManager* cameraManager = _vehicle->cameraManager();
         QObject::connect(cameraManager, &QGCCameraManager::currentCameraChanged, this, &QGCApplication::_setActiveCamera);
+        _setActiveCamera();
     }
     else{
         qCWarning(QGCApplicationLog) << "*****   No camera on vehicle   *****";
@@ -1020,6 +1021,7 @@ void QGCApplication::_setActiveVehicle(Vehicle* vehicle)
     if(_vehicle->gimbalController()->gimbals()->count() > 0) {
         GimbalController* gimbalController = _vehicle->gimbalController();
         QObject::connect(gimbalController, &GimbalController::activeGimbalChanged, this, &QGCApplication::_setActiveGimbal);
+        _setActiveGimbal();
     }
     else {
         qCWarning(QGCApplicationLog) << "*****   No gimbal on vehicle   *****";
@@ -1244,7 +1246,10 @@ void QGCApplication::setZoom(float value)
 
 void QGCApplication::startStream()
 {
-    if(!_activeCamera) return;
+    if(!_activeCamera) {
+        qCWarning(QGCApplicationLog) << "*****   No active camera  *****";
+        return;
+    }
     this->rtmpUrl = "rtmp://ome.stationdrone.net/app/" + this->uavSn;
 
     // Start the bus thread
