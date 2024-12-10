@@ -1254,6 +1254,7 @@ void QGCApplication::setZoom(float value)
 
 void QGCApplication::startStream()
 {
+    this->rtmpUrl = "rtmp://ome.stationdrone.net/app/" + this->uavSn;
     if(this->future.isValid() && this->future.isRunning()) {
         qCWarning(QGCApplicationLog) << "*****   Stream already active  *****";
         return;
@@ -1263,7 +1264,6 @@ void QGCApplication::startStream()
         qCWarning(QGCApplicationLog) << "*****   No active camera  *****";
         return;
     }
-    this->rtmpUrl = "rtmp://ome.stationdrone.net/app/" + this->uavSn;
 
     // Start the bus thread
     this->future = QtConcurrent::run([this]() {
