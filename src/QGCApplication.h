@@ -263,7 +263,7 @@ private:
     void         setZoom           (float value);
     void         startStream       ();
     void         stopStream        ();
-    void         getTelemetry      ();
+    void         getTelemetry      (double &lat, double &lon, double &alt, double &speed, double &yaw, double &pitch, double &roll);
     int          takePhoto         ();
     int          startRecording    ();
     int          stopRecording     ();

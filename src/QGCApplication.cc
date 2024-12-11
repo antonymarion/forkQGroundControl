@@ -945,11 +945,11 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qCWarning(QGCApplicationLog) << "=================================================";
             qCWarning(QGCApplicationLog) << "recieved TELEMETRY";
             qCWarning(QGCApplicationLog) << "=================================================";
-            double x, y, z, speed, yaw, pitch, roll;
-            QGCApplication::getTelemetry(x, y, z, speed, yaw, pitch, roll);
-            message.insert("x", x);
-            message.insert("y", y);
-            message.insert("z", z);
+            double lat, lon, alt, speed, yaw, pitch, roll;
+            QGCApplication::getTelemetry(lat, lon, alt, speed, yaw, pitch, roll);
+            message.insert("lat", lat);
+            message.insert("lon", lon);
+            message.insert("alt", alt);
             message.insert("speed", speed);
             message.insert("yaw", yaw);
             message.insert("pitch", pitch);
@@ -1463,10 +1463,10 @@ void QGCApplication::genericGimbal(QString axis, QString value)
     qCWarning(QGCApplicationLog) << "==============   MOVE_GIMBAL   ==============";
 }
 
-void QGCApplication::getTelemetry(double &x, double &y, double &z, double &speed, double &yaw, double &pitch, double &roll) {
-  x = _vehicle->coordinate().latitude();
-  y = _vehicle->coordinate().longitude();
-  z = _vehicle->coordinate().altitude();
+void QGCApplication::getTelemetry(double &lat, double &lon, double &alt, double &speed, double &yaw, double &pitch, double &roll) {
+  lat = _vehicle->coordinate().latitude();
+  lon = _vehicle->coordinate().longitude();
+  alt = _vehicle->coordinate().altitude();
   speed = qobject_cast<VehicleFactGroup*>(_vehicle->vehicleFactGroup())->airSpeed()->rawValueString();
   yaw = qobject_cast<VehicleFactGroup*>(_vehicle->vehicleFactGroup())->heading()->rawValueString();
   pitch = qobject_cast<VehicleFactGroup*>(_vehicle->vehicleFactGroup())->pitch()->rawValueString();
