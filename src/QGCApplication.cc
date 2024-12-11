@@ -946,7 +946,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qCWarning(QGCApplicationLog) << "recieved TELEMETRY";
             qCWarning(QGCApplicationLog) << "=================================================";
             double x, y, z, speed, yaw, pitch, roll;
-            _vehicle->getTelemetry(x, y, z, speed, yaw, pitch, roll);
+            QGCApplication::getTelemetry(x, y, z, speed, yaw, pitch, roll);
             message.insert("x", x);
             message.insert("y", y);
             message.insert("z", z);
