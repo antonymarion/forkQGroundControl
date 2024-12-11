@@ -263,6 +263,7 @@ private:
     void         setZoom           (float value);
     void         startStream       ();
     void         stopStream        ();
+    void         getTelemetry      ();
     int          takePhoto         ();
     int          startRecording    ();
     int          stopRecording     ();
@@ -311,7 +312,8 @@ private:
         "TAKE_OFF",
         "RETURN_TO_HOME",
         "VERTICAL_LANDING",
-        "FLYING_TERMINATION_SYSTEM"
+        "FLYING_TERMINATION_SYSTEM",
+        "TELEMETRY"
     };
 
     // Vector neutral joysticks

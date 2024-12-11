@@ -941,6 +941,21 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             _vehicle->emergencyStop();
             state_value = 0;
             break;
+        case 18:
+            qCWarning(QGCApplicationLog) << "=================================================";
+            qCWarning(QGCApplicationLog) << "recieved TELEMETRY";
+            qCWarning(QGCApplicationLog) << "=================================================";
+            double x, y, z, speed, yaw, pitch, roll;
+            _vehicle->getTelemetry(x, y, z, speed, yaw, pitch, roll);
+            message.insert("x", x);
+            message.insert("y", y);
+            message.insert("z", z);
+            message.insert("speed", speed);
+            message.insert("yaw", yaw);
+            message.insert("pitch", pitch);
+            message.insert("roll", roll);
+            state_value = 0;
+            break;
         default:
             message.insert("status","KO");
             message.insert("error","KO");
@@ -1446,6 +1461,16 @@ void QGCApplication::genericGimbal(QString axis, QString value)
             QGCApplication::moveGimbal(axis, value);
     }
     qCWarning(QGCApplicationLog) << "==============   MOVE_GIMBAL   ==============";
+}
+
+void QGCApplication::getTelemetry(double &x, double &y, double &z, double &speed, double &yaw, double &pitch, double &roll) {
+  x = _vehicle->coordinate().latitude();
+  y = _vehicle->coordinate().longitude();
+  z = _vehicle->coordinate().altitude();
+  speed = qobject_cast<VehicleFactGroup*>(_vehicle->vehicleFactGroup())->airSpeed()->rawValueString();
+  yaw = qobject_cast<VehicleFactGroup*>(_vehicle->vehicleFactGroup())->heading()->rawValueString();
+  pitch = qobject_cast<VehicleFactGroup*>(_vehicle->vehicleFactGroup())->pitch()->rawValueString();
+  roll = qobject_cast<VehicleFactGroup*>(_vehicle->vehicleFactGroup())->roll()->rawValueString();
 }
 
 void QGCApplication::moveGimbalTundra(QString value)
