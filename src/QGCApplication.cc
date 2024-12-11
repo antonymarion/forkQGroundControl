@@ -1467,10 +1467,10 @@ void QGCApplication::getTelemetry(double &lat, double &lon, double &alt, double 
   lat = _vehicle->coordinate().latitude();
   lon = _vehicle->coordinate().longitude();
   alt = _vehicle->coordinate().altitude();
-  speed = qobject_cast<VehicleFactGroup*>(_vehicle->vehicleFactGroup())->airSpeed()->rawValue()->toDouble();
-  yaw = qobject_cast<VehicleFactGroup*>(_vehicle->vehicleFactGroup())->heading()->rawValue()->toDouble();
-  pitch = qobject_cast<VehicleFactGroup*>(_vehicle->vehicleFactGroup())->pitch()->rawValue()->toDouble();
-  roll = qobject_cast<VehicleFactGroup*>(_vehicle->vehicleFactGroup())->roll()->rawValue()->toDouble();
+  speed = qobject_cast<VehicleFactGroup*>(_vehicle->vehicleFactGroup())->airSpeed()->rawValue().toDouble();
+  yaw = qobject_cast<VehicleFactGroup*>(_vehicle->vehicleFactGroup())->heading()->rawValue().toDouble();
+  pitch = qobject_cast<VehicleFactGroup*>(_vehicle->vehicleFactGroup())->pitch()->rawValue().toDouble();
+  roll = qobject_cast<VehicleFactGroup*>(_vehicle->vehicleFactGroup())->roll()->rawValue().toDouble();
 }
 
 void QGCApplication::moveGimbalTundra(QString value)
