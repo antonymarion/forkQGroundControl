@@ -1118,6 +1118,7 @@ void QGCApplication::sendAircraftPositionInfos() {
     newResponse.insert("latitude",           _vehicle->coordinate().latitude());
     newResponse.insert("longitude",          _vehicle->coordinate().longitude());
     newResponse.insert("altitude",           _vehicle->coordinate().altitude());
+    newResponse.insert("altitudeRelative",   qobject_cast<VehicleFactGroup*>(_vehicle->vehicleFactGroup())->altitudeRelative()->rawValueString());
     newResponse.insert("isFlying",           _isFlying);
     newResponse.insert("flightDistance",     qobject_cast<VehicleFactGroup*>(_vehicle->vehicleFactGroup())->flightDistance()->rawValueString());
     newResponse.insert("verticalSpeed",      qobject_cast<VehicleFactGroup*>(_vehicle->vehicleFactGroup())->climbRate()->rawValueString());
