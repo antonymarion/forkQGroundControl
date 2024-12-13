@@ -1,0 +1,8 @@
+<RCC>
+  <qresource prefix="/org/freedesktop/gstreamer/qml6">
+    <file alias="vertex.vert.qsb">C:/Users/adrie/Desktop/Boulot/MAVLINK/forkQGroundControl/src/VideoManager/VideoReceiver/GStreamer/gstqml6gl/.qsb/vertex.vert.qsb</file>
+    <file alias="YUV_TRIPLANAR.frag.qsb">C:/Users/adrie/Desktop/Boulot/MAVLINK/forkQGroundControl/src/VideoManager/VideoReceiver/GStreamer/gstqml6gl/.qsb/YUV_TRIPLANAR.frag.qsb</file>
+    <file alias="RGBA.frag.qsb">C:/Users/adrie/Desktop/Boulot/MAVLINK/forkQGroundControl/src/VideoManager/VideoReceiver/GStreamer/gstqml6gl/.qsb/RGBA.frag.qsb</file>
+  </qresource>
+</RCC>
+

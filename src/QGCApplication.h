@@ -29,6 +29,8 @@
 #include <thread>
 #include <gst/app/gstappsink.h>
 #include <iostream>
+// #include <miniocpp/client.h>
+// #include <client.h>
 
 // These private headers are require to implement the signal compress support below
 #include <QtCore/private/qthread_p.h>

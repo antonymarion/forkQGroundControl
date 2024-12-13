@@ -29,37 +29,35 @@ if(NOT QGC_BUILD_DEPENDENCIES)
     set(ZLIB_USE_STATIC_LIBS ON)
     find_package(ZLIB ${MINIMUM_ZLIB_VERSION})
     if(ZLIB_FOUND)
-        message(STATUS "Found ZLIB ${ZLIB_VERSION_STRING}")
-        target_link_libraries(Compression PRIVATE ZLIB::ZLIB)
+        message(STATUS "Found ZLIB1 ${ZLIB_VERSION_STRING}")
+        # target_link_libraries(Compression PRIVATE ZLIB::ZLIB)
     else()
         find_package(PkgConfig)
         if(PkgConfig_FOUND)
             pkg_check_modules(ZLIB IMPORTED_TARGET ZLIB>=${MINIMUM_ZLIB_VERSION})
             if(ZLIB_FOUND)
-                message(STATUS "Found ZLIB ${ZLIB_VERSION}")
+                message(STATUS "Found ZLIB2 ${ZLIB_VERSION}")
                 target_link_libraries(Joystick PRIVATE PkgConfig::ZLIB)
             endif()
         endif()
     endif()
 endif()
 
-if(NOT ZLIB_FOUND)
-    set(ZLIB_BUILD_EXAMPLES OFF CACHE INTERNAL "")
-    set(SKIP_INSTALL_FILES ON CACHE INTERNAL "")
-    set(SKIP_INSTALL_LIBRARIES ON CACHE INTERNAL "")
-    set(SKIP_INSTALL_HEADERS ON CACHE INTERNAL "")
-    set(SKIP_INSTALL_ALL ON CACHE INTERNAL "")
+set(ZLIB_BUILD_EXAMPLES OFF CACHE INTERNAL "")
+set(SKIP_INSTALL_FILES ON CACHE INTERNAL "")
+set(SKIP_INSTALL_LIBRARIES ON CACHE INTERNAL "")
+set(SKIP_INSTALL_HEADERS ON CACHE INTERNAL "")
+set(SKIP_INSTALL_ALL ON CACHE INTERNAL "")
 
-    FetchContent_Declare(zlib
-        GIT_REPOSITORY https://github.com/madler/zlib.git
-        GIT_TAG v1.3.1
-        GIT_SHALLOW TRUE
-    )
+FetchContent_Declare(zlib
+    GIT_REPOSITORY https://github.com/madler/zlib.git
+    GIT_TAG v1.3.1
+    GIT_SHALLOW TRUE
+)
 
-    FetchContent_MakeAvailable(zlib)
+FetchContent_MakeAvailable(zlib)
 
-    target_link_libraries(Compression PRIVATE zlibstatic)
-endif()
+target_link_libraries(Compression PRIVATE zlibstatic)
 
 ############### XZ
 

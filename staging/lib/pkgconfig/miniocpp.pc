@@ -1,0 +1,12 @@
+prefix=C:/Users/adrie/Desktop/Boulot/MAVLINK/forkQGroundControl/staging
+exec_prefix=C:/Users/adrie/Desktop/Boulot/MAVLINK/forkQGroundControl/staging
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: miniocpp
+Description: MinIO C++ Client SDK provides simple APIs to access S3 compatible object storage
+Version: 0.3.0
+
+Requires:
+Libs: -L${libdir} -lminiocpp
+Cflags: -I${includedir}

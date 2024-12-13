@@ -171,7 +171,7 @@ VideoManager::setToolbox(QGCToolbox *toolbox)
         });
 
         (void) connect(_videoReceiverData[0].receiver, &VideoReceiver::recordingChanged, this, [this](bool active){
-            qCDebug(VideoManagerLog) << "Video 0 recording changed, active: " << (active ? "yes" : "no");
+            qCWarning(VideoManagerLog) << "Video 0 recording changed, active: " << (active ? "yes" : "no");
             _recording = active;
             if (!active) {
                 _subtitleWriter->stopCapturingTelemetry();

@@ -104,7 +104,7 @@ if(CMAKE_CROSSCOMPILING AND ANDROID)
     set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE BOTH)
 endif()
 
-set(BUILD_SHARED_LIBS OFF)
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 
 #######################################################
 #               Qt6 Configuration
@@ -185,7 +185,7 @@ find_package(Qt6
     HINTS
         ${QT_LIBRARY_HINTS}
 )
-find_package(CURL REQUIRED)
+find_package(miniocpp REQUIRED)
 
 # Require 6.6.3 because otherwise libQt6QuickControls2Basic.so.6 &
 # libQt6QuickControls2BasicStyleImpl.so.6 are missing.
@@ -237,8 +237,7 @@ cmake_dependent_option(QGC_BUILD_DEPENDENCIES "Force Building of Dependencies." 
 #                Custom Build Configuration
 #######################################################
 
-add_subdirectory(libs/minio-cpp)
-add_subdirectory(libs/curlpp)
+# add_subdirectory(libs/minio-cpp)
 if(QGC_CUSTOM_BUILD)
     add_subdirectory(custom)
 endif()
@@ -443,8 +442,6 @@ target_link_libraries(${PROJECT_NAME}
         Qt6::Quick
         Qt6::Widgets
         Qt6::Svg # Used to import QSvgPlugin
-        curlpp
-        minio-cpp
         QGC
         QmlControls
         Utilities

@@ -87,6 +87,7 @@ target_link_libraries(QGC
         GPS
         Joystick
         MAVLink
+        miniocpp::miniocpp
         MissionManager
         # PlanView
         PositionManager

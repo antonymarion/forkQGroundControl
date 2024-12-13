@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="/db/mapping/joystick">
+    <file alias="gamecontrollerdb.txt">C:/Users/adrie/Desktop/Boulot/MAVLINK/forkQGroundControl/_deps/sdl_gamecontrollerdb-src/gamecontrollerdb.txt</file>
+  </qresource>
+</RCC>
+
