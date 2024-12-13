@@ -1119,10 +1119,12 @@ void QGCApplication::sendAircraftPositionInfos() {
     newResponse.insert("longitude",          _vehicle->coordinate().longitude());
     newResponse.insert("altitude",           _vehicle->coordinate().altitude());
     newResponse.insert("isFlying",           _isFlying);
+    newResponse.insert("flightDistance",     qobject_cast<VehicleFactGroup*>(_vehicle->vehicleFactGroup())->flightDistance()->rawValueString());
+    newResponse.insert("verticalSpeed",      qobject_cast<VehicleFactGroup*>(_vehicle->vehicleFactGroup())->climbRate()->rawValueString());
+    newResponse.insert("horizontalSpeed",    qobject_cast<VehicleFactGroup*>(_vehicle->vehicleFactGroup())->groundSpeed()->rawValueString());
     newResponse.insert("gpsSatelliteCount",  qobject_cast<VehicleGPSFactGroup*>(_vehicle->gpsFactGroup())->count()->rawValueString());
     newResponse.insert("firmwareVersionUav", _vehicle->firmwarePatchVersion());
     newResponse.insert("firmwareVersion",    this->_buildVersion);
-    newResponse.insert("velocity",           qobject_cast<VehicleFactGroup*>(_vehicle->vehicleFactGroup())->airSpeed()->rawValueString());
     
     
     bool hasCamera = _vehicle->cameraManager()->cameras()->count() != 0;
