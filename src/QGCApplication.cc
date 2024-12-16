@@ -1126,6 +1126,11 @@ void QGCApplication::sendAircraftPositionInfos() {
     newResponse.insert("gpsSatelliteCount",  qobject_cast<VehicleGPSFactGroup*>(_vehicle->gpsFactGroup())->count()->rawValueString());
     newResponse.insert("firmwareVersionUav", _vehicle->firmwarePatchVersion());
     newResponse.insert("firmwareVersion",    this->_buildVersion);
+    QJsonObject dAttitude;
+    dAttitude.insert("yaw",                  qobject_cast<VehicleFactGroup*>(_vehicle->vehicleFactGroup())->heading()->rawValueString());
+    dAttitude.insert("pitch",                qobject_cast<VehicleFactGroup*>(_vehicle->vehicleFactGroup())->pitch()->rawValueString());
+    dAttitude.insert("roll",                 qobject_cast<VehicleFactGroup*>(_vehicle->vehicleFactGroup())->roll()->rawValueString());
+    newResponse.insert("attitude",           dAttitude);
     
     
     bool hasCamera = _vehicle->cameraManager()->cameras()->count() != 0;
