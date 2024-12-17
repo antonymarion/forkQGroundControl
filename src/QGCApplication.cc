@@ -1172,9 +1172,11 @@ void QGCApplication::sendAircraftPositionInfos() {
     for (int i=0; i<batteries->count(); i++) {
         VehicleBatteryFactGroup* battery = qobject_cast<VehicleBatteryFactGroup*>(batteries->get(i));
         res += battery->percentRemaining()->rawValue().toInt();
+        qCWarning(QGCApplicationLog) << "TIME REMAINING" << battery->timeRemaining()->rawValue().toInt();
         totalSeconds = std::min(totalSeconds, battery->timeRemaining()->rawValue().toInt());
     }
 
+        qCWarning(QGCApplicationLog) << "TOTAL SECONDS" << totalSeconds;
     if (totalSeconds == INT_MAX) {
         newResponse.insert("timeRemaining", "--:--:--");
     } else {
