@@ -1177,6 +1177,8 @@ void QGCApplication::sendAircraftPositionInfos() {
     }
 
         qCWarning(QGCApplicationLog) << "TOTAL SECONDS" << totalSeconds;
+        qCWarning(QGCApplicationLog) << "vehicle UID" << _vehicle->vehicleUIDStr();
+        qCWarning(QGCApplicationLog) << "joysticks" << _toolbox->joystickManager()->joystickNames();
     if (totalSeconds == INT_MAX) {
         newResponse.insert("timeRemaining", "--:--:--");
     } else {
