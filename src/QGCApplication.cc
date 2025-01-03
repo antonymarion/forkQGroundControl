@@ -1084,8 +1084,8 @@ void QGCApplication::sendInfos()
         qCWarning(QGCApplicationLog) << "*****   Mqtt not available   *****";
         return;
     }
+    QGCApplication::sendRemotePilote();
 
-    QGCApplication::sendAircraftPositionInfos();
     if(!delay) {
         qCWarning(QGCApplicationLog) << "*****   Aircraft not available   *****";
         if(_vehicle) {
@@ -1093,7 +1093,7 @@ void QGCApplication::sendInfos()
         }
         return;
     }
-    QGCApplication::sendRemotePilote();
+    QGCApplication::sendAircraftPositionInfos();
     
     qCWarning(QGCApplicationLog) << "==============  Infos sent  ==============";
 }
