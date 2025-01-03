@@ -1017,6 +1017,7 @@ void QGCApplication::sendEventMessage(QString command, int value)
 void QGCApplication::_setActiveVehicle(Vehicle* vehicle)
 {
     _vehicle = vehicle;
+    delay = false;
 
     if(!_vehicle) {
         qCWarning(QGCApplicationLog) << "*****   No vehicle available   *****";
@@ -1085,6 +1086,13 @@ void QGCApplication::sendInfos()
     }
 
     QGCApplication::sendAircraftPositionInfos();
+    if(!delay) {
+        qCWarning(QGCApplicationLog) << "*****   Aircraft not available   *****";
+        if(_vehicle) {
+            delay = true;
+        }
+        return;
+    }
     QGCApplication::sendRemotePilote();
     
     qCWarning(QGCApplicationLog) << "==============  Infos sent  ==============";
