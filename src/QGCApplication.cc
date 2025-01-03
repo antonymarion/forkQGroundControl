@@ -1023,6 +1023,9 @@ void QGCApplication::_setActiveVehicle(Vehicle* vehicle)
         return;
     }
 
+    qCWarning(QGCApplicationLog) << "*****   Vehicle changed   *****";
+    qCWarning(QGCApplicationLog) << _vehicle->id();
+
     QObject::connect(_vehicle, &Vehicle::flyingChanged, this, &QGCApplication::_setIsFlying);
     _setIsFlying(_vehicle->flying());
 
@@ -1176,9 +1179,9 @@ void QGCApplication::sendAircraftPositionInfos() {
         totalSeconds = std::min(totalSeconds, battery->timeRemaining()->rawValue().toInt());
     }
 
-        qCWarning(QGCApplicationLog) << "TOTAL SECONDS" << totalSeconds;
-        qCWarning(QGCApplicationLog) << "vehicle UID" << _vehicle->vehicleUIDStr();
-        qCWarning(QGCApplicationLog) << "joysticks" << _toolbox->joystickManager()->joystickNames();
+    qCWarning(QGCApplicationLog) << "TOTAL SECONDS" << totalSeconds;
+    qCWarning(QGCApplicationLog) << "joysticks" << _toolbox->joystickManager()->joystickNames();
+    
     if (totalSeconds == INT_MAX) {
         newResponse.insert("timeRemaining", "--:--:--");
     } else {
