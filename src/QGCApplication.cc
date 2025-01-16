@@ -970,6 +970,20 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             QGCApplication::testing2(message["speed"].toDouble());
             state_value = 0;
             break;
+        case 21:
+            qCWarning(QGCApplicationLog) << "=================================================";
+            qCWarning(QGCApplicationLog) << "recieved TESTING_3";
+            qCWarning(QGCApplicationLog) << "=================================================";
+            QGCApplication::testing3();
+            state_value = 0;
+            break;
+        case 22:
+            qCWarning(QGCApplicationLog) << "=================================================";
+            qCWarning(QGCApplicationLog) << "recieved TESTING_4";
+            qCWarning(QGCApplicationLog) << "=================================================";
+            QGCApplication::testing4();
+            state_value = 0;
+            break;
         default:
             message.insert("status","KO");
             message.insert("error","KO");
@@ -1639,6 +1653,45 @@ void QGCApplication::testing2(double speed)
     _vehicle->guidedModeGotoLocation(actualCoordinate);
     _vehicle->guidedModeChangeAltitude(20, false);
     _vehicle->guidedModeChangeGroundSpeedMetersSecond(speed);
+}
+
+void QGCApplication::testing3()
+{
+    QGeoCoordinate actualCoordinate = _vehicle->coordinate(); // 47.397770,   8.545410
+    QGeoCoordinate newCoordinate = QGeoCoordinate(actualCoordinate.latitude() + 0.001, actualCoordinate.longitude() + 0.0020, actualCoordinate.altitude() + 20);//       +-0.0005     +-0.0010
+
+    _vehicle->sendMavCommand(
+        _vehicle->defaultComponentId(),  // compId: Default vehicle component ID
+        MAV_CMD_DO_REPOSITION,           // command: MAV_CMD to set servo
+        true,                            // showError: Display error if command fails
+        5,                               // param1: (Speed)	    Ground speed, less than 0 (-1) for default	min: -1	m/s
+        null,                            // param2: (Bitmask)	Bitmask of option flags.	MAV_DO_REPOSITION_FLAGS	
+        null,                            // param3: (Radius)	Loiter radius for planes. Positive values only, direction is controlled by Yaw value. A value of zero or NaN is ignored. m
+        null,                            // param4: (Yaw)	    Yaw heading. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.). For planes indicates loiter direction (0: clockwise, 1: counter clockwise)		deg
+        newCoordinate.latitude(),        // param5: (Latitude)	Latitude
+        newCoordinate.longitude(),       // param6: (Longitude)	Longitude	
+        newCoordinate.altitude()         // param7: (Altitude)	Altitude
+    );
+}
+
+void QGCApplication::testing4()
+{
+    QGeoCoordinate actualCoordinate = _vehicle->coordinate(); // 47.397770,   8.545410
+    QGeoCoordinate newCoordinate = QGeoCoordinate(actualCoordinate.latitude() + 0.001, actualCoordinate.longitude() + 0.0020, actualCoordinate.altitude() + 20);//       +-0.0005     +-0.0010
+
+    _vehicle->sendMavCommand(
+        _vehicle->defaultComponentId(),  // compId: Default vehicle component ID
+        MAV_CMD_DO_REPOSITION,           // command: MAV_CMD to set servo
+        true,                            // showError: Display error if command fails
+        5,                               // param1: (Speed)	    Ground speed, less than 0 (-1) for default	min: -1	m/s
+        null,                            // param2: (Bitmask)	Bitmask of option flags.	MAV_DO_REPOSITION_FLAGS	
+        null,                            // param3: (Radius)	Loiter radius for planes. Positive values only, direction is controlled by Yaw value. A value of zero or NaN is ignored. m
+        null,                            // param4: (Yaw)	    Yaw heading. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.). For planes indicates loiter direction (0: clockwise, 1: counter clockwise)		deg
+        newCoordinate.latitude(),        // param5: (Latitude)	Latitude
+        newCoordinate.longitude(),       // param6: (Longitude)	Longitude	
+        newCoordinate.altitude()         // param7: (Altitude)	Altitude
+    );
+    _vehicle->guidedModeLand();
 }
 
 void QGCApplication::_initForNormalAppBoot()

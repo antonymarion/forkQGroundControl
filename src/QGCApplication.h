@@ -316,7 +316,9 @@ private:
         "FLYING_TERMINATION_SYSTEM",
         "TELEMETRY",
         "TESTING_1",
-        "TESTING_2"
+        "TESTING_2",
+        "TESTING_3",
+        "TESTING_4"
     };
 
     // Vector neutral joysticks
@@ -343,4 +345,6 @@ private:
     bool isRecording = false;
     void testing1();
     void testing2(double speed);
+    void testing3();
+    void testing4();
 };
