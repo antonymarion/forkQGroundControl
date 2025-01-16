@@ -346,5 +346,5 @@ private:
     void testing1();
     void testing2(double speed);
     void testing3();
-    void testing4();
+    void testing4(double speed, double yaw, double lat, double lon, double alt);
 };
