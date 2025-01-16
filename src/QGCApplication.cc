@@ -1624,7 +1624,7 @@ void QGCApplication::servoCmd(float servoId, float pwmValue)
 void QGCApplication::testing1()
 {
     QGeoCoordinate actualCoordinate = _vehicle->coordinate(); // 47.397770,   8.545410,  200
-    QGeoCoordinate newCoordinate = new QGeoCoordinate(actualCoordinate.latitude() + 0.001, actualCoordinate.longitude() + 0.0020, 100);//       +-0.0005     +-0.0010
+    QGeoCoordinate newCoordinate = QGeoCoordinate(actualCoordinate.latitude() + 0.001, actualCoordinate.longitude() + 0.0020, 100);//       +-0.0005     +-0.0010
 
     _vehicle->guidedModeGotoLocation(actualCoordinate);
     _vehicle->guidedModeChangeAltitude(20, false);
@@ -1634,7 +1634,7 @@ void QGCApplication::testing1()
 void QGCApplication::testing2(double speed)
 {
     QGeoCoordinate actualCoordinate = _vehicle->coordinate(); // 47.397770,   8.545410
-    QGeoCoordinate newCoordinate = new QGeoCoordinate(actualCoordinate.latitude() + 0.001, actualCoordinate.longitude() + 0.0020, 100);//       +-0.0005     +-0.0010
+    QGeoCoordinate newCoordinate = QGeoCoordinate(actualCoordinate.latitude() + 0.001, actualCoordinate.longitude() + 0.0020, 100);//       +-0.0005     +-0.0010
 
     _vehicle->guidedModeGotoLocation(actualCoordinate);
     _vehicle->guidedModeChangeAltitude(20, false);
