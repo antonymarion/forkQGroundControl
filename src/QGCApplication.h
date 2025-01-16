@@ -314,7 +314,9 @@ private:
         "RETURN_TO_HOME",
         "VERTICAL_LANDING",
         "FLYING_TERMINATION_SYSTEM",
-        "TELEMETRY"
+        "TELEMETRY",
+        "TESTING_1",
+        "TESTING_2"
     };
 
     // Vector neutral joysticks

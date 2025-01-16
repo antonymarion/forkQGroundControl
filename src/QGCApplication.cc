@@ -1623,7 +1623,7 @@ void QGCApplication::servoCmd(float servoId, float pwmValue)
 
 void QGCApplication::testing1()
 {
-    QGeoCoordinate actualCoordinate = _vehicle->coordinate(); // 47.397770,   8.545410
+    QGeoCoordinate actualCoordinate = _vehicle->coordinate(); // 47.397770,   8.545410,  200
     QGeoCoordinate newCoordinate = new QGeoCoordinate(actualCoordinate.latitude() + 0.001, actualCoordinate.longitude() + 0.0020, 100);//       +-0.0005     +-0.0010
 
     _vehicle->guidedModeGotoLocation(actualCoordinate);
