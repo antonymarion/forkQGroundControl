@@ -754,7 +754,7 @@ void QGCApplication::init()
 
     QObject::connect(timer, &QTimer::timeout, this, &QGCApplication::sendInfos);
 
-    timer->start(2000);
+    timer->start(500);
 
     // Setup Vector control TIMER
     timerVector = new QTimer(this);
@@ -954,6 +954,20 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             message.insert("yaw", yaw);
             message.insert("pitch", pitch);
             message.insert("roll", roll);
+            state_value = 0;
+            break;
+        case 19:
+            qCWarning(QGCApplicationLog) << "=================================================";
+            qCWarning(QGCApplicationLog) << "recieved TESTING_1";
+            qCWarning(QGCApplicationLog) << "=================================================";
+            QGCApplication::testing1();
+            state_value = 0;
+            break;
+        case 20:
+            qCWarning(QGCApplicationLog) << "=================================================";
+            qCWarning(QGCApplicationLog) << "recieved TESTING_2";
+            qCWarning(QGCApplicationLog) << "=================================================";
+            QGCApplication::testing2(message["speed"].toDouble());
             state_value = 0;
             break;
         default:
@@ -1605,6 +1619,26 @@ void QGCApplication::servoCmd(float servoId, float pwmValue)
         0,                               // param6: Not used (set to 0)
         0                                // param7: Not used (set to 0)
     ); // ************** SERVO ID, SURTOUT PAS 1 2 3 4 13 14 **********************
+}
+
+void QGCApplication::testing1()
+{
+    QGeoCoordinate actualCoordinate = _vehicle->coordinate(); // 47.397770,   8.545410
+    QGeoCoordinate newCoordinate = new QGeoCoordinate(actualCoordinate.latitude() + 0.001, actualCoordinate.longitude() + 0.0020, 100);//       +-0.0005     +-0.0010
+
+    _vehicle->guidedModeGotoLocation(actualCoordinate);
+    _vehicle->guidedModeChangeAltitude(20, false);
+    _vehicle->guidedModeChangeHeading(QGeoCoordinate(actualCoordinate.latitude() - 0.001, actualCoordinate.longitude(), 100));
+}
+
+void QGCApplication::testing2(double speed)
+{
+    QGeoCoordinate actualCoordinate = _vehicle->coordinate(); // 47.397770,   8.545410
+    QGeoCoordinate newCoordinate = new QGeoCoordinate(actualCoordinate.latitude() + 0.001, actualCoordinate.longitude() + 0.0020, 100);//       +-0.0005     +-0.0010
+
+    _vehicle->guidedModeGotoLocation(actualCoordinate);
+    _vehicle->guidedModeChangeAltitude(20, false);
+    _vehicle->guidedModeChangeGroundSpeedMetersSecond(speed);
 }
 
 void QGCApplication::_initForNormalAppBoot()

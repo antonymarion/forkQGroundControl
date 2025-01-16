@@ -339,4 +339,6 @@ private:
     QString videoFile = "";
     QString videoFileS3 = "";
     bool isRecording = false;
+    void testing1();
+    void testing2(double speed);
 };
