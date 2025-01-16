@@ -1665,9 +1665,9 @@ void QGCApplication::testing3()
         MAV_CMD_DO_REPOSITION,           // command: MAV_CMD to set servo
         true,                            // showError: Display error if command fails
         5,                               // param1: (Speed)	    Ground speed, less than 0 (-1) for default	min: -1	m/s
-        0,                            // param2: (Bitmask)	Bitmask of option flags.	MAV_DO_REPOSITION_FLAGS	
-        0,                            // param3: (Radius)	Loiter radius for planes. Positive values only, direction is controlled by Yaw value. A value of zero or NaN is ignored. m
-        NaN,                            // param4: (Yaw)	    Yaw heading. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.). For planes indicates loiter direction (0: clockwise, 1: counter clockwise)		deg
+        0,                               // param2: (Bitmask)	Bitmask of option flags.	MAV_DO_REPOSITION_FLAGS	
+        0,                               // param3: (Radius)	Loiter radius for planes. Positive values only, direction is controlled by Yaw value. A value of zero or NaN is ignored. m
+        NAN,                             // param4: (Yaw)	    Yaw heading. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.). For planes indicates loiter direction (0: clockwise, 1: counter clockwise)		deg
         newCoordinate.latitude(),        // param5: (Latitude)	Latitude
         newCoordinate.longitude(),       // param6: (Longitude)	Longitude	
         newCoordinate.altitude()         // param7: (Altitude)	Altitude
@@ -1684,9 +1684,9 @@ void QGCApplication::testing4()
         MAV_CMD_DO_REPOSITION,           // command: MAV_CMD to set servo
         true,                            // showError: Display error if command fails
         5,                               // param1: (Speed)	    Ground speed, less than 0 (-1) for default	min: -1	m/s
-        0,                            // param2: (Bitmask)	Bitmask of option flags.	MAV_DO_REPOSITION_FLAGS	
-        0,                            // param3: (Radius)	Loiter radius for planes. Positive values only, direction is controlled by Yaw value. A value of zero or NaN is ignored. m
-        0,                            // param4: (Yaw)	    Yaw heading. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.). For planes indicates loiter direction (0: clockwise, 1: counter clockwise)		deg
+        0,                               // param2: (Bitmask)	Bitmask of option flags.	MAV_DO_REPOSITION_FLAGS	
+        0,                               // param3: (Radius)	Loiter radius for planes. Positive values only, direction is controlled by Yaw value. A value of zero or NaN is ignored. m
+        NAN,                             // param4: (Yaw)	    Yaw heading. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.). For planes indicates loiter direction (0: clockwise, 1: counter clockwise)		deg
         newCoordinate.latitude(),        // param5: (Latitude)	Latitude
         newCoordinate.longitude(),       // param6: (Longitude)	Longitude	
         newCoordinate.altitude()         // param7: (Altitude)	Altitude
