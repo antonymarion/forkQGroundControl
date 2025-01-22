@@ -452,6 +452,10 @@ public:
 
     // Property accesors
     int id() const{ return _id; }
+    int sn() const{ return _dgSn; }
+    int uas() const{ return _dgUas; }
+    void setSn (QString newSn)  { _dgSn = newSn; }
+    void setUas(QString newUas) { _dgUas = newUas; }
     int compId() const{ return _compID; }
     MAV_AUTOPILOT firmwareType() const { return _firmwareType; }
     MAV_TYPE vehicleType() const { return _vehicleType; }
@@ -1014,6 +1018,9 @@ private:
     QGeoCoordinate  _coordinate;
     QGeoCoordinate  _homePosition;
     QGeoCoordinate  _armedPosition;
+    
+    QString         _dgSn = "";
+    QString         _dgUas = "";
 
     qreal           _initialGCSPressure = 0.;
     qreal           _initialGCSTemperature = 0.;
