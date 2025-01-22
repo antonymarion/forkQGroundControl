@@ -907,10 +907,10 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
                 qCWarning(QGCApplicationLog) << "*****   Timer not available   *****";
                 break;
             };
-            roll = message["roll"].toDouble();
-            pitch = message["pitch"].toDouble();
-            yaw = message["yaw"].toDouble();
-            thrust = message["thrust"].toDouble();
+            _roll = message["roll"].toDouble();
+            _pitch = message["pitch"].toDouble();
+            _yaw = message["yaw"].toDouble();
+            _thrust = message["thrust"].toDouble();
             state_value = 0;
             break;
         case 14:
@@ -963,11 +963,12 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qCWarning(QGCApplicationLog) << "=================================================";
             qCWarning(QGCApplicationLog) << "recieved GO_TO_WAYPOINT";
             qCWarning(QGCApplicationLog) << "=================================================";
-            double speed = message["speed"].toDouble();
-            double yaw = message["yaw"].toDouble();
-            double lat = message["lat"].toDouble();
-            double lon = message["lon"].toDouble();
-            double alt = message["alt"].toDouble();
+            double speed, yaw, lat, lon, alt;
+            speed = message["speed"].toDouble();
+            yaw = message["yaw"].toDouble();
+            lat = message["lat"].toDouble();
+            lon = message["lon"].toDouble();
+            alt = message["alt"].toDouble();
             QGCApplication::goToWaypoint(speed, yaw, lat, lon, alt);
             state_value = 0;
             break;
@@ -1592,10 +1593,10 @@ void QGCApplication::moveGimbal(QString axis, QString value)
 void QGCApplication::vectorControl()
 {
     _vehicle->sendJoystickDataThreadSafe(
-                    static_cast<float>(roll),
-                    static_cast<float>(pitch),
-                    static_cast<float>(yaw),
-                    static_cast<float>(thrust),
+                    static_cast<float>(_roll),
+                    static_cast<float>(_pitch),
+                    static_cast<float>(_yaw),
+                    static_cast<float>(_thrust),
                     0,
                     "FRONT");
 }

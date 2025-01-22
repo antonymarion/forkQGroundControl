@@ -325,10 +325,10 @@ private:
     };
 
     // Vector neutral joysticks
-    double roll   = 0;
-    double pitch  = 0;
-    double yaw    = 0;
-    double thrust = 0.5; // interface slider command
+    double _roll   = 0;
+    double _pitch  = 0;
+    double _yaw    = 0;
+    double _thrust = 0.5; // interface slider command
 
     // Gstreamer
     //======================================================================================================================
