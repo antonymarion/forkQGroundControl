@@ -991,8 +991,8 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qCWarning(QGCApplicationLog) << "=================================================";
             qCWarning(QGCApplicationLog) << "recieved TESTING_1";
             qCWarning(QGCApplicationLog) << "=================================================";
-            qCWarning(QGCApplicationLog) << _vehicle->dgUas();
-            qCWarning(QGCApplicationLog) << _vehicle->dgSn();
+            qCWarning(QGCApplicationLog) << _vehicle->uas();
+            qCWarning(QGCApplicationLog) << _vehicle->sn();
             state_value = 0;
             break;
         case 23:
