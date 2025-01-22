@@ -319,9 +319,9 @@ private:
         "TELEMETRY",
         "GO_TO_WAYPOINT",
         "PAUSE_ALL",
+        "SET_DATA",
         "TESTING_1",
-        "TESTING_2",
-        "TESTING_3"
+        "TESTING_2"
     };
 
     // Vector neutral joysticks

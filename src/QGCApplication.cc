@@ -981,21 +981,23 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             break;
         case 21:
             qCWarning(QGCApplicationLog) << "=================================================";
-            qCWarning(QGCApplicationLog) << "recieved TESTING_1";
+            qCWarning(QGCApplicationLog) << "recieved SET_DATA";
             qCWarning(QGCApplicationLog) << "=================================================";
-            QGCApplication::testing1();
+            _vehicle->setUas(message["uas"].toString());
+            _vehicle->setSn(message["sn"].toString());
             state_value = 0;
             break;
         case 22:
             qCWarning(QGCApplicationLog) << "=================================================";
-            qCWarning(QGCApplicationLog) << "recieved TESTING_2";
+            qCWarning(QGCApplicationLog) << "recieved TESTING_1";
             qCWarning(QGCApplicationLog) << "=================================================";
-            QGCApplication::testing2(message["speed"].toDouble());
+            qCWarning(QGCApplicationLog) << _vehicle->dgUas();
+            qCWarning(QGCApplicationLog) << _vehicle->dgSn();
             state_value = 0;
             break;
         case 23:
             qCWarning(QGCApplicationLog) << "=================================================";
-            qCWarning(QGCApplicationLog) << "recieved TESTING_3";
+            qCWarning(QGCApplicationLog) << "recieved TESTING_2";
             qCWarning(QGCApplicationLog) << "=================================================";
             QGCApplication::testing3();
             state_value = 0;
