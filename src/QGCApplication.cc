@@ -945,48 +945,58 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qCWarning(QGCApplicationLog) << "=================================================";
             qCWarning(QGCApplicationLog) << "recieved TELEMETRY";
             qCWarning(QGCApplicationLog) << "=================================================";
-            double lat, lon, alt, speed, yaw, pitch, roll;
-            QGCApplication::getTelemetry(lat, lon, alt, speed, yaw, pitch, roll);
-            message.insert("lat", lat);
-            message.insert("lon", lon);
-            message.insert("alt", alt);
-            message.insert("speed", speed);
-            message.insert("yaw", yaw);
-            message.insert("pitch", pitch);
-            message.insert("roll", roll);
+            double lat, lon, alt, hSpeed, vSpeed, yaw, pitch, roll;
+            QGCApplication::getTelemetry(lat, lon, alt, hSpeed, vSpeed, yaw, pitch, roll);
+            message.insert("latitude", lat);
+            message.insert("longitude", lon);
+            message.insert("altitude", alt);
+            message.insert("horizontalSpeed", hSpeed);
+            message.insert("verticalSpeed", vSpeed);
+            QJsonObject dAttitude;
+            dAttitude.insert("yaw", yaw);
+            dAttitude.insert("pitch", pitch);
+            dAttitude.insert("roll", roll);
+            message.insert("attitude", dAttitude);
             state_value = 0;
             break;
         case 19:
+            qCWarning(QGCApplicationLog) << "=================================================";
+            qCWarning(QGCApplicationLog) << "recieved GO_TO_WAYPOINT";
+            qCWarning(QGCApplicationLog) << "=================================================";
+            double speed = message["speed"].toDouble();
+            double yaw = message["yaw"].toDouble();
+            double lat = message["lat"].toDouble();
+            double lon = message["lon"].toDouble();
+            double alt = message["alt"].toDouble();
+            QGCApplication::goToWaypoint(speed, yaw, lat, lon, alt);
+            state_value = 0;
+            break;
+        case 20:
+            qCWarning(QGCApplicationLog) << "=================================================";
+            qCWarning(QGCApplicationLog) << "recieved PAUSE_ALL";
+            qCWarning(QGCApplicationLog) << "=================================================";
+            QGCApplication::pauseAll();
+            state_value = 0;
+            break;
+        case 21:
             qCWarning(QGCApplicationLog) << "=================================================";
             qCWarning(QGCApplicationLog) << "recieved TESTING_1";
             qCWarning(QGCApplicationLog) << "=================================================";
             QGCApplication::testing1();
             state_value = 0;
             break;
-        case 20:
+        case 22:
             qCWarning(QGCApplicationLog) << "=================================================";
             qCWarning(QGCApplicationLog) << "recieved TESTING_2";
             qCWarning(QGCApplicationLog) << "=================================================";
             QGCApplication::testing2(message["speed"].toDouble());
             state_value = 0;
             break;
-        case 21:
+        case 23:
             qCWarning(QGCApplicationLog) << "=================================================";
             qCWarning(QGCApplicationLog) << "recieved TESTING_3";
             qCWarning(QGCApplicationLog) << "=================================================";
             QGCApplication::testing3();
-            state_value = 0;
-            break;
-        case 22:
-            qCWarning(QGCApplicationLog) << "=================================================";
-            qCWarning(QGCApplicationLog) << "recieved TESTING_4";
-            qCWarning(QGCApplicationLog) << "=================================================";
-            speed = message["speed"].toDouble();
-            yaw = message["yaw"].toDouble();
-            lat = message["lat"].toDouble();
-            lon = message["lon"].toDouble();
-            alt = message["alt"].toDouble();
-            QGCApplication::testing4(speed, yaw, lat, lon, alt);
             state_value = 0;
             break;
         default:
@@ -1539,11 +1549,12 @@ void QGCApplication::genericGimbal(QString axis, QString value)
     qCWarning(QGCApplicationLog) << "==============   MOVE_GIMBAL   ==============";
 }
 
-void QGCApplication::getTelemetry(double &lat, double &lon, double &alt, double &speed, double &yaw, double &pitch, double &roll) {
+void QGCApplication::getTelemetry(double &lat, double &lon, double &alt, double &hSpeed, double &vSpeed, double &yaw, double &pitch, double &roll) {
   lat = _vehicle->coordinate().latitude();
   lon = _vehicle->coordinate().longitude();
   alt = _vehicle->coordinate().altitude();
-  speed = qobject_cast<VehicleFactGroup*>(_vehicle->vehicleFactGroup())->airSpeed()->rawValue().toDouble();
+  hSpeed = qobject_cast<VehicleFactGroup*>(_vehicle->vehicleFactGroup())->groundSpeed()->rawValue().toDouble();
+  vSpeed = qobject_cast<VehicleFactGroup*>(_vehicle->vehicleFactGroup())->climbRate()->rawValue().toDouble();
   yaw = qobject_cast<VehicleFactGroup*>(_vehicle->vehicleFactGroup())->heading()->rawValue().toDouble();
   pitch = qobject_cast<VehicleFactGroup*>(_vehicle->vehicleFactGroup())->pitch()->rawValue().toDouble();
   roll = qobject_cast<VehicleFactGroup*>(_vehicle->vehicleFactGroup())->roll()->rawValue().toDouble();
@@ -1670,29 +1681,37 @@ void QGCApplication::testing3()
         MAV_CMD_DO_REPOSITION,           // command: MAV_CMD to set servo
         true,                            // showError: Display error if command fails
         5,                               // param1: (Speed)	    Ground speed, less than 0 (-1) for default	min: -1	m/s
-        0,                               // param2: (Bitmask)	Bitmask of option flags.	MAV_DO_REPOSITION_FLAGS	
+        MAV_DO_REPOSITION_FLAGS_CHANGE_MODE,    // param2: (Bitmask)	Bitmask of option flags.	MAV_DO_REPOSITION_FLAGS	
         0,                               // param3: (Radius)	Loiter radius for planes. Positive values only, direction is controlled by Yaw value. A value of zero or NaN is ignored. m
-        NAN,                             // param4: (Yaw)	    Yaw heading. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.). For planes indicates loiter direction (0: clockwise, 1: counter clockwise)		deg
+        qQNaN(),                             // param4: (Yaw)	    Yaw heading. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.). For planes indicates loiter direction (0: clockwise, 1: counter clockwise)		deg
         newCoordinate.latitude(),        // param5: (Latitude)	Latitude
         newCoordinate.longitude(),       // param6: (Longitude)	Longitude	
         newCoordinate.altitude()         // param7: (Altitude)	Altitude
     );
 }
 
-void QGCApplication::testing4(double speed, double yaw, double lat, double lon, double alt)
+void QGCApplication::goToWaypoint(double speed, double yaw, double lat, double lon, double alt)
 {
     _vehicle->sendMavCommand(
         _vehicle->defaultComponentId(),  // compId: Default vehicle component ID
         MAV_CMD_DO_REPOSITION,           // command: MAV_CMD to set servo
         true,                            // showError: Display error if command fails
         speed,                           // param1: (Speed)	    Ground speed, less than 0 (-1) for default	min: -1	m/s
-        0,                               // param2: (Bitmask)	Bitmask of option flags.	MAV_DO_REPOSITION_FLAGS	
+        MAV_DO_REPOSITION_FLAGS_CHANGE_MODE,    // param2: (Bitmask)	Bitmask of option flags.	MAV_DO_REPOSITION_FLAGS	
         0,                               // param3: (Radius)	Loiter radius for planes. Positive values only, direction is controlled by Yaw value. A value of zero or NaN is ignored. m
         yaw,                             // param4: (Yaw)	    Yaw heading. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.). For planes indicates loiter direction (0: clockwise, 1: counter clockwise)		deg
         lat,                             // param5: (Latitude)	Latitude
         lon,                             // param6: (Longitude)	Longitude	
         alt                              // param7: (Altitude)	Altitude
     );
+}
+
+void QGCApplication::pauseAll()
+{
+    QmlObjectListModel* vehicles = _toolbox->multiVehicleManager()->vehicles();
+    for(int i = 0; i<vehicles->count(); i++){
+        qobject_cast<Vehicle*>(vehicles->get(i))->pauseVehicle();
+    }
 }
 
 void QGCApplication::_initForNormalAppBoot()

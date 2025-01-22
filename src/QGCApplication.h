@@ -263,7 +263,7 @@ private:
     void         setZoom           (float value);
     void         startStream       ();
     void         stopStream        ();
-    void         getTelemetry      (double &lat, double &lon, double &alt, double &speed, double &yaw, double &pitch, double &roll);
+    void         getTelemetry      (double &lat, double &lon, double &alt, double &hSpeed, double &vSpeed, double &yaw, double &pitch, double &roll);
     int          takePhoto         ();
     int          startRecording    ();
     int          stopRecording     ();
@@ -272,6 +272,8 @@ private:
     void         moveGimbalTundra  (QString value);
     void         moveGimbal        (QString axis, QString value);
     void         vectorControl     ();
+    void         goToWaypoint      (double speed, double yaw, double lat, double lon, double alt);
+    void         pauseAll          ();
 
     // Utilities
     bool isFileEmpty(const std::string& filePath);
@@ -315,10 +317,11 @@ private:
         "VERTICAL_LANDING",
         "FLYING_TERMINATION_SYSTEM",
         "TELEMETRY",
+        "GO_TO_WAYPOINT",
+        "PAUSE_ALL",
         "TESTING_1",
         "TESTING_2",
-        "TESTING_3",
-        "TESTING_4"
+        "TESTING_3"
     };
 
     // Vector neutral joysticks
@@ -346,5 +349,4 @@ private:
     void testing1();
     void testing2(double speed);
     void testing3();
-    void testing4(double speed, double yaw, double lat, double lon, double alt);
 };
