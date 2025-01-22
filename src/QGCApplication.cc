@@ -793,6 +793,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
     QString payload = QString(msg.payload());
     QJsonDocument d = QJsonDocument::fromJson(payload.toUtf8());
     QJsonObject message = d.object();
+    QJsonObject tAttitude;
     int state_value = -1;
     switch (this->commandsList.indexOf(message["instruction"].toString())){
         case 0:
@@ -946,7 +947,6 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qCWarning(QGCApplicationLog) << "recieved TELEMETRY";
             qCWarning(QGCApplicationLog) << "=================================================";
             double t_lat, t_lon, t_alt, t_hSpeed, t_vSpeed, t_yaw, t_pitch, t_roll;
-            QJsonObject tAttitude;
             QGCApplication::getTelemetry(t_lat, t_lon, t_alt, t_hSpeed, t_vSpeed, t_yaw, t_pitch, t_roll);
             message.insert("latitude", t_lat);
             message.insert("longitude", t_lon);
