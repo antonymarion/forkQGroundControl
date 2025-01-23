@@ -30,6 +30,7 @@
 #include <gst/app/gstappsink.h>
 #include <iostream>
 
+#include "MinioApi/MinioApi.h" 
 // These private headers are require to implement the signal compress support below
 #include <QtCore/private/qthread_p.h>
 #include <QtCore/private/qobject_p.h>
@@ -150,7 +151,8 @@ public slots:
     /// Show modal application message to the user about the need for a reboot. Multiple messages will be supressed if they occur
     /// one after the other.
     void showRebootAppMessage(const QString& message, const QString& title = QString());
-
+    void handleUploadFinished(bool success, const QString& message);
+    void handleUploadProgress(qint64 bytesSent, qint64 bytesTotal);
     QGCImageProvider* qgcImageProvider();
 
 signals:
@@ -207,7 +209,7 @@ private:
     QElapsedTimer       _msecsElapsedTime;
 
     QList<QPair<QString /* title */, QString /* message */>> _delayedAppMessages;
-
+    MinioApi* m_minioApi;
     class CompressedSignalList {
         Q_DISABLE_COPY(CompressedSignalList)
 

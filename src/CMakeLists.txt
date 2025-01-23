@@ -7,6 +7,7 @@ find_package(Qt6
         QuickControls2
         QuickWidgets
         Widgets
+        Concurrent 
 )
 
 qt_add_library(QGC STATIC
@@ -22,7 +23,7 @@ qt_add_library(QGC STATIC
 if(QGC_UTM_ADAPTER)
     add_definitions(-DQGC_UTM_ADAPTER)
 endif()
-
+add_subdirectory(MinioApi)
 add_subdirectory(ADSB)
 add_subdirectory(AirLink)
 add_subdirectory(AnalyzeView)
@@ -68,6 +69,7 @@ target_link_libraries(QGC
         Qt6::Core5Compat
         Qt6::Bluetooth
         Qt6::Mqtt
+        Qt6::Concurrent
         API
         ADSB
         AirLink
@@ -102,6 +104,7 @@ target_link_libraries(QGC
         Viewer3D
         VideoManager
         VideoReceiver
+        MinioApi
     PUBLIC
         Qt6::Core
         Qt6::CorePrivate

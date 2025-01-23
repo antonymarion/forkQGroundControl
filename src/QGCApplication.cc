@@ -46,7 +46,7 @@
 #include <fstream>
 
 
-
+#include "MinioApi/MinioApi.h" 
 #include "Audio/AudioOutput.h"
 #include "QGCConfig.h"
 #include "QGCApplication.h"
@@ -473,7 +473,18 @@ QGCApplication::QGCApplication(int &argc, char* argv[], bool unitTesting)
     bool fClearCache = false;           // Clear parameter/airframe caches
     bool logging = false;               // Turn on logging
     QString loggingOptions;
-
+     m_minioApi = new MinioApi(
+        "url",
+        "user",
+        "password",
+        "eu-west-3",  
+        this
+    );
+    
+    connect(m_minioApi, &MinioApi::uploadFinished,
+            this, &QGCApplication::handleUploadFinished);
+    connect(m_minioApi, &MinioApi::uploadProgress,
+            this, &QGCApplication::handleUploadProgress);
     CmdLineOpt_t rgCmdLineOptions[] = {
         { "--clear-settings",   &fClearSettingsOptions, nullptr },
         { "--clear-cache",      &fClearCache,           nullptr },
@@ -1327,15 +1338,21 @@ bool QGCApplication::isFileEmpty(const std::string& filePath) {
     return file.tellg() == 0; // `tellg()` retourne la taille actuelle du fichier.
 }
 
-int QGCApplication::takePhoto(){
-    qCWarning(QGCApplicationLog) << "==============  START TAKE_PHOTO  =============="; // NEED TO UPDATE FOR OTHER CAMS
-    /* MavlinkCameraControl *activeCamera = QGCApplication::getActiveCamera();
-    if(!activeCamera) {
-        qCWarning(QGCApplicationLog) << "*****   No active camera   *****";
-        return;
+void QGCApplication::handleUploadFinished(bool success, const QString& message) {
+    if (success) {
+        qCDebug(QGCApplicationLog) << "Upload réussi:" << message;
+    } else {
+        qCWarning(QGCApplicationLog) << "Échec de l'upload:" << message;
     }
-    activeCamera->setCameraModePhoto();
-    activeCamera->takePhoto(); */
+}
+
+void QGCApplication::handleUploadProgress(qint64 bytesSent, qint64 bytesTotal) {
+    double percentage = (bytesTotal > 0) ? (bytesSent * 100.0 / bytesTotal) : 0;
+    qCDebug(QGCApplicationLog) << "Progression de l'upload:" << percentage << "%";
+}
+// Modifiez votre fonction takePhoto :
+int QGCApplication::takePhoto() {
+    qCWarning(QGCApplicationLog) << "==============  START TAKE_PHOTO  ==============";
     
     QString baseImageFileName = "capture_" + QDateTime::currentDateTime().toString("yyyy-MM-dd_hh.mm.ss.zzz") + ".jpg";
     QString imageFile = toolbox()->settingsManager()->appSettings()->photoSavePath() + "/" + baseImageFileName;
@@ -1343,9 +1360,13 @@ int QGCApplication::takePhoto(){
     
     VideoManager* videoManager = QGCApplication::getVideoManager();
     videoManager->grabImage(imageFile);
-    return !QGCApplication::isFileEmpty(imageFile.toStdString().c_str()) ? 1 : -1;
     
-    qCWarning(QGCApplicationLog) << "==============   END TAKE_PHOTO   ==============";
+    if (!QGCApplication::isFileEmpty(imageFile.toStdString().c_str())) {
+        m_minioApi->uploadFile("bucket-name", imageFileS3, imageFile);
+        return 1;
+    }
+    
+    return -1;
 }
 
 int QGCApplication::startRecording(){
