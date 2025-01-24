@@ -743,7 +743,6 @@ void QGCApplication::init()
 
     auto *manager = toolbox()->multiVehicleManager();
     connect(manager, &MultiVehicleManager::activeVehicleChanged, this, &QGCApplication::_setActiveVehicle);
-    connect(manager, &MultiVehicleManager::vehicleAdded, this, &QGCApplication::_watchNewVehicleChanges);
     _setActiveVehicle(manager->activeVehicle());
 
     _videoManager = toolbox()->videoManager();
