@@ -1181,6 +1181,8 @@ void QGCApplication::sendAircraftPositionInfos() {
     newResponse.insert("productType",        _vehicle->vehicleTypeString());
     newResponse.insert("rtmpUrl",            rtmpUrl);
     qCWarning(QGCApplicationLog) << "UID : "<< _vehicle->vehicleUIDStr();
+    qCWarning(QGCApplicationLog) << "SN : "<< _vehicle->sn();
+    qCWarning(QGCApplicationLog) << "UAS : "<< _vehicle->uas();
     newResponse.insert("latitude",           _vehicle->coordinate().latitude());
     newResponse.insert("longitude",          _vehicle->coordinate().longitude());
     newResponse.insert("altitude",           _vehicle->coordinate().altitude());
