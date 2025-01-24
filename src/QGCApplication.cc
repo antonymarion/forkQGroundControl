@@ -1111,9 +1111,9 @@ void QGCApplication::_setNewVehicleData(Vehicle* vehicle)
     };
     if(!vehicle->vehicleLinkManager())
 
-    // qCWarning(QGCApplicationLog) << "link names" << vehicle->vehicleLinkManager()->linkNames();
-    // qCWarning(QGCApplicationLog) << "link statues" << vehicle->vehicleLinkManager()->linkStatuses();
-    qCWarning(QGCApplicationLog) << "link name" << vehicle->vehicleLinkManager()->primaryLink().lock()->linkConfiguration()->name();
+    qCWarning(QGCApplicationLog) << "link names" << vehicle->vehicleLinkManager()->linkNames();
+    qCWarning(QGCApplicationLog) << "link statues" << vehicle->vehicleLinkManager()->linkStatuses();
+    // qCWarning(QGCApplicationLog) << "link name" << vehicle->vehicleLinkManager()->primaryLink().lock()->linkConfiguration()->name();
     vehicle->setUas("uas1");
     vehicle->setSn("sn1");
 }
