@@ -1202,6 +1202,7 @@ void QGCApplication::sendAircraftPositionInfos() {
     newResponse.insert("systemOS",           "Windows"); // TODO change to include Android
     newResponse.insert("productType",        _vehicle->vehicleTypeString());
     newResponse.insert("rtmpUrl",            rtmpUrl);
+    qCWarning(QGCApplicationLog) << "UID : "<< _vehicle->vehicleUIDStr();
     newResponse.insert("latitude",           _vehicle->coordinate().latitude());
     newResponse.insert("longitude",          _vehicle->coordinate().longitude());
     newResponse.insert("altitude",           _vehicle->coordinate().altitude());
