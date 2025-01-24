@@ -1109,8 +1109,8 @@ void QGCApplication::_setNewVehicleData(Vehicle* vehicle)
         qCWarning(QGCApplicationLog) << "*****   No vehicle available   *****";
         return;
     };
-    
-    qCWarning(QGCApplicationLog) << "link" << _vehicle->vehicleLinkManager()->primaryLink();
+
+    // qCWarning(QGCApplicationLog) << "link" << _vehicle->vehicleLinkManager()->primaryLink();
     qCWarning(QGCApplicationLog) << "link name" << _vehicle->vehicleLinkManager()->primaryLinkName();
     vehicle->setUas("uas1");
     vehicle->setSn("sn1");
