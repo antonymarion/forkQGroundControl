@@ -1112,7 +1112,7 @@ void QGCApplication::_setNewVehicleData(Vehicle* vehicle)
     }
 
     QStringList uasSn = aircraftUasSnList.value(vehicle->vehicleUIDStr());
-    if(!uasSn) {
+    if(uasSn.isEmpty()) {
         qCWarning(QGCApplicationLog) << "*****  Vehicle Data Not Found   *****";
         qCWarning(QGCApplicationLog) << "UID : "<< vehicle->vehicleUIDStr();
         return;
