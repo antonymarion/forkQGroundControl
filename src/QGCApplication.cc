@@ -1111,6 +1111,13 @@ void QGCApplication::_setNewVehicleData(Vehicle* vehicle)
         return;
     }
 
+    QTime dieTime= QTime::currentTime().addSecs(10);
+    while(!_vehicle->isInitialConnectComplete() && QTime::currentTime() < dieTime) {}
+    if(QTime::currentTime() > dieTime){
+        qCWarning(QGCApplicationLog) << "*****   Set UAS & SN timeout   *****";
+        return;
+    }
+
     QStringList uasSn = aircraftUasSnList.value(vehicle->vehicleUIDStr());
     if(uasSn.isEmpty()) {
         qCWarning(QGCApplicationLog) << "*****  Vehicle Data Not Found   *****";
