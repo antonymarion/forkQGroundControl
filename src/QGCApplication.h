@@ -324,7 +324,7 @@ private:
         "TESTING_1",
         "TESTING_2"
     };
-    QMap<QString, QStringList> aircraftList = {
+    QMap<QString, QStringList> aircraftUasSnList = {
         {"4F:4E:49:44:4C:41:54:49", {"fakeUas", "fakeSn"}}
     }
 

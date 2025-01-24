@@ -797,7 +797,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
     QJsonObject message = d.object();
     QJsonObject tAttitude;
     int state_value = -1;
-    switch (this->commandsList.indexOf(message["instruction"].toString())){
+    switch (commandsList.indexOf(message["instruction"].toString())){
         case 0:
             qCWarning(QGCApplicationLog) << "=================================================";
             qCWarning(QGCApplicationLog) << "recieved OPEN_STREAM";
@@ -1111,7 +1111,7 @@ void QGCApplication::_setNewVehicleData(Vehicle* vehicle)
         return;
     };
 
-    QStringList uasSn = aircraftList.value(vehicle->vehicleUIDStr());
+    QStringList uasSn = aircraftUasSnList.value(vehicle->vehicleUIDStr());
     if(!uasSn) {
         qCWarning(QGCApplicationLog) << "*****  Vehicle Data Not Found   *****";
         qCWarning(QGCApplicationLog) << "UID : "<< vehicle->vehicleUIDStr();
@@ -1193,15 +1193,15 @@ void QGCApplication::sendAircraftPositionInfos() {
     };
 
     QJsonObject newResponse;
-    newResponse.insert("registrationNumber", this->registrationNumber);
-    newResponse.insert("emailRemotePilot",   this->loggedEmail);
-    newResponse.insert("isStreaming",        this->isStreaming);
+    newResponse.insert("registrationNumber", registrationNumber);
+    newResponse.insert("emailRemotePilot",   loggedEmail);
+    newResponse.insert("isStreaming",        isStreaming);
     newResponse.insert("system",             _vehicle->firmwareTypeString());
     newResponse.insert("systemVersion",      "V1"); // TODO ???
     newResponse.insert("simulated",          false);
     newResponse.insert("systemOS",           "Windows"); // TODO change to include Android
     newResponse.insert("productType",        _vehicle->vehicleTypeString());
-    newResponse.insert("rtmpUrl",            this->rtmpUrl);
+    newResponse.insert("rtmpUrl",            rtmpUrl);
     newResponse.insert("latitude",           _vehicle->coordinate().latitude());
     newResponse.insert("longitude",          _vehicle->coordinate().longitude());
     newResponse.insert("altitude",           _vehicle->coordinate().altitude());
@@ -1212,7 +1212,7 @@ void QGCApplication::sendAircraftPositionInfos() {
     newResponse.insert("horizontalSpeed",    qobject_cast<VehicleFactGroup*>(_vehicle->vehicleFactGroup())->groundSpeed()->rawValueString());
     newResponse.insert("gpsSatelliteCount",  qobject_cast<VehicleGPSFactGroup*>(_vehicle->gpsFactGroup())->count()->rawValueString());
     newResponse.insert("firmwareVersionUav", _vehicle->firmwarePatchVersion());
-    newResponse.insert("firmwareVersion",    this->_buildVersion);
+    newResponse.insert("firmwareVersion",    _buildVersion);
     QJsonObject dAttitude;
     dAttitude.insert("yaw",                  qobject_cast<VehicleFactGroup*>(_vehicle->vehicleFactGroup())->heading()->rawValueString());
     dAttitude.insert("pitch",                qobject_cast<VehicleFactGroup*>(_vehicle->vehicleFactGroup())->pitch()->rawValueString());
@@ -1287,7 +1287,7 @@ void QGCApplication::sendAircraftPositionInfos() {
 
     QJsonDocument doc(newResponse);
     QString responseMessage(doc.toJson(QJsonDocument::Compact));
-    m_client->publish("POSITION/"+this->uavSn, responseMessage.toUtf8());
+    m_client->publish("POSITION/"+uavSn, responseMessage.toUtf8());
 }
         /* 
             // Might not do that
