@@ -252,6 +252,7 @@ private:
 
     // Vehicles signal receivers
     void _setActiveVehicle  (Vehicle* vehicle);
+    void _setNewVehicleData  (Vehicle* vehicle);
     void _setIsFlying       (bool flying);
     void _setActiveGimbal   ();
     void _setActiveCamera   ();
@@ -288,7 +289,6 @@ private:
     QMqttClient*          m_client            = nullptr;                 // mqtt client
     bool                  _isFlying;                                     // is aircraft currently flying
     bool                  _recording;
-    bool                  delay               = false;                   // use to wait for aircraft init
     bool                  canControl          = true;                    // false if remote piltoe override commands
     Vehicle*              _vehicle{nullptr};                             // current vehicle
     VideoManager*         _videoManager{nullptr};

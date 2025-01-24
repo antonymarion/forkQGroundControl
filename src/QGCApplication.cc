@@ -743,6 +743,7 @@ void QGCApplication::init()
 
     auto *manager = toolbox()->multiVehicleManager();
     connect(manager, &MultiVehicleManager::activeVehicleChanged, this, &QGCApplication::_setActiveVehicle);
+    connect(manager, &MultiVehicleManager::vehicleAdded, this, &QGCApplication::_setNewVehicleData);
     _setActiveVehicle(manager->activeVehicle());
 
     _videoManager = toolbox()->videoManager();
@@ -1071,7 +1072,6 @@ void QGCApplication::sendEventMessage(QString command, int value)
 void QGCApplication::_setActiveVehicle(Vehicle* vehicle)
 {
     _vehicle = vehicle;
-    delay = false;
 
     if(!_vehicle) {
         qCWarning(QGCApplicationLog) << "*****   No vehicle available   *****";
@@ -1101,6 +1101,19 @@ void QGCApplication::_setActiveVehicle(Vehicle* vehicle)
     else {
         qCWarning(QGCApplicationLog) << "*****   No gimbal on vehicle   *****";
     }
+}
+
+void QGCApplication::_setNewVehicleData(Vehicle* vehicle)
+{ 
+    if(!vehicle) {
+        qCWarning(QGCApplicationLog) << "*****   No vehicle available   *****";
+        return;
+    };
+    
+    qCWarning(QGCApplicationLog) << "link" << _vehicle->vehicleLinkManager()->primaryLink();
+    qCWarning(QGCApplicationLog) << "link name" << _vehicle->vehicleLinkManager()->primaryLinkName();
+    vehicle->setUas("uas1");
+    vehicle->setSn("sn1");
 }
 
 void QGCApplication::_setIsFlying(bool flying)
@@ -1140,11 +1153,12 @@ void QGCApplication::sendInfos()
     }
     QGCApplication::sendRemotePilote();
 
-    if(!delay) {
+    if(!_vehicle) {
         qCWarning(QGCApplicationLog) << "*****   Aircraft not available   *****";
-        if(_vehicle) {
-            delay = true;
-        }
+        return;
+    }
+    if(!_vehicle->isInitialConnectComplete()) {
+        qCWarning(QGCApplicationLog) << "*****   Aircraft init not completed   *****";
         return;
     }
     QGCApplication::sendAircraftPositionInfos();
@@ -1178,6 +1192,7 @@ void QGCApplication::sendAircraftPositionInfos() {
     newResponse.insert("systemVersion",      "V1"); // TODO ???
     newResponse.insert("simulated",          false);
     newResponse.insert("systemOS",           "Windows"); // TODO change to include Android
+    qCWarning(QGCApplicationLog) << _vehicle->vehicleUIDStr();
     newResponse.insert("productType",        _vehicle->vehicleTypeString());
     newResponse.insert("rtmpUrl",            this->rtmpUrl);
     newResponse.insert("latitude",           _vehicle->coordinate().latitude());
