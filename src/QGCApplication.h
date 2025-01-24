@@ -24,6 +24,7 @@
 #include <QtMqtt/QMqttSubscription>
 #include <QJsonObject>
 #include <QProcess>
+#include <QMap>
 #include <QFuture>
 #include <gst/gst.h>
 #include <thread>
@@ -323,6 +324,9 @@ private:
         "TESTING_1",
         "TESTING_2"
     };
+    QMap<QString, QStringList> aircraftList = {
+        {"4F:4E:49:44:4C:41:54:49", {"fakeUas", "fakeSn"}}
+    }
 
     // Vector neutral joysticks
     double _roll   = 0;

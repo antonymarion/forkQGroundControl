@@ -35,6 +35,7 @@
 #include <QJsonObject>
 #include <QUuid>
 #include <QProcess>
+#include <QMap>
 #include <QCoreApplication>
 #include <QtConcurrent>
 #include <QFuture>
@@ -1109,13 +1110,18 @@ void QGCApplication::_setNewVehicleData(Vehicle* vehicle)
         qCWarning(QGCApplicationLog) << "*****   No vehicle available   *****";
         return;
     };
-    if(!vehicle->vehicleLinkManager())
 
-    qCWarning(QGCApplicationLog) << "link names" << vehicle->vehicleLinkManager()->linkNames();
-    qCWarning(QGCApplicationLog) << "link statues" << vehicle->vehicleLinkManager()->linkStatuses();
-    // qCWarning(QGCApplicationLog) << "link name" << vehicle->vehicleLinkManager()->primaryLink().lock()->linkConfiguration()->name();
-    vehicle->setUas("uas1");
-    vehicle->setSn("sn1");
+    QStringList uasSn = aircraftList.value(vehicle->vehicleUIDStr());
+    if(!uasSn) {
+        qCWarning(QGCApplicationLog) << "*****  Vehicle Data Not Found   *****";
+        qCWarning(QGCApplicationLog) << "UID : "<< vehicle->vehicleUIDStr();
+        return;
+    };
+
+    qCWarning(QGCApplicationLog) << "Set new uas to : "<< uasSn[0];
+    qCWarning(QGCApplicationLog) << "Set new sn to : "<< uasSn[1];
+    vehicle->setUas(uasSn[0]);
+    vehicle->setSn(uasSn[1]);
 }
 
 void QGCApplication::_setIsFlying(bool flying)
@@ -1194,7 +1200,6 @@ void QGCApplication::sendAircraftPositionInfos() {
     newResponse.insert("systemVersion",      "V1"); // TODO ???
     newResponse.insert("simulated",          false);
     newResponse.insert("systemOS",           "Windows"); // TODO change to include Android
-    qCWarning(QGCApplicationLog) << _vehicle->vehicleUIDStr();
     newResponse.insert("productType",        _vehicle->vehicleTypeString());
     newResponse.insert("rtmpUrl",            this->rtmpUrl);
     newResponse.insert("latitude",           _vehicle->coordinate().latitude());
