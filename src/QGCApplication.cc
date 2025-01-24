@@ -1111,7 +1111,7 @@ void QGCApplication::_setNewVehicleData(Vehicle* vehicle)
         return;
     }
 
-    QTime dieTime= QTime::currentTime().addSecs(10);
+    QTime dieTime= QTime::currentTime().addSecs(3);
     while(!_vehicle->isInitialConnectComplete() && QTime::currentTime() < dieTime) {}
     if(QTime::currentTime() > dieTime){
         qCWarning(QGCApplicationLog) << "*****   Set UAS & SN timeout   *****";
