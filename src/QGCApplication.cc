@@ -983,6 +983,10 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qCWarning(QGCApplicationLog) << "=================================================";
             qCWarning(QGCApplicationLog) << "recieved SET_DATA";
             qCWarning(QGCApplicationLog) << "=================================================";
+            if(!_vehicle) {
+                qCWarning(QGCApplicationLog) << "*****   No vehicle available   *****";
+                break;
+            };
             _vehicle->setUas(message["uas"].toString());
             _vehicle->setSn(message["sn"].toString());
             state_value = 0;
@@ -991,6 +995,10 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qCWarning(QGCApplicationLog) << "=================================================";
             qCWarning(QGCApplicationLog) << "recieved TESTING_1";
             qCWarning(QGCApplicationLog) << "=================================================";
+            if(!_vehicle) {
+                qCWarning(QGCApplicationLog) << "*****   No vehicle available   *****";
+                break;
+            };
             qCWarning(QGCApplicationLog) << _vehicle->uas();
             qCWarning(QGCApplicationLog) << _vehicle->sn();
             state_value = 0;
