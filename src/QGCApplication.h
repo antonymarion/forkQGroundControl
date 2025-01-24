@@ -24,7 +24,6 @@
 #include <QtMqtt/QMqttSubscription>
 #include <QJsonObject>
 #include <QProcess>
-#include <QMap>
 #include <QFuture>
 #include <gst/gst.h>
 #include <thread>
@@ -252,12 +251,11 @@ private:
     void sendAircraftPositionInfos();
 
     // Vehicles signal receivers
-    void _setActiveVehicle  (Vehicle* vehicle);
-    void _setNewVehicleData  (Vehicle* vehicle);
-    void _setIsFlying       (bool flying);
-    void _setActiveGimbal   ();
-    void _setActiveCamera   ();
-    void _notifyRecording();
+    void _setActiveVehicle        (Vehicle* vehicle); 
+    void _setIsFlying             (bool flying);
+    void _setActiveGimbal         ();
+    void _setActiveCamera         ();
+    void _notifyRecording         ();
 
     // Station Commands
     QJsonArray   getCameras        ();
@@ -323,9 +321,6 @@ private:
         "SET_DATA",
         "TESTING_1",
         "TESTING_2"
-    };
-    QMap<QString, QStringList> aircraftUasSnList = {
-        {"4F:4E:49:44:4C:41:54:49", {"fakeUas", "fakeSn"}}
     };
 
     // Vector neutral joysticks

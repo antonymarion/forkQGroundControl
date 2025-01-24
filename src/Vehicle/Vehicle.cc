@@ -62,6 +62,7 @@
 #endif
 
 #include <QtCore/QDateTime>
+#include <QMap>
 
 QGC_LOGGING_CATEGORY(VehicleLog, "VehicleLog")
 
@@ -272,6 +273,7 @@ void Vehicle::_commonInit()
     connect(this, &Vehicle::homePositionChanged,    this, &Vehicle::_updateDistanceHeadingToHome);
     connect(this, &Vehicle::hobbsMeterChanged,      this, &Vehicle::_updateHobbsMeter);
     connect(this, &Vehicle::coordinateChanged,      this, &Vehicle::_updateAltAboveTerrain);
+    connect(this, &Vehicle::vehicleUIDChanged,      this, &Vehicle::_setNewVehicleData);
     // Initialize alt above terrain to Nan so frontend can display it correctly in case the terrain query had no response
     _altitudeAboveTerrFact.setRawValue(qQNaN());
 
@@ -467,6 +469,21 @@ void Vehicle::resetCounters()
     _messagesLost       = 0;
     _messageSeq         = 0;
     _heardFrom          = false;
+}
+
+void Vehicle::_setNewVehicleData()
+{
+    QStringList uasSn = aircraftUasSnList.value(vehicleUIDStr());
+    if(uasSn.isEmpty()) {
+        qCWarning(VehicleLog) << "*****  Vehicle Data Not Found   *****";
+        qCWarning(VehicleLog) << "UID : "<< vehicleUIDStr();
+        return;
+    }
+
+    _dgUas = uasSn[0];
+    _dgSn = uasSn[1];
+    qCWarning(VehicleLog) << "Set new uas to : "<< _dgUas;
+    qCWarning(VehicleLog) << "Set new sn to : "<< _dgSn;
 }
 
 void Vehicle::_mavlinkMessageReceived(LinkInterface* link, mavlink_message_t message)

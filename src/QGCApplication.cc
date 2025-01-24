@@ -35,7 +35,6 @@
 #include <QJsonObject>
 #include <QUuid>
 #include <QProcess>
-#include <QMap>
 #include <QCoreApplication>
 #include <QtConcurrent>
 #include <QFuture>
@@ -744,7 +743,7 @@ void QGCApplication::init()
 
     auto *manager = toolbox()->multiVehicleManager();
     connect(manager, &MultiVehicleManager::activeVehicleChanged, this, &QGCApplication::_setActiveVehicle);
-    connect(manager, &MultiVehicleManager::vehicleAdded, this, &QGCApplication::_setNewVehicleData);
+    connect(manager, &MultiVehicleManager::vehicleAdded, this, &QGCApplication::_watchNewVehicleChanges);
     _setActiveVehicle(manager->activeVehicle());
 
     _videoManager = toolbox()->videoManager();
@@ -1102,33 +1101,6 @@ void QGCApplication::_setActiveVehicle(Vehicle* vehicle)
     else {
         qCWarning(QGCApplicationLog) << "*****   No gimbal on vehicle   *****";
     }
-}
-
-void QGCApplication::_setNewVehicleData(Vehicle* vehicle)
-{ 
-    if(!vehicle) {
-        qCWarning(QGCApplicationLog) << "*****   No vehicle available   *****";
-        return;
-    }
-
-    QTime dieTime= QTime::currentTime().addSecs(3);
-    while(!_vehicle->isInitialConnectComplete() && QTime::currentTime() < dieTime) {}
-    if(QTime::currentTime() > dieTime){
-        qCWarning(QGCApplicationLog) << "*****   Set UAS & SN timeout   *****";
-        return;
-    }
-
-    QStringList uasSn = aircraftUasSnList.value(vehicle->vehicleUIDStr());
-    if(uasSn.isEmpty()) {
-        qCWarning(QGCApplicationLog) << "*****  Vehicle Data Not Found   *****";
-        qCWarning(QGCApplicationLog) << "UID : "<< vehicle->vehicleUIDStr();
-        return;
-    }
-
-    qCWarning(QGCApplicationLog) << "Set new uas to : "<< uasSn[0];
-    qCWarning(QGCApplicationLog) << "Set new sn to : "<< uasSn[1];
-    vehicle->setUas(uasSn[0]);
-    vehicle->setSn(uasSn[1]);
 }
 
 void QGCApplication::_setIsFlying(bool flying)

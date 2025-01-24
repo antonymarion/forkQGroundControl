@@ -17,6 +17,7 @@
 #include <QtCore/QVariantList>
 #include <QtPositioning/QGeoCoordinate>
 #include <QtCore/QFile>
+#include <QMap>
 
 #include "HealthAndArmingCheckReport.h"
 #include "MAVLinkStreamConfig.h"
@@ -913,6 +914,7 @@ signals:
     void logData                        (uint32_t ofs, uint16_t id, uint8_t count, const uint8_t* data);
 
 private slots:
+    void _setNewVehicleData                 ();
     void _mavlinkMessageReceived            (LinkInterface* link, mavlink_message_t message);
     void _sendMessageMultipleNext           ();
     void _parametersReady                   (bool parametersReady);
@@ -1011,6 +1013,10 @@ private:
 
     QTimer              _csvLogTimer;
     QFile               _csvLogFile;
+    
+    QMap<QString, QStringList> aircraftUasSnList = {
+        {"4F:4E:49:44:4C:41:54:49", {"fakeUas", "fakeSn"}}
+    };
 
     bool            _joystickEnabled = false;
     bool _isActiveVehicle = false;
