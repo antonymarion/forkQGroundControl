@@ -252,36 +252,28 @@ private:
 
     // Vehicles signal receivers
     void _setActiveVehicle        (Vehicle* vehicle); 
+    void _setupNewVehicle         (Vehicle* vehicle); 
+    void _setupNewMqttSubscription(QString newSn);
     void _setIsFlying             (bool flying);
-    void _setActiveGimbal         ();
     void _setActiveCamera         ();
     void _notifyRecording         ();
 
     // Station Commands
-    QJsonArray   getCameras        ();
-    QJsonObject  getGimbalCapabilities();
-    void         setZoom           (float value);
+    
     void         startStream       ();
     void         stopStream        ();
-    void         getTelemetry      (double &lat, double &lon, double &alt, double &hSpeed, double &vSpeed, double &yaw, double &pitch, double &roll);
     int          takePhoto         ();
     int          startRecording    ();
     int          stopRecording     ();
-    void         resetGimbal       ();
-    void         genericGimbal     (QString axis, QString value);
-    void         moveGimbalTundra  (QString value);
-    void         moveGimbal        (QString axis, QString value);
     void         vectorControl     ();
-    void         goToWaypoint      (double speed, double yaw, double lat, double lon, double alt);
     void         pauseAll          ();
 
     // Utilities
     bool isFileEmpty(const std::string& filePath);
-    void servoCmd   (float servoId, float pwmValue);
 
     QString               rtmpUrl             = "";                      // streaming URL
     QString               loggedEmail         = "graphx.stephaneroma@gmail.com";  // Remote pilote logged email
-    QString               registrationNumber  = "UAS-FR-458156";         // Aircraft registration number
+    // QString               registrationNumber  = "UAS-FR-458156";         // Aircraft registration number
     QString               uavSn               = "1600FTR2STD24289930B";  // Aircraft serial number
     QString               productName         = "Tundra 2";              // Aircraft name
     bool                  isStreaming         = false;                   // is currently streaming on rtmp URL
@@ -291,11 +283,9 @@ private:
     bool                  canControl          = true;                    // false if remote piltoe override commands
     Vehicle*              _vehicle{nullptr};                             // current vehicle
     VideoManager*         _videoManager{nullptr};
-    Gimbal*               _activeGimbal{nullptr};
     MavlinkCameraControl* _activeCamera{nullptr};
     QTimer*               timerVector = nullptr;                         // send vector command timer
-    QStringList           aircraftList        = { "Tundra 2" };          // special aircraft list
-    QStringList           axisList            = { "pitch", "yaw", "roll", "thrust" }; // global axis list
+    QStringList           simulatedMAC        = { "4F:4E:49:44:4C:41:54:49" }; // global axis list
     QStringList           commandsList        = {                        // front-end commmand list
         "OPEN_STREAM",
         "STOP_STREAM",

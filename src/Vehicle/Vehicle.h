@@ -455,8 +455,10 @@ public:
     int id() const{ return _id; }
     QString sn () const{ return _dgSn; }
     QString uas() const{ return _dgUas; }
+    QString productName() const{ return _dgProductName; }
     void setSn (QString newSn)  { _dgSn = newSn; }
     void setUas(QString newUas) { _dgUas = newUas; }
+    void setProductName(QString newProductName) { _dgProductName = newProductName; }
     int compId() const{ return _compID; }
     MAV_AUTOPILOT firmwareType() const { return _firmwareType; }
     MAV_TYPE vehicleType() const { return _vehicleType; }
@@ -815,12 +817,26 @@ public:
 
     GimbalController* gimbalController  () { return _gimbalController; }
 
+    void         goToWaypoint      (double speed, double yaw, double lat, double lon, double alt);
+    void         servoCmd          (float servoId, float pwmValue);
+    void         getTelemetry      (double &lat, double &lon, double &alt, double &hSpeed, double &vSpeed, double &yaw, double &pitch, double &roll);
+    void         getCameraCapabilities (bool &activeCamera, QString &cameraName, bool &hasZoom, QJsonObject &iso, QJsonObject &aperture);
+    
+    void         resetGimbal       ();
+    void         genericGimbal     (QString axis, QString value);
+    void         moveGimbalTundra  (QString value);
+    void         moveGimbal        (QString axis, QString value);
+    QJsonObject  getGimbalCapabilities();
+    QJsonArray   getCameras        ();
+    void         setZoom           (float value);
+
 public slots:
     void setVtolInFwdFlight                 (bool vtolInFwdFlight);
     void _offlineFirmwareTypeSettingChanged (QVariant varFirmwareType); // Should only be used by MissionControler to set firmware from Plan file
     void _offlineVehicleTypeSettingChanged  (QVariant varVehicleType);  // Should only be used by MissionController to set vehicle type from Plan file
 
 signals:
+    void snChanged                      (QString newSn);
     void coordinateChanged              (QGeoCoordinate coordinate);
     void joystickEnabledChanged         (bool enabled);
     void mavlinkMessageReceived         (const mavlink_message_t& message);
@@ -1015,8 +1031,14 @@ private:
     QFile               _csvLogFile;
     
     QMap<QString, QStringList> aircraftUasSnList = {
-        {"4F:4E:49:44:4C:41:54:49", {"fakeUas", "fakeSn"}}
+        {"4F:4E:49:44:4C:41:54:49", {"fakeUas", "fakeSn", "Tundra 2"}}
     };
+    QStringList           aircraftList        = { "Tundra 2" };          // special aircraft list
+    QStringList           axisList            = { "pitch", "yaw", "roll", "thrust" }; // global axis list
+    
+    QString         _dgSn = "";
+    QString         _dgUas = "";
+    QString         _dgProductName = "";
 
     bool            _joystickEnabled = false;
     bool _isActiveVehicle = false;
@@ -1024,9 +1046,6 @@ private:
     QGeoCoordinate  _coordinate;
     QGeoCoordinate  _homePosition;
     QGeoCoordinate  _armedPosition;
-    
-    QString         _dgSn = "";
-    QString         _dgUas = "";
 
     qreal           _initialGCSPressure = 0.;
     qreal           _initialGCSTemperature = 0.;

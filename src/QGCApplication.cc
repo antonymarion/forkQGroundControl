@@ -743,6 +743,7 @@ void QGCApplication::init()
 
     auto *manager = toolbox()->multiVehicleManager();
     connect(manager, &MultiVehicleManager::activeVehicleChanged, this, &QGCApplication::_setActiveVehicle);
+    connect(manager, &MultiVehicleManager::vehicleAdded, this, &QGCApplication::_setupNewVehicle);
     _setActiveVehicle(manager->activeVehicle());
 
     _videoManager = toolbox()->videoManager();
@@ -770,13 +771,23 @@ void QGCApplication::updateLogStateChange()
 
 void QGCApplication::brokerConnected()
 {
-    // Setup Subscription
-    QString topic = "REQUEST/+/" + this->uavSn + "/+";
-    QMqttSubscription *subscription = m_client->subscribe(topic, 1);
-    if(!subscription) {
-        qCWarning(QGCApplicationLog) << "***** Can't connect with Mqtt *****";
+    QmlObjectListModel* vehicles = toolbox()->multiVehicleManager()->vehicles();
+    for(int i=0; i<vehicles->count(); i++){
+        Vehicle* vehicle = qobject_cast<Vehicle*>(vehicles->get(i));
+        
+        if(!vehicle->isInitialConnectComplete()) {
+            qCWarning(QGCApplicationLog) << "*****   Aircraft init not completed   *****";
+            continue;
+        }
+        // Setup Subscription
+        QString topic = "REQUEST/+/" + vehicle->sn() + "/+";
+        QMqttSubscription *subscription = m_client->subscribe(topic, 1);
+        if(!subscription) {
+            qCWarning(QGCApplicationLog) << "***** Can't connect "+vehicle->sn()+" with Mqtt *****";
+            continue;
+        }
+        QObject::connect(subscription, &QMqttSubscription::messageReceived, this, &QGCApplication::updateMessage);
     }
-    QObject::connect(subscription, &QMqttSubscription::messageReceived, this, &QGCApplication::updateMessage);
 
     qCWarning(QGCApplicationLog) << "Mqtt Connected";
 }
@@ -848,16 +859,14 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qCWarning(QGCApplicationLog) << "recieved GET_CAMERA";
             qCWarning(QGCApplicationLog) << "=================================================";
             message.insert("gimbalRange", QGCApplication::getGimbalCapabilities());
-            if(!_activeCamera) {
+            bool activeCamera, hasZoom;
+            QString cameraName;
+            QJsonObject iso, aperture;
+            QGCApplication::getCameraCapabilities(activeCamera, cameraName, hasZoom, iso, aperture);
+            if(!activeCamera) {
                 qCWarning(QGCApplicationLog) << "============== camera ranges ==============";
-                message.insert("hasZoom", _activeCamera->hasZoom());
-                if(_activeCamera->modelName() != "Caméra intégrée Tundra II"){
-                    QJsonObject iso;
-                    QJsonObject aperture;
-                    iso.insert("min", _activeCamera->iso()->cookedMinString());
-                    iso.insert("max", _activeCamera->iso()->cookedMaxString());
-                    aperture.insert("min", _activeCamera->aperture()->cookedMinString());
-                    aperture.insert("max", _activeCamera->aperture()->cookedMaxString());
+                message.insert("hasZoom", hasZoom);
+                if(cameraName != "Caméra intégrée Tundra II"){
                     message.insert("isoRange", iso);
                     message.insert("aperture", aperture);
                 }
@@ -1091,15 +1100,23 @@ void QGCApplication::_setActiveVehicle(Vehicle* vehicle)
     else{
         qCWarning(QGCApplicationLog) << "*****   No camera on vehicle   *****";
     }
+}
 
-    if(_vehicle->gimbalController()->gimbals()->count() > 0) {
-        GimbalController* gimbalController = _vehicle->gimbalController();
-        QObject::connect(gimbalController, &GimbalController::activeGimbalChanged, this, &QGCApplication::_setActiveGimbal);
-        _setActiveGimbal();
+void QGCApplication::_setupNewVehicle(Vehicle* vehicle)
+{
+    QObject::connect(vehicle, &Vehicle::snChanged, this, &QGCApplication::_setupNewMqttSubscription);
+}
+
+void QGCApplication::_setupNewMqttSubscription(QString newSn)
+{
+    // Setup Subscription
+    QString topic = "REQUEST/+/" + newSn + "/+";
+    QMqttSubscription *subscription = m_client->subscribe(topic, 1);
+    if(!subscription) {
+        qCWarning(QGCApplicationLog) << "***** Can't connect "+newSn+" with Mqtt *****";
+        return;
     }
-    else {
-        qCWarning(QGCApplicationLog) << "*****   No gimbal on vehicle   *****";
-    }
+    QObject::connect(subscription, &QMqttSubscription::messageReceived, this, &QGCApplication::updateMessage);
 }
 
 void QGCApplication::_setIsFlying(bool flying)
@@ -1114,11 +1131,6 @@ void QGCApplication::_setIsFlying(bool flying)
     if(!_isFlying && timerVector->isActive()){
         timerVector->stop();
     }
-}
-
-void QGCApplication::_setActiveGimbal()
-{
-    _activeGimbal = _vehicle->gimbalController()->activeGimbal();
 }
 
 void QGCApplication::_setActiveCamera()
@@ -1138,15 +1150,6 @@ void QGCApplication::sendInfos()
         return;
     }
     QGCApplication::sendRemotePilote();
-
-    if(!_vehicle) {
-        qCWarning(QGCApplicationLog) << "*****   Aircraft not available   *****";
-        return;
-    }
-    if(!_vehicle->isInitialConnectComplete()) {
-        qCWarning(QGCApplicationLog) << "*****   Aircraft init not completed   *****";
-        return;
-    }
     QGCApplication::sendAircraftPositionInfos();
     
     qCWarning(QGCApplicationLog) << "==============  Infos sent  ==============";
@@ -1160,6 +1163,10 @@ void QGCApplication::sendRemotePilote()
     QmlObjectListModel* vehicles = toolbox()->multiVehicleManager()->vehicles();
     for(int i=0; i<vehicles->count(); i++){
         Vehicle* vehicle = qobject_cast<Vehicle*>(vehicles->get(i));
+        if(!vehicle->isInitialConnectComplete()) {
+            qCWarning(QGCApplicationLog) << "*****   Aircraft init not completed   *****";
+            continue;
+        }
         newResponse.insert("registrationNumber", vehicle->uas());
         QJsonDocument doc(newResponse);
         QString responseMessage(doc.toJson(QJsonDocument::Compact));
@@ -1175,8 +1182,12 @@ void QGCApplication::sendAircraftPositionInfos() {
         qCWarning(QGCApplicationLog) << "============== start send position ==============";
         if(!vehicle) {
             qCWarning(QGCApplicationLog) << "*****   No vehicle available   *****";
-            return;
+            continue;
         };
+        if(!vehicle->isInitialConnectComplete()) {
+            qCWarning(QGCApplicationLog) << "*****   Aircraft init not completed   *****";
+            continue;
+        }
 
         QJsonObject newResponse;
         newResponse.insert("registrationNumber", vehicle->uas());
@@ -1184,7 +1195,7 @@ void QGCApplication::sendAircraftPositionInfos() {
         newResponse.insert("isStreaming",        isStreaming);
         newResponse.insert("system",             vehicle->firmwareTypeString());
         newResponse.insert("systemVersion",      "V1"); // TODO ???
-        newResponse.insert("simulated",          false);
+        newResponse.insert("simulated",          simulatedMAC.contains(vehicle->vehicleUIDStr()));
         newResponse.insert("systemOS",           "Windows"); // TODO change to include Android
         newResponse.insert("productType",        vehicle->vehicleTypeString());
         newResponse.insert("rtmpUrl",            rtmpUrl);
@@ -1195,7 +1206,7 @@ void QGCApplication::sendAircraftPositionInfos() {
         newResponse.insert("longitude",          vehicle->coordinate().longitude());
         newResponse.insert("altitude",           vehicle->coordinate().altitude());
         newResponse.insert("altitudeRelative",   qobject_cast<VehicleFactGroup*>(vehicle->vehicleFactGroup())->altitudeRelative()->rawValueString());
-        newResponse.insert("isFlying",           _isFlying);
+        newResponse.insert("isFlying",           vehicle->flying());
         newResponse.insert("flightDistance",     qobject_cast<VehicleFactGroup*>(vehicle->vehicleFactGroup())->flightDistance()->rawValueString());
         newResponse.insert("verticalSpeed",      qobject_cast<VehicleFactGroup*>(vehicle->vehicleFactGroup())->climbRate()->rawValueString());
         newResponse.insert("horizontalSpeed",    qobject_cast<VehicleFactGroup*>(vehicle->vehicleFactGroup())->groundSpeed()->rawValueString());
@@ -1212,15 +1223,16 @@ void QGCApplication::sendAircraftPositionInfos() {
         bool hasCamera = vehicle->cameraManager()->cameras()->count() != 0;
         newResponse.insert("hasCamera", hasCamera);
         if(hasCamera) {
-            if(_activeCamera) {
+            MavlinkCameraControl* currentCamera = vehicle->cameraManager()->currentCameraInstance();
+            if(currentCamera) {
                 qCWarning(QGCApplicationLog) << "============== current camera values ==============";
-                newResponse.insert("sensorName", _activeCamera->modelName());
-                newResponse.insert("hasZoom",    _activeCamera->hasZoom());
-                if(_activeCamera->modelName() != "Caméra intégrée Tundra II"){
+                newResponse.insert("sensorName", currentCamera->modelName());
+                newResponse.insert("hasZoom",    currentCamera->hasZoom());
+                if(currentCamera->modelName() != "Caméra intégrée Tundra II"){
                     QJsonObject currentValues;
-                    currentValues.insert("ISO",          _activeCamera->iso()->rawValueString());
-                    currentValues.insert("whiteBalance", _activeCamera->wb()->rawValueString());
-                    currentValues.insert("aperture",     _activeCamera->aperture()->rawValueString());
+                    currentValues.insert("ISO",          currentCamera->iso()->rawValueString());
+                    currentValues.insert("whiteBalance", currentCamera->wb()->rawValueString());
+                    currentValues.insert("aperture",     currentCamera->aperture()->rawValueString());
                     newResponse.insert("intrinsics",     currentValues);
                 }
             }
@@ -1229,16 +1241,17 @@ void QGCApplication::sendAircraftPositionInfos() {
         bool hasGimbal = vehicle->gimbalController()->gimbals()->count() != 0;
         newResponse.insert("hasGimbal", hasGimbal);
         if(hasGimbal) {
-            if(_activeGimbal) {
+            Gimbal* currentGimbal = vehicle->gimbalController()->activeGimbal();
+            if(currentGimbal) {
                 qCWarning(QGCApplicationLog) << "============== current gimbal values ==============";
                 QJsonObject currentState;
                 QJsonObject attitude;
-                attitude.insert("yaw",                _activeGimbal->absoluteYaw()->rawValueString());
-                attitude.insert("pitch",              _activeGimbal->absolutePitch()->rawValueString());
-                attitude.insert("roll",               _activeGimbal->absoluteRoll()->rawValueString());
+                attitude.insert("yaw",                currentGimbal->absoluteYaw()->rawValueString());
+                attitude.insert("pitch",              currentGimbal->absolutePitch()->rawValueString());
+                attitude.insert("roll",               currentGimbal->absoluteRoll()->rawValueString());
                 currentState.insert("KeyGimbalReset", "null");
                 currentState.insert("attitude",       attitude);
-                currentState.insert("keyYawRelativeToAircraftHeading", _activeGimbal->bodyYaw()->rawValueString()); // TODO
+                currentState.insert("keyYawRelativeToAircraftHeading", currentGimbal->bodyYaw()->rawValueString()); // TODO
                 newResponse.insert("gimbal",          currentState);
             }
         }
@@ -1328,53 +1341,6 @@ void QGCApplication::sendAircraftPositionInfos() {
 void QGCApplication::setCamera(int i){
     Vehicule::cameraManager().setCurrentCamera(i);
 } */
-
-QJsonArray QGCApplication::getCameras()
-{
-    QJsonArray cameraList;
-    if(!_vehicle || _vehicle->cameraManager()->cameras()->count() <= 0) return cameraList;
-    QmlObjectListModel *cameras = _vehicle->cameraManager()->cameras();
-    for (int i = 0; i < cameras->count(); i++) {
-        MavlinkCameraControl *camera = qobject_cast<MavlinkCameraControl*>(cameras->get(i));
-        QJsonObject thisCamera;
-        thisCamera.insert("index",i);
-        thisCamera.insert("name",camera->modelName());
-        cameraList.append(thisCamera);
-    }
-    return cameraList;
-}
-
-QJsonObject QGCApplication::getGimbalCapabilities()
-{
-    QJsonObject capabilities;
-    if(_activeGimbal) {
-        QJsonObject yawCap;
-        QJsonObject pitchCap;
-        QJsonObject rollCap;
-        qCWarning(QGCApplicationLog) << "minYaw : " << _activeGimbal->absoluteYaw()->cookedMinString();
-        qCWarning(QGCApplicationLog) << "maxYaw : " << _activeGimbal->absoluteYaw()->cookedMaxString();
-        yawCap.insert("min",          _activeGimbal->bodyYaw()->cookedMinString());
-        yawCap.insert("max",          _activeGimbal->bodyYaw()->cookedMaxString());
-        pitchCap.insert("min",        _activeGimbal->absolutePitch()->cookedMinString());
-        pitchCap.insert("max",        _activeGimbal->absolutePitch()->cookedMaxString());
-        rollCap.insert("min",         _activeGimbal->absoluteRoll()->cookedMinString());
-        rollCap.insert("max",         _activeGimbal->absoluteRoll()->cookedMaxString());
-        capabilities.insert("yaw",    yawCap);
-        capabilities.insert("pitch",  pitchCap);
-        capabilities.insert("roll",   rollCap);
-    }
-    return capabilities;
-}
-
-void QGCApplication::setZoom(float value)
-{
-    if(!_activeCamera) {
-        qCWarning(QGCApplicationLog) << "*****   No active camera   *****";
-        return;
-    }
-    _activeCamera->setZoomLevel(value);
-    qCWarning(QGCApplicationLog) << "==============  SET_ZOOM  ==============";
-}
 
 void QGCApplication::startStream()
 {
@@ -1550,68 +1516,6 @@ int QGCApplication::stopRecording()
     qCWarning(QGCApplicationLog) << "==============   STOP_RECORDING   =============="; // NEED TO UPDATE FOR OTHER CAMS
 }
 
-void QGCApplication::resetGimbal()
-{
-    if(!_activeGimbal) return;
-
-    _activeGimbal->setAbsolutePitch(0);
-    _activeGimbal->setBodyYaw(0);
-    _activeGimbal->setAbsoluteRoll(0);
-    qCWarning(QGCApplicationLog) << "==============   RESET_GIMBAL   ==============";
-}
-
-void QGCApplication::genericGimbal(QString axis, QString value)
-{
-    switch (this->aircraftList.indexOf(this->productName)){
-        case 0:
-            QGCApplication::moveGimbalTundra(value);
-            break;
-        default:
-            QGCApplication::moveGimbal(axis, value);
-    }
-    qCWarning(QGCApplicationLog) << "==============   MOVE_GIMBAL   ==============";
-}
-
-void QGCApplication::getTelemetry(double &lat, double &lon, double &alt, double &hSpeed, double &vSpeed, double &yaw, double &pitch, double &roll) {
-  lat = _vehicle->coordinate().latitude();
-  lon = _vehicle->coordinate().longitude();
-  alt = _vehicle->coordinate().altitude();
-  hSpeed = qobject_cast<VehicleFactGroup*>(_vehicle->vehicleFactGroup())->groundSpeed()->rawValue().toDouble();
-  vSpeed = qobject_cast<VehicleFactGroup*>(_vehicle->vehicleFactGroup())->climbRate()->rawValue().toDouble();
-  yaw = qobject_cast<VehicleFactGroup*>(_vehicle->vehicleFactGroup())->heading()->rawValue().toDouble();
-  pitch = qobject_cast<VehicleFactGroup*>(_vehicle->vehicleFactGroup())->pitch()->rawValue().toDouble();
-  roll = qobject_cast<VehicleFactGroup*>(_vehicle->vehicleFactGroup())->roll()->rawValue().toDouble();
-}
-
-void QGCApplication::moveGimbalTundra(QString value)
-{
-    if(value == "+") QGCApplication::servoCmd(9, 1801);
-    if(value == "-") QGCApplication::servoCmd(9, 1201);
-    if(value == "0") QGCApplication::servoCmd(9, 1501);
-}
-
-void QGCApplication::moveGimbal(QString axis, QString value)
-{
-    if(!_activeGimbal) return;
-
-    switch (axisList.indexOf(axis)) {
-        case 0:
-            qCWarning(QGCApplicationLog) << "=====   PITCH CHANGED  =====";
-            _activeGimbal->setAbsolutePitch(value.toFloat());
-            break;
-        case 1:
-            qCWarning(QGCApplicationLog) << "=====   YAW CHANGED   =====";
-            _activeGimbal->setBodyYaw(value.toFloat());
-            break;
-        case 2:
-            qCWarning(QGCApplicationLog) << "=====   ROLL CHANGED   =====";
-            _activeGimbal->setAbsoluteRoll(value.toFloat());
-            break;
-        default:
-            qCWarning(QGCApplicationLog) << "*****   INVALID AXIS   *****";
-    }
-}
-
 void QGCApplication::vectorControl()
 {
     _vehicle->sendJoystickDataThreadSafe(
@@ -1640,38 +1544,6 @@ bool QGCApplication::isFileEmpty(const std::string& filePath)
     }
 
     return file.tellg() == 0; // `tellg()` retourne la taille actuelle du fichier.
-}
-
-void QGCApplication::servoCmd(float servoId, float pwmValue)
-{
-    if(!_vehicle) {
-        qCWarning(QGCApplicationLog) << "*****   No vehicle found   *****";
-        return;
-    }
-    
-    // Sends the MAV_CMD_DO_SET_SERVO command to the vehicle.
-    // If no acknowledgment (Ack) is received, the command will be retried.
-    // If another sendMavCommand is already in progress,
-    // the current command will be queued and sent once the previous one completes.
-    
-    // @param compId : Component ID to send the command to.
-    // @param command : The MAV_CMD to send.
-    // @param showError : true to display an error if the command fails, false to suppress the error display.
-    // @param param1 to param7 : Optional parameters to send with the MAV_CMD.
-    
-    // Signals: mavCommandResult emitted on success or failure of the command.
-    _vehicle->sendMavCommand(
-        _vehicle->defaultComponentId(),  // compId: Default vehicle component ID
-        MAV_CMD_DO_SET_SERVO,            // command: MAV_CMD to set servo
-        true,                            // showError: Display error if command fails
-        servoId,                         // param1: Specify which servo to set (e.g., 1)
-        pwmValue,                        // param2: PWM value to set for the servo (e.g., 1500)
-        0,                               // param3: Not used (set to 0)
-        0,                               // param4: Not used (set to 0)
-        0,                               // param5: Not used (set to 0)
-        0,                               // param6: Not used (set to 0)
-        0                                // param7: Not used (set to 0)
-    ); // ************** SERVO ID, SURTOUT PAS 1 2 3 4 13 14 **********************
 }
 
 void QGCApplication::testing1()
@@ -1710,22 +1582,6 @@ void QGCApplication::testing3()
         newCoordinate.latitude(),        // param5: (Latitude)	Latitude
         newCoordinate.longitude(),       // param6: (Longitude)	Longitude	
         newCoordinate.altitude()         // param7: (Altitude)	Altitude
-    );
-}
-
-void QGCApplication::goToWaypoint(double speed, double yaw, double lat, double lon, double alt)
-{
-    _vehicle->sendMavCommand(
-        _vehicle->defaultComponentId(),  // compId: Default vehicle component ID
-        MAV_CMD_DO_REPOSITION,           // command: MAV_CMD to set servo
-        true,                            // showError: Display error if command fails
-        speed,                           // param1: (Speed)	    Ground speed, less than 0 (-1) for default	min: -1	m/s
-        MAV_DO_REPOSITION_FLAGS_CHANGE_MODE,    // param2: (Bitmask)	Bitmask of option flags.	MAV_DO_REPOSITION_FLAGS	
-        0,                               // param3: (Radius)	Loiter radius for planes. Positive values only, direction is controlled by Yaw value. A value of zero or NaN is ignored. m
-        yaw,                             // param4: (Yaw)	    Yaw heading. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.). For planes indicates loiter direction (0: clockwise, 1: counter clockwise)		deg
-        lat,                             // param5: (Latitude)	Latitude
-        lon,                             // param6: (Longitude)	Longitude	
-        alt                              // param7: (Altitude)	Altitude
     );
 }
 
