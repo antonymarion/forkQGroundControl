@@ -1158,8 +1158,8 @@ void QGCApplication::sendRemotePilote()
     newResponse.insert("email", loggedEmail);
 
     QmlObjectListModel* vehicles = toolbox()->multiVehicleManager()->vehicles();
-    for(QObject* oVehicle : vehicles){
-        Vehicle* vehicle = qobject_cast<Vehicle*>(oVehicle);
+    for(int i=0; i<vehicles->count(); i++){
+        Vehicle* vehicle = qobject_cast<Vehicle*>(vehicles->get(i));
         newResponse.insert("registrationNumber", vehicle->uas());
         QJsonDocument doc(newResponse);
         QString responseMessage(doc.toJson(QJsonDocument::Compact));
@@ -1170,8 +1170,8 @@ void QGCApplication::sendRemotePilote()
 void QGCApplication::sendAircraftPositionInfos() {
 
     QmlObjectListModel* vehicles = toolbox()->multiVehicleManager()->vehicles();
-    for(QObject* oVehicle : vehicles){
-        Vehicle* vehicle = qobject_cast<Vehicle*>(oVehicle);
+    for(int i=0; i<vehicles->count(); i++){
+        Vehicle* vehicle = qobject_cast<Vehicle*>(vehicles->get(i));
         qCWarning(QGCApplicationLog) << "============== start send position ==============";
         if(!vehicle) {
             qCWarning(QGCApplicationLog) << "*****   No vehicle available   *****";
