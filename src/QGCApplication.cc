@@ -1156,11 +1156,15 @@ void QGCApplication::sendRemotePilote()
 {
     QJsonObject newResponse;
     newResponse.insert("email", loggedEmail);
-    newResponse.insert("registrationNumber", registrationNumber);
 
-    QJsonDocument doc(newResponse);
-    QString responseMessage(doc.toJson(QJsonDocument::Compact));
-    m_client->publish("REMOTE_PILOT/" + uavSn, responseMessage.toUtf8());
+    QmlObjectListModel* vehicles = toolbox()->multiVehicleManager()->vehicles();
+    for(int i = 0; i < vehicles.count(); i++){
+        Vehicle vehicle = qobject_cast<Vehicle*>(_vehicle->vehicleFactGroup());
+        newResponse.insert("registrationNumber", vehicle->uas());
+        QJsonDocument doc(newResponse);
+        QString responseMessage(doc.toJson(QJsonDocument::Compact));
+        m_client->publish("REMOTE_PILOT/" + vehicle->sn(), responseMessage.toUtf8());
+    }
 }
 
 void QGCApplication::sendAircraftPositionInfos() {
@@ -1180,9 +1184,9 @@ void QGCApplication::sendAircraftPositionInfos() {
     newResponse.insert("systemOS",           "Windows"); // TODO change to include Android
     newResponse.insert("productType",        _vehicle->vehicleTypeString());
     newResponse.insert("rtmpUrl",            rtmpUrl);
-    qCWarning(QGCApplicationLog) << "UID : "<< _vehicle->vehicleUIDStr();
-    qCWarning(QGCApplicationLog) << "SN : "<< _vehicle->sn();
-    qCWarning(QGCApplicationLog) << "UAS : "<< _vehicle->uas();
+    qCWarning(QGCApplicationLog) << "UID : " << _vehicle->vehicleUIDStr();
+    qCWarning(QGCApplicationLog) << "SN : "  << _vehicle->sn();
+    qCWarning(QGCApplicationLog) << "UAS : " << _vehicle->uas();
     newResponse.insert("latitude",           _vehicle->coordinate().latitude());
     newResponse.insert("longitude",          _vehicle->coordinate().longitude());
     newResponse.insert("altitude",           _vehicle->coordinate().altitude());
