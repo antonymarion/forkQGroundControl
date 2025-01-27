@@ -1168,111 +1168,116 @@ void QGCApplication::sendRemotePilote()
 }
 
 void QGCApplication::sendAircraftPositionInfos() {
-    qCWarning(QGCApplicationLog) << "============== start send position ==============";
-    if(!_vehicle) {
-        qCWarning(QGCApplicationLog) << "*****   No vehicle available   *****";
-        return;
-    };
 
-    QJsonObject newResponse;
-    newResponse.insert("registrationNumber", registrationNumber);
-    newResponse.insert("emailRemotePilot",   loggedEmail);
-    newResponse.insert("isStreaming",        isStreaming);
-    newResponse.insert("system",             _vehicle->firmwareTypeString());
-    newResponse.insert("systemVersion",      "V1"); // TODO ???
-    newResponse.insert("simulated",          false);
-    newResponse.insert("systemOS",           "Windows"); // TODO change to include Android
-    newResponse.insert("productType",        _vehicle->vehicleTypeString());
-    newResponse.insert("rtmpUrl",            rtmpUrl);
-    qCWarning(QGCApplicationLog) << "UID : " << _vehicle->vehicleUIDStr();
-    qCWarning(QGCApplicationLog) << "SN : "  << _vehicle->sn();
-    qCWarning(QGCApplicationLog) << "UAS : " << _vehicle->uas();
-    newResponse.insert("latitude",           _vehicle->coordinate().latitude());
-    newResponse.insert("longitude",          _vehicle->coordinate().longitude());
-    newResponse.insert("altitude",           _vehicle->coordinate().altitude());
-    newResponse.insert("altitudeRelative",   qobject_cast<VehicleFactGroup*>(_vehicle->vehicleFactGroup())->altitudeRelative()->rawValueString());
-    newResponse.insert("isFlying",           _isFlying);
-    newResponse.insert("flightDistance",     qobject_cast<VehicleFactGroup*>(_vehicle->vehicleFactGroup())->flightDistance()->rawValueString());
-    newResponse.insert("verticalSpeed",      qobject_cast<VehicleFactGroup*>(_vehicle->vehicleFactGroup())->climbRate()->rawValueString());
-    newResponse.insert("horizontalSpeed",    qobject_cast<VehicleFactGroup*>(_vehicle->vehicleFactGroup())->groundSpeed()->rawValueString());
-    newResponse.insert("gpsSatelliteCount",  qobject_cast<VehicleGPSFactGroup*>(_vehicle->gpsFactGroup())->count()->rawValueString());
-    newResponse.insert("firmwareVersionUav", _vehicle->firmwarePatchVersion());
-    newResponse.insert("firmwareVersion",    _buildVersion);
-    QJsonObject dAttitude;
-    dAttitude.insert("yaw",                  qobject_cast<VehicleFactGroup*>(_vehicle->vehicleFactGroup())->heading()->rawValueString());
-    dAttitude.insert("pitch",                qobject_cast<VehicleFactGroup*>(_vehicle->vehicleFactGroup())->pitch()->rawValueString());
-    dAttitude.insert("roll",                 qobject_cast<VehicleFactGroup*>(_vehicle->vehicleFactGroup())->roll()->rawValueString());
-    newResponse.insert("attitude",           dAttitude);
-    
-    
-    bool hasCamera = _vehicle->cameraManager()->cameras()->count() != 0;
-    newResponse.insert("hasCamera", hasCamera);
-    if(hasCamera) {
-        if(_activeCamera) {
-            qCWarning(QGCApplicationLog) << "============== current camera values ==============";
-            newResponse.insert("sensorName", _activeCamera->modelName());
-            newResponse.insert("hasZoom",    _activeCamera->hasZoom());
-            if(_activeCamera->modelName() != "Caméra intégrée Tundra II"){
-                QJsonObject currentValues;
-                currentValues.insert("ISO",          _activeCamera->iso()->rawValueString());
-                currentValues.insert("whiteBalance", _activeCamera->wb()->rawValueString());
-                currentValues.insert("aperture",     _activeCamera->aperture()->rawValueString());
-                newResponse.insert("intrinsics",     currentValues);
+    QmlObjectListModel* vehicles = toolbox()->multiVehicleManager()->vehicles();
+    for(QObject* oVehicle : vehicles){
+        Vehicle* vehicle = qobject_cast<Vehicle*>(oVehicle);
+        qCWarning(QGCApplicationLog) << "============== start send position ==============";
+        if(!vehicle) {
+            qCWarning(QGCApplicationLog) << "*****   No vehicle available   *****";
+            return;
+        };
+
+        QJsonObject newResponse;
+        newResponse.insert("registrationNumber", vehicle->uas());
+        newResponse.insert("emailRemotePilot",   loggedEmail);
+        newResponse.insert("isStreaming",        isStreaming);
+        newResponse.insert("system",             vehicle->firmwareTypeString());
+        newResponse.insert("systemVersion",      "V1"); // TODO ???
+        newResponse.insert("simulated",          false);
+        newResponse.insert("systemOS",           "Windows"); // TODO change to include Android
+        newResponse.insert("productType",        vehicle->vehicleTypeString());
+        newResponse.insert("rtmpUrl",            rtmpUrl);
+        qCWarning(QGCApplicationLog) << "UID : " << vehicle->vehicleUIDStr();
+        qCWarning(QGCApplicationLog) << "SN : "  << vehicle->sn();
+        qCWarning(QGCApplicationLog) << "UAS : " << vehicle->uas();
+        newResponse.insert("latitude",           vehicle->coordinate().latitude());
+        newResponse.insert("longitude",          vehicle->coordinate().longitude());
+        newResponse.insert("altitude",           vehicle->coordinate().altitude());
+        newResponse.insert("altitudeRelative",   qobject_cast<VehicleFactGroup*>(vehicle->vehicleFactGroup())->altitudeRelative()->rawValueString());
+        newResponse.insert("isFlying",           _isFlying);
+        newResponse.insert("flightDistance",     qobject_cast<VehicleFactGroup*>(vehicle->vehicleFactGroup())->flightDistance()->rawValueString());
+        newResponse.insert("verticalSpeed",      qobject_cast<VehicleFactGroup*>(vehicle->vehicleFactGroup())->climbRate()->rawValueString());
+        newResponse.insert("horizontalSpeed",    qobject_cast<VehicleFactGroup*>(vehicle->vehicleFactGroup())->groundSpeed()->rawValueString());
+        newResponse.insert("gpsSatelliteCount",  qobject_cast<VehicleGPSFactGroup*>(vehicle->gpsFactGroup())->count()->rawValueString());
+        newResponse.insert("firmwareVersionUav", vehicle->firmwarePatchVersion());
+        newResponse.insert("firmwareVersion",    _buildVersion);
+        QJsonObject dAttitude;
+        dAttitude.insert("yaw",                  qobject_cast<VehicleFactGroup*>(vehicle->vehicleFactGroup())->heading()->rawValueString());
+        dAttitude.insert("pitch",                qobject_cast<VehicleFactGroup*>(vehicle->vehicleFactGroup())->pitch()->rawValueString());
+        dAttitude.insert("roll",                 qobject_cast<VehicleFactGroup*>(vehicle->vehicleFactGroup())->roll()->rawValueString());
+        newResponse.insert("attitude",           dAttitude);
+        
+        
+        bool hasCamera = vehicle->cameraManager()->cameras()->count() != 0;
+        newResponse.insert("hasCamera", hasCamera);
+        if(hasCamera) {
+            if(_activeCamera) {
+                qCWarning(QGCApplicationLog) << "============== current camera values ==============";
+                newResponse.insert("sensorName", _activeCamera->modelName());
+                newResponse.insert("hasZoom",    _activeCamera->hasZoom());
+                if(_activeCamera->modelName() != "Caméra intégrée Tundra II"){
+                    QJsonObject currentValues;
+                    currentValues.insert("ISO",          _activeCamera->iso()->rawValueString());
+                    currentValues.insert("whiteBalance", _activeCamera->wb()->rawValueString());
+                    currentValues.insert("aperture",     _activeCamera->aperture()->rawValueString());
+                    newResponse.insert("intrinsics",     currentValues);
+                }
             }
         }
-    }
 
-    bool hasGimbal = _vehicle->gimbalController()->gimbals()->count() != 0;
-    newResponse.insert("hasGimbal", hasGimbal);
-    if(hasGimbal) {
-        if(_activeGimbal) {
-            qCWarning(QGCApplicationLog) << "============== current gimbal values ==============";
-            QJsonObject currentState;
-            QJsonObject attitude;
-            attitude.insert("yaw",                _activeGimbal->absoluteYaw()->rawValueString());
-            attitude.insert("pitch",              _activeGimbal->absolutePitch()->rawValueString());
-            attitude.insert("roll",               _activeGimbal->absoluteRoll()->rawValueString());
-            currentState.insert("KeyGimbalReset", "null");
-            currentState.insert("attitude",       attitude);
-            currentState.insert("keyYawRelativeToAircraftHeading", _activeGimbal->bodyYaw()->rawValueString()); // TODO
-            newResponse.insert("gimbal",          currentState);
+        bool hasGimbal = vehicle->gimbalController()->gimbals()->count() != 0;
+        newResponse.insert("hasGimbal", hasGimbal);
+        if(hasGimbal) {
+            if(_activeGimbal) {
+                qCWarning(QGCApplicationLog) << "============== current gimbal values ==============";
+                QJsonObject currentState;
+                QJsonObject attitude;
+                attitude.insert("yaw",                _activeGimbal->absoluteYaw()->rawValueString());
+                attitude.insert("pitch",              _activeGimbal->absolutePitch()->rawValueString());
+                attitude.insert("roll",               _activeGimbal->absoluteRoll()->rawValueString());
+                currentState.insert("KeyGimbalReset", "null");
+                currentState.insert("attitude",       attitude);
+                currentState.insert("keyYawRelativeToAircraftHeading", _activeGimbal->bodyYaw()->rawValueString()); // TODO
+                newResponse.insert("gimbal",          currentState);
+            }
         }
-    }
-    QmlObjectListModel* batteries = _vehicle->batteries();
-    int res = 0;
-    int totalSeconds = INT_MAX;
-    for (int i=0; i<batteries->count(); i++) {
-        VehicleBatteryFactGroup* battery = qobject_cast<VehicleBatteryFactGroup*>(batteries->get(i));
-        res += battery->percentRemaining()->rawValue().toInt();
-        qCWarning(QGCApplicationLog) << "TIME REMAINING" << battery->timeRemaining()->rawValue().toInt();
-        totalSeconds = std::min(totalSeconds, battery->timeRemaining()->rawValue().toInt());
-    }
+        QmlObjectListModel* batteries = vehicle->batteries();
+        int res = 0;
+        int totalSeconds = INT_MAX;
+        for (int i=0; i<batteries->count(); i++) {
+            VehicleBatteryFactGroup* battery = qobject_cast<VehicleBatteryFactGroup*>(batteries->get(i));
+            res += battery->percentRemaining()->rawValue().toInt();
+            qCWarning(QGCApplicationLog) << "TIME REMAINING" << battery->timeRemaining()->rawValue().toInt();
+            totalSeconds = std::min(totalSeconds, battery->timeRemaining()->rawValue().toInt());
+        }
 
-    qCWarning(QGCApplicationLog) << "TOTAL SECONDS" << totalSeconds;
-    qCWarning(QGCApplicationLog) << "joysticks" << _toolbox->joystickManager()->joystickNames();
-    
-    if (totalSeconds == INT_MAX) {
-        newResponse.insert("timeRemaining", "--:--:--");
-    } else {
-        int hours           = totalSeconds / 3600;
-        int minutes         = (totalSeconds % 3600) / 60;
-        int seconds         = totalSeconds % 60;
+        qCWarning(QGCApplicationLog) << "TOTAL SECONDS" << totalSeconds;
+        qCWarning(QGCApplicationLog) << "joysticks" << _toolbox->joystickManager()->joystickNames();
+        
+        if (totalSeconds == INT_MAX) {
+            newResponse.insert("timeRemaining", "--:--:--");
+        } else {
+            int hours           = totalSeconds / 3600;
+            int minutes         = (totalSeconds % 3600) / 60;
+            int seconds         = totalSeconds % 60;
 
-        if(minutes <= 0 && hours <= 0) {
-            newResponse.insert("timeRemaining", QString::asprintf("%02dS", seconds));
+            if(minutes <= 0 && hours <= 0) {
+                newResponse.insert("timeRemaining", QString::asprintf("%02dS", seconds));
+            }
+            else if (hours <= 0) {
+                newResponse.insert("timeRemaining", QString::asprintf("%02dM:%02dS", minutes, seconds));
+            }
+            else {
+                newResponse.insert("timeRemaining", QString::asprintf("%02dH:%02dM:%02dS", hours, minutes, seconds));
+            }
         }
-        else if (hours <= 0) {
-            newResponse.insert("timeRemaining", QString::asprintf("%02dM:%02dS", minutes, seconds));
-        }
-        else {
-            newResponse.insert("timeRemaining", QString::asprintf("%02dH:%02dM:%02dS", hours, minutes, seconds));
-        }
+        newResponse.insert("batteryPowerPercentUav", res/batteries->count());
+
+        QJsonDocument doc(newResponse);
+        QString responseMessage(doc.toJson(QJsonDocument::Compact));
+        m_client->publish("POSITION/"+vehicle->sn(), responseMessage.toUtf8());
     }
-    newResponse.insert("batteryPowerPercentUav", res/batteries->count());
-
-    QJsonDocument doc(newResponse);
-    QString responseMessage(doc.toJson(QJsonDocument::Compact));
-    m_client->publish("POSITION/"+uavSn, responseMessage.toUtf8());
 }
         /* 
             // Might not do that
