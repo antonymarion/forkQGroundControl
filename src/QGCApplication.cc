@@ -1158,8 +1158,8 @@ void QGCApplication::sendRemotePilote()
     newResponse.insert("email", loggedEmail);
 
     QmlObjectListModel* vehicles = toolbox()->multiVehicleManager()->vehicles();
-    for(int i = 0; i < vehicles.count(); i++){
-        Vehicle* vehicle = qobject_cast<Vehicle*>(vehicles->get(i));
+    for(QObject* oVehicle : vehicles){
+        Vehicle* vehicle = qobject_cast<Vehicle*>(oVehicle);
         newResponse.insert("registrationNumber", vehicle->uas());
         QJsonDocument doc(newResponse);
         QString responseMessage(doc.toJson(QJsonDocument::Compact));
