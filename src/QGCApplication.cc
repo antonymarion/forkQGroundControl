@@ -744,7 +744,7 @@ void QGCApplication::init()
     _vehicleManager = _toolbox->multiVehicleManager();
     connect(_vehicleManager, &MultiVehicleManager::activeVehicleChanged, this, &QGCApplication::_setActiveVehicle);
     connect(_vehicleManager, &MultiVehicleManager::vehicleAdded, this, &QGCApplication::_setupNewVehicle);
-    _setActiveVehicle(manager->activeVehicle());
+    _setActiveVehicle(_vehicleManager->activeVehicle());
 
     _videoManager = toolbox()->videoManager();
     connect(_videoManager, &VideoManager::recordingChanged, this, &QGCApplication::_notifyRecording);
@@ -806,7 +806,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
     QJsonObject message = d.object();
     Vehicle* requestVehicle{nullptr};
     for(int i = 0; i < _vehicleManager->vehicles()->count(); i++){
-        Vehicle* vehicle = qobject_cast<Vehicle*>(vehicles->get(i));
+        Vehicle* vehicle = qobject_cast<Vehicle*>(_vehicleManager->vehicles()->get(i));
         if(vehicle.sn() == message["serialNumber"].toString()){
             requestVehicle = vehicle;
             break;
