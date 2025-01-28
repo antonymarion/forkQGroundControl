@@ -561,18 +561,14 @@ void Vehicle::getCameraCapabilities(bool &activeCamera, QString &cameraName, boo
     MavlinkCameraControl* currentCamera = _cameraManager->currentCameraInstance();
     if(currentCamera) {
         activeCamera = true;
-        hasZoom = activeCamera->hasZoom();
-        cameraName = activeCamera->modelName();
+        hasZoom = currentCamera->hasZoom();
+        cameraName = currentCamera->modelName();
         
         if(cameraName != "Caméra intégrée Tundra II"){
-            QJsonObject _iso;
-            QJsonObject _aperture;
-            _iso.insert("min", activeCamera->iso()->cookedMinString());
-            _iso.insert("max", activeCamera->iso()->cookedMaxString());
-            _aperture.insert("min", activeCamera->aperture()->cookedMinString());
-            _aperture.insert("max", activeCamera->aperture()->cookedMaxString());
-            iso = _iso;
-            aperture = _aperture;
+            _iso.insert("min", currentCamera->iso()->cookedMinString());
+            _iso.insert("max", currentCamera->iso()->cookedMaxString());
+            _aperture.insert("min", currentCamera->aperture()->cookedMinString());
+            _aperture.insert("max", currentCamera->aperture()->cookedMaxString());
         }
         return;
     }
