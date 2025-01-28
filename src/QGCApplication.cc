@@ -804,7 +804,8 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
     QString payload = QString(msg.payload());
     QJsonDocument d = QJsonDocument::fromJson(payload.toUtf8());
     QJsonObject message = d.object();
-    QJsonObject tAttitude;
+    QJsonObject tAttitude, iso, aperture;
+    QString cameraName;
     int state_value = -1;
     switch (commandsList.indexOf(message["instruction"].toString())){
         case 0:
@@ -825,21 +826,33 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qCWarning(QGCApplicationLog) << "=================================================";
             qCWarning(QGCApplicationLog) << "recieved RESET_GIMBAL";
             qCWarning(QGCApplicationLog) << "=================================================";
-            QGCApplication::resetGimbal();
+            if(!_vehicle) {
+                qCWarning(QGCApplicationLog) << "*****   No vehicle available   *****";
+                break;
+            };
+            _vehicle->resetGimbal();
             state_value = 0;
             break;
         case 3:
             qCWarning(QGCApplicationLog) << "=================================================";
             qCWarning(QGCApplicationLog) << "recieved MOVE_GIMBAL";
             qCWarning(QGCApplicationLog) << "=================================================";
-            QGCApplication::genericGimbal(message["axis"].toString(), message["value"].toString());
+            if(!_vehicle) {
+                qCWarning(QGCApplicationLog) << "*****   No vehicle available   *****";
+                break;
+            };
+            _vehicle->genericGimbal(message["axis"].toString(), message["value"].toString());
             state_value = 0;
             break;
         case 4:
             qCWarning(QGCApplicationLog) << "=================================================";
             qCWarning(QGCApplicationLog) << "recieved GET_CAMERAS";
             qCWarning(QGCApplicationLog) << "=================================================";
-            message.insert("availableCameraListData", QGCApplication::getCameras());
+            if(!_vehicle) {
+                qCWarning(QGCApplicationLog) << "*****   No vehicle available   *****";
+                break;
+            };
+            message.insert("availableCameraListData", _vehicle->getCameras());
             state_value = 0;
             break;
         case 5:
@@ -858,11 +871,13 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qCWarning(QGCApplicationLog) << "=================================================";
             qCWarning(QGCApplicationLog) << "recieved GET_CAMERA";
             qCWarning(QGCApplicationLog) << "=================================================";
-            message.insert("gimbalRange", QGCApplication::getGimbalCapabilities());
+            if(!_vehicle) {
+                qCWarning(QGCApplicationLog) << "*****   No vehicle available   *****";
+                break;
+            };
+            message.insert("gimbalRange", _vehicle->getGimbalCapabilities());
             bool activeCamera, hasZoom;
-            QString cameraName;
-            QJsonObject iso, aperture;
-            QGCApplication::getCameraCapabilities(activeCamera, cameraName, hasZoom, iso, aperture);
+            _vehicle->getCameraCapabilities(activeCamera, cameraName, hasZoom, iso, aperture);
             if(!activeCamera) {
                 qCWarning(QGCApplicationLog) << "============== camera ranges ==============";
                 message.insert("hasZoom", hasZoom);
@@ -877,7 +892,11 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qCWarning(QGCApplicationLog) << "=================================================";
             qCWarning(QGCApplicationLog) << "recieved ZOOM_CAMERA";
             qCWarning(QGCApplicationLog) << "=================================================";
-            QGCApplication::setZoom(message["zoomValue"].toDouble());
+            if(!_vehicle) {
+                qCWarning(QGCApplicationLog) << "*****   No vehicle available   *****";
+                break;
+            };
+            _vehicle->setZoom(message["zoomValue"].toDouble());
             state_value = 0;
             break;
         case 9:
@@ -902,7 +921,11 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qCWarning(QGCApplicationLog) << "=================================================";
             qCWarning(QGCApplicationLog) << "recieved MAV_CMD_DO_SET_SERVO";
             qCWarning(QGCApplicationLog) << "=================================================";
-            QGCApplication::servoCmd(message["param1"].toDouble(), message["param2"].toDouble()); 
+            if(!_vehicle) {
+                qCWarning(QGCApplicationLog) << "*****   No vehicle available   *****";
+                break;
+            };
+            _vehicle->servoCmd(message["param1"].toDouble(), message["param2"].toDouble()); 
             state_value = 0;
             break; // ************** SERVO ID, SURTOUT PAS 1 2 3 4 13 14 **********************
         case 13:
@@ -955,8 +978,12 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qCWarning(QGCApplicationLog) << "=================================================";
             qCWarning(QGCApplicationLog) << "recieved TELEMETRY";
             qCWarning(QGCApplicationLog) << "=================================================";
+            if(!_vehicle) {
+                qCWarning(QGCApplicationLog) << "*****   No vehicle available   *****";
+                break;
+            };
             double t_lat, t_lon, t_alt, t_hSpeed, t_vSpeed, t_yaw, t_pitch, t_roll;
-            QGCApplication::getTelemetry(t_lat, t_lon, t_alt, t_hSpeed, t_vSpeed, t_yaw, t_pitch, t_roll);
+            _vehicle->getTelemetry(t_lat, t_lon, t_alt, t_hSpeed, t_vSpeed, t_yaw, t_pitch, t_roll);
             message.insert("latitude", t_lat);
             message.insert("longitude", t_lon);
             message.insert("altitude", t_alt);
@@ -972,13 +999,17 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qCWarning(QGCApplicationLog) << "=================================================";
             qCWarning(QGCApplicationLog) << "recieved GO_TO_WAYPOINT";
             qCWarning(QGCApplicationLog) << "=================================================";
+            if(!_vehicle) {
+                qCWarning(QGCApplicationLog) << "*****   No vehicle available   *****";
+                break;
+            };
             double w_speed, w_yaw, w_lat, w_lon, w_alt;
             w_speed = message["speed"].toDouble();
             w_yaw = message["yaw"].toDouble();
             w_lat = message["lat"].toDouble();
             w_lon = message["lon"].toDouble();
             w_alt = message["alt"].toDouble();
-            QGCApplication::goToWaypoint(w_speed, w_yaw, w_lat, w_lon, w_alt);
+            _vehicle->goToWaypoint(w_speed, w_yaw, w_lat, w_lon, w_alt);
             state_value = 0;
             break;
         case 20:
