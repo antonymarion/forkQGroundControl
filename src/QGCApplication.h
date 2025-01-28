@@ -286,7 +286,10 @@ private:
     MultiVehicleManager*  _vehicleManager{nullptr};
     MavlinkCameraControl* _activeCamera{nullptr};
     QTimer*               timerVector = nullptr;                         // send vector command timer
-    QStringList           simulatedMAC        = { "4F:4E:49:44:4C:41:54:49" }; // global axis list
+    QStringList           simulatedMAC        = {                        // global axis list
+        "4F:4E:49:44:4C:41:54:49",
+        "00:00:00:00:00:00:00:00" 
+        };
     QStringList           commandsList        = {                        // front-end commmand list
         "OPEN_STREAM",
         "STOP_STREAM",

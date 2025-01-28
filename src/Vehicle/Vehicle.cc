@@ -493,7 +493,7 @@ void Vehicle::resetGimbal()
 
 void Vehicle::genericGimbal(QString axis, QString value)
 {
-    switch (aircraftList.indexOf(_dgProductName)){
+    switch (specialGimbalList.indexOf(_dgProductName)){
         case 0:
             moveGimbalTundra(value);
             break;
