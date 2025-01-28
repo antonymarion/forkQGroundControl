@@ -541,8 +541,8 @@ QJsonObject Vehicle::getGimbalCapabilities()
         QJsonObject yawCap;
         QJsonObject pitchCap;
         QJsonObject rollCap;
-        qCWarning(QGCApplicationLog) << "minYaw : " << activeGimbal->absoluteYaw()->cookedMinString();
-        qCWarning(QGCApplicationLog) << "maxYaw : " << activeGimbal->absoluteYaw()->cookedMaxString();
+        qCWarning(VehicleLog) << "minYaw : " << activeGimbal->absoluteYaw()->cookedMinString();
+        qCWarning(VehicleLog) << "maxYaw : " << activeGimbal->absoluteYaw()->cookedMaxString();
         yawCap.insert("min",          activeGimbal->bodyYaw()->cookedMinString());
         yawCap.insert("max",          activeGimbal->bodyYaw()->cookedMaxString());
         pitchCap.insert("min",        activeGimbal->absolutePitch()->cookedMinString());
@@ -565,10 +565,14 @@ void Vehicle::getCameraCapabilities(bool &activeCamera, QString &cameraName, boo
         cameraName = activeCamera->modelName();
         
         if(cameraName != "Caméra intégrée Tundra II"){
-            iso.insert("min", activeCamera->iso()->cookedMinString());
-            iso.insert("max", activeCamera->iso()->cookedMaxString());
-            aperture.insert("min", activeCamera->aperture()->cookedMinString());
-            aperture.insert("max", activeCamera->aperture()->cookedMaxString());
+            QJsonObject _iso;
+            QJsonObject _aperture;
+            _iso.insert("min", activeCamera->iso()->cookedMinString());
+            _iso.insert("max", activeCamera->iso()->cookedMaxString());
+            _aperture.insert("min", activeCamera->aperture()->cookedMinString());
+            _aperture.insert("max", activeCamera->aperture()->cookedMaxString());
+            iso = _iso;
+            aperture = _aperture;
         }
         return;
     }
@@ -594,11 +598,11 @@ void Vehicle::setZoom(float value)
 {
     MavlinkCameraControl* currentCamera = _cameraManager->currentCameraInstance();
     if(!currentCamera) {
-        qCWarning(QGCApplicationLog) << "*****   No active camera   *****";
+        qCWarning(VehicleLog) << "*****   No active camera   *****";
         return;
     }
     currentCamera->setZoomLevel(value);
-    qCWarning(QGCApplicationLog) << "==============  SET_ZOOM  ==============";
+    qCWarning(VehicleLog) << "==============  SET_ZOOM  ==============";
 }
 
 void Vehicle::_offlineFirmwareTypeSettingChanged(QVariant varFirmwareType)
