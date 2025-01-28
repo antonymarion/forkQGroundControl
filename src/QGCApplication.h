@@ -43,6 +43,7 @@ class QGCApplication;
 class Vehicle;
 class MavlinkCameraControl;
 class VehicleCameraControl;
+class MultiVehicleManager;
 class Gimbal;
 class VideoManager;
 
