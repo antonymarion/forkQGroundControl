@@ -807,7 +807,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
     Vehicle* requestVehicle{nullptr};
     for(int i = 0; i < _vehicleManager->vehicles()->count(); i++){
         Vehicle* vehicle = qobject_cast<Vehicle*>(_vehicleManager->vehicles()->get(i));
-        if(vehicle.sn() == message["serialNumber"].toString()){
+        if(vehicle->sn() == message["serialNumber"].toString()){
             requestVehicle = vehicle;
             break;
         }
