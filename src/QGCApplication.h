@@ -243,7 +243,7 @@ private:
     void brokerConnected     ();
     void updateMessage       (const QMqttMessage &msg);
     void updateStatus        (QMqttSubscription::SubscriptionState state);
-    void sendEventMessage    (QString command, int value);
+    void sendEventMessage    (QString command, int value, QString sn);
 
     // Send info timer
     void sendInfos();
@@ -271,18 +271,18 @@ private:
     // Utilities
     bool isFileEmpty(const std::string& filePath);
 
-    QString               rtmpUrl             = "";                      // streaming URL
+    QString               rtmpUrl             = "rtmp://ome.stationdrone.net/app/";                      // streaming URL
     QString               loggedEmail         = "graphx.stephaneroma@gmail.com";  // Remote pilote logged email
     // QString               registrationNumber  = "UAS-FR-458156";         // Aircraft registration number
-    QString               uavSn               = "1600FTR2STD24289930B";  // Aircraft serial number
-    QString               productName         = "Tundra 2";              // Aircraft name
+    // QString               uavSn               = "1600FTR2STD24289930B";  // Aircraft serial number
     bool                  isStreaming         = false;                   // is currently streaming on rtmp URL
     QMqttClient*          m_client            = nullptr;                 // mqtt client
     bool                  _isFlying;                                     // is aircraft currently flying
     bool                  _recording;
-    bool                  canControl          = true;                    // false if remote piltoe override commands
+    bool                  canControl          = true;                    // false if remote pilote override commands
     Vehicle*              _vehicle{nullptr};                             // current vehicle
     VideoManager*         _videoManager{nullptr};
+    MultiVehicleManager*  _vehicleManager{nullptr};
     MavlinkCameraControl* _activeCamera{nullptr};
     QTimer*               timerVector = nullptr;                         // send vector command timer
     QStringList           simulatedMAC        = { "4F:4E:49:44:4C:41:54:49" }; // global axis list
