@@ -565,10 +565,10 @@ void Vehicle::getCameraCapabilities(bool &activeCamera, QString &cameraName, boo
         cameraName = currentCamera->modelName();
         
         if(cameraName != "Caméra intégrée Tundra II"){
-            _iso.insert("min", currentCamera->iso()->cookedMinString());
-            _iso.insert("max", currentCamera->iso()->cookedMaxString());
-            _aperture.insert("min", currentCamera->aperture()->cookedMinString());
-            _aperture.insert("max", currentCamera->aperture()->cookedMaxString());
+            iso.insert("min", currentCamera->iso()->cookedMinString());
+            iso.insert("max", currentCamera->iso()->cookedMaxString());
+            aperture.insert("min", currentCamera->aperture()->cookedMinString());
+            aperture.insert("max", currentCamera->aperture()->cookedMaxString());
         }
         return;
     }
