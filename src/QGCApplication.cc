@@ -788,12 +788,14 @@ void QGCApplication::brokerConnected()
         }
         QObject::connect(subscription, &QMqttSubscription::messageReceived, this, &QGCApplication::updateMessage);
     }
+    clientState = true;
 
     qCWarning(QGCApplicationLog) << "Mqtt Connected";
 }
 
 void QGCApplication::brokerDisconnected()
 {
+    clientState = false;
     qCWarning(QGCApplicationLog) << m_client->error();
     qCWarning(QGCApplicationLog) << "Mqtt Disconnected";
     m_client->connectToHost();
@@ -1185,7 +1187,7 @@ void QGCApplication::_notifyRecording(){
 
 void QGCApplication::sendInfos()
 {
-    if(!m_client) {
+    if(!clientState) {
         qCWarning(QGCApplicationLog) << "*****   Mqtt not available   *****";
         return;
     }
