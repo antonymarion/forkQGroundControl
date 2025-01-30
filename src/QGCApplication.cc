@@ -1588,7 +1588,7 @@ bool QGCApplication::isFileEmpty(const std::string& filePath)
     return file.tellg() == 0; // `tellg()` retourne la taille actuelle du fichier.
 }
 
-void delay(int sec) {
+void QGCApplication::delay(int sec) {
     QTime dieTime = QTime::currentTime().addSecs(sec);
     while(QTime::currentTime() < dieTime) {
         QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
