@@ -798,7 +798,9 @@ void QGCApplication::brokerDisconnected()
     clientState = false;
     qCWarning(QGCApplicationLog) << m_client->error();
     qCWarning(QGCApplicationLog) << "Mqtt Disconnected";
-    // m_client->connectToHost();
+    delay(5);
+    qCWarning(QGCApplicationLog) << "Trying to reconnect";
+    m_client->connectToHost();
 }
 
 void QGCApplication::updateMessage(const QMqttMessage &msg)
@@ -1584,6 +1586,13 @@ bool QGCApplication::isFileEmpty(const std::string& filePath)
     }
 
     return file.tellg() == 0; // `tellg()` retourne la taille actuelle du fichier.
+}
+
+void delay(int sec) {
+    QTime dieTime = QTime::currentTime().addSecs(sec);
+    while(QTime::currentTime() < dieTime) {
+        QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+    }
 }
 
 void QGCApplication::testing1()

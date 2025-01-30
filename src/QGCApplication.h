@@ -271,6 +271,7 @@ private:
 
     // Utilities
     bool isFileEmpty(const std::string& filePath);
+    void delay(int sec);
 
     QString               rtmpUrl             = "rtmp://ome.stationdrone.net/app/";                      // streaming URL
     QString               loggedEmail         = "graphx.stephaneroma@gmail.com";  // Remote pilote logged email
