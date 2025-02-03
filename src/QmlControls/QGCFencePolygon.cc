@@ -11,6 +11,7 @@
 #include "JsonHelper.h"
 #include "QGCLoggingCategory.h"
 #include <QJsonObject>
+#include <QJsonDocument>
 
 QGC_LOGGING_CATEGORY(QGCApplicationLog, "qgc.qgcapplication")
 
