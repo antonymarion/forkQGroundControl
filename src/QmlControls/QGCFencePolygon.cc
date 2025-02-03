@@ -9,6 +9,7 @@
 
 #include "QGCFencePolygon.h"
 #include "JsonHelper.h"
+#include "QGCLoggingCategory.h"
 
 QGC_LOGGING_CATEGORY(QGCApplicationLog, "qgc.qgcapplication")
 
