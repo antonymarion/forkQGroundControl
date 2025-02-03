@@ -54,7 +54,7 @@ void QGCFencePolygon::saveToJson(QJsonObject& json)
     json[_jsonInclusionKey] = _inclusion;
     QJsonDocument doc(json);
     QString jsonString(doc.toJson(QJsonDocument::Compact));
-    qCWarning(QGCApplicationLog) << jsonString;
+    qCWarning(QGCPolygonLog) << jsonString;
     QGCMapPolygon::saveToJson(json);
 }
 
@@ -64,7 +64,7 @@ bool QGCFencePolygon::loadFromJson(const QJsonObject& json, bool required, QStri
     
     QJsonDocument doc(json);
     QString jsonString(doc.toJson(QJsonDocument::Compact));
-    qCWarning(QGCApplicationLog) << jsonString;
+    qCWarning(QGCPolygonLog) << jsonString;
 
     QList<JsonHelper::KeyValidateInfo> keyInfoList = {
         { JsonHelper::jsonVersionKey,   QJsonValue::Double, true },
