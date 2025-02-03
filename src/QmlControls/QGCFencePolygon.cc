@@ -13,7 +13,7 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 
-QGC_LOGGING_CATEGORY(QGCApplicationLog, "qgc.qgcapplication")
+QGC_LOGGING_CATEGORY(QGCPolygonLog, "qgc.qgcapplication")
 
 QGCFencePolygon::QGCFencePolygon(bool inclusion, QObject* parent)
     : QGCMapPolygon (parent)

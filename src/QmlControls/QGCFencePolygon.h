@@ -11,6 +11,7 @@
 
 #include "QGCMapPolygon.h"
 
+Q_DECLARE_LOGGING_CATEGORY(QGCPolygonLog)
 /// The QGCFencePolygon class provides a polygon used by GeoFence support.
 class QGCFencePolygon : public QGCMapPolygon
 {
