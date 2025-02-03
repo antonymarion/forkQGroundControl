@@ -601,9 +601,8 @@ void Vehicle::setZoom(float value)
     qCWarning(VehicleLog) << "==============  SET_ZOOM  ==============";
 }
 
-void QGCApplication::uploadGeofencing(QString fence)
+void Vehicle::uploadGeofencing(QString fence)
 {
-    _geoFenceManager
 }
 
 void Vehicle::_offlineFirmwareTypeSettingChanged(QVariant varFirmwareType)
