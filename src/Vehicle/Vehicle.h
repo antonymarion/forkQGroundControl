@@ -829,6 +829,7 @@ public:
     QJsonObject  getGimbalCapabilities();
     QJsonArray   getCameras        ();
     void         setZoom           (float value);
+    void         uploadGeofencing  (QString fence);
 
 public slots:
     void setVtolInFwdFlight                 (bool vtolInFwdFlight);
@@ -1042,7 +1043,7 @@ private:
     QString         _dgProductName = "";
 
     bool            _joystickEnabled = false;
-    bool _isActiveVehicle = false;
+    bool            _isActiveVehicle = false;
 
     QGeoCoordinate  _coordinate;
     QGeoCoordinate  _homePosition;

@@ -315,6 +315,7 @@ private:
         "GO_TO_WAYPOINT",
         "PAUSE_ALL",
         "SET_DATA",
+        "SET_GEOFENCING",
         "TESTING_1",
         "TESTING_2"
     };

@@ -601,6 +601,11 @@ void Vehicle::setZoom(float value)
     qCWarning(VehicleLog) << "==============  SET_ZOOM  ==============";
 }
 
+void QGCApplication::uploadGeofencing(QString fence)
+{
+    _geoFenceManager
+}
+
 void Vehicle::_offlineFirmwareTypeSettingChanged(QVariant varFirmwareType)
 {
     _firmwareType = static_cast<MAV_AUTOPILOT>(varFirmwareType.toInt());

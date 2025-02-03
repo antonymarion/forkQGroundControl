@@ -10,6 +10,8 @@
 #include "QGCFencePolygon.h"
 #include "JsonHelper.h"
 
+QGC_LOGGING_CATEGORY(QGCApplicationLog, "qgc.qgcapplication")
+
 QGCFencePolygon::QGCFencePolygon(bool inclusion, QObject* parent)
     : QGCMapPolygon (parent)
     , _inclusion    (inclusion)
@@ -47,12 +49,15 @@ void QGCFencePolygon::saveToJson(QJsonObject& json)
 {
     json[JsonHelper::jsonVersionKey] = _jsonCurrentVersion;
     json[_jsonInclusionKey] = _inclusion;
+    qCWarning(QGCApplicationLog) << json.toString();
     QGCMapPolygon::saveToJson(json);
 }
 
 bool QGCFencePolygon::loadFromJson(const QJsonObject& json, bool required, QString& errorString)
 {
     errorString.clear();
+    
+    qCWarning(QGCApplicationLog) << json.toString();
 
     QList<JsonHelper::KeyValidateInfo> keyInfoList = {
         { JsonHelper::jsonVersionKey,   QJsonValue::Double, true },

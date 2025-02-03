@@ -1046,6 +1046,17 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             break;
         case 22:
             qCWarning(QGCApplicationLog) << "=================================================";
+            qCWarning(QGCApplicationLog) << "recieved SET_GEOFENCING";
+            qCWarning(QGCApplicationLog) << "=================================================";
+            if(!_vehicle) {
+                qCWarning(QGCApplicationLog) << "*****   No vehicle available   *****";
+                break;
+            };
+            _vehicle->uploadGeofencing(message[""].toString());
+            state_value = 0;
+            break;
+        case 23:
+            qCWarning(QGCApplicationLog) << "=================================================";
             qCWarning(QGCApplicationLog) << "recieved TESTING_1";
             qCWarning(QGCApplicationLog) << "=================================================";
             if(!_vehicle) {
@@ -1056,7 +1067,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qCWarning(QGCApplicationLog) << _vehicle->sn();
             state_value = 0;
             break;
-        case 23:
+        case 24:
             qCWarning(QGCApplicationLog) << "=================================================";
             qCWarning(QGCApplicationLog) << "recieved TESTING_2";
             qCWarning(QGCApplicationLog) << "=================================================";
