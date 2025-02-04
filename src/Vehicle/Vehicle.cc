@@ -52,6 +52,7 @@
 #include <StatusTextHandler.h>
 #include <MAVLinkSigning.h>
 #include "GimbalController.h"
+#include "JsonHelper.h"
 
 #ifdef QGC_UTM_ADAPTER
 #include "UTMSPVehicle.h"
@@ -606,20 +607,21 @@ void Vehicle::loadAndSendGeofence(const QJsonObject& json, double returnAltitude
     QmlObjectListModel  polygons;
     QmlObjectListModel  circles;
     QGeoCoordinate      breachReturnPoint;
+    QString             errorString;
     Fact                breachReturnAltitudeFact;
     double              breachReturnDefaultAltitude =  returnAltitude ? returnAltitude : qQNaN();
 
     QJsonArray jsonPolygonArray = json["polygons"].toArray();
     for (const QJsonValue jsonPolygonValue: jsonPolygonArray) {
         if (jsonPolygonValue.type() != QJsonValue::Object) {
-            qCWarning(QGCApplicationLog) << "GeoFence polygon not stored as object";
-            return false;
+            qCWarning(VehicleLog) << "GeoFence polygon not stored as object";
+            return;
         }
 
         QGCFencePolygon* fencePolygon = new QGCFencePolygon(false /* inclusion */, this /* parent */);
         if (!fencePolygon->loadFromJson(jsonPolygonValue.toObject(), true /* required */, errorString)) {
-            qCWarning(QGCApplicationLog) << errorString;
-            return false;
+            qCWarning(VehicleLog) << errorString;
+            return;
         }
         polygons.append(fencePolygon);
     }
@@ -627,22 +629,22 @@ void Vehicle::loadAndSendGeofence(const QJsonObject& json, double returnAltitude
     QJsonArray jsonCircleArray = json["circles"].toArray();
     for (const QJsonValue jsonCircleValue: jsonCircleArray) {
         if (jsonCircleValue.type() != QJsonValue::Object) {
-            qCWarning(QGCApplicationLog) << "GeoFence circle not stored as object";
-            return false;
+            qCWarning(VehicleLog) << "GeoFence circle not stored as object";
+            return;
         }
 
         QGCFenceCircle* fenceCircle = new QGCFenceCircle(this /* parent */);
         if (!fenceCircle->loadFromJson(jsonCircleValue.toObject(), errorString)) {
-            qCWarning(QGCApplicationLog) << errorString;
-            return false;
+            qCWarning(VehicleLog) << errorString;
+            return;
         }
         circles.append(fenceCircle);
     }
 
     if (json.contains("breachReturn")) {
         if (!JsonHelper::loadGeoCoordinate(json["breachReturn"], true /* altitudeRequred */, breachReturnPoint, errorString)) {
-            qCWarning(QGCApplicationLog) << errorString;
-            return false;
+            qCWarning(VehicleLog) << errorString;
+            return;
         }
         breachReturnAltitudeFact.setRawValue(breachReturnPoint.altitude());
     } else {
