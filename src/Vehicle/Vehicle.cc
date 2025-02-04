@@ -601,7 +601,7 @@ void Vehicle::setZoom(float value)
     qCWarning(VehicleLog) << "==============  SET_ZOOM  ==============";
 }
 
-void QGCApplication::loadAndSendGeofence(const QJsonObject& json, double returnAltitude){ 
+void Vehicle::loadAndSendGeofence(const QJsonObject& json, double returnAltitude){ 
 
     QmlObjectListModel  polygons;
     QmlObjectListModel  circles;
