@@ -817,19 +817,19 @@ public:
 
     GimbalController* gimbalController  () { return _gimbalController; }
 
-    void         goToWaypoint      (double speed, double yaw, double lat, double lon, double alt);
-    void         servoCmd          (float servoId, float pwmValue);
-    void         getTelemetry      (double &lat, double &lon, double &alt, double &hSpeed, double &vSpeed, double &yaw, double &pitch, double &roll);
-    void         getCameraCapabilities (bool &activeCamera, QString &cameraName, bool &hasZoom, QJsonObject &iso, QJsonObject &aperture);
+    void         goToWaypoint           (double speed, double yaw, double lat, double lon, double alt);
+    void         servoCmd               (float servoId, float pwmValue);
+    void         getTelemetry           (double &lat, double &lon, double &alt, double &hSpeed, double &vSpeed, double &yaw, double &pitch, double &roll);
+    void         getCameraCapabilities  (bool &activeCamera, QString &cameraName, bool &hasZoom, QJsonObject &iso, QJsonObject &aperture);
     
-    void         resetGimbal       ();
-    void         genericGimbal     (QString axis, QString value);
-    void         moveGimbalTundra  (QString value);
-    void         moveGimbal        (QString axis, QString value);
-    QJsonObject  getGimbalCapabilities();
-    QJsonArray   getCameras        ();
-    void         setZoom           (float value);
-    void         loadAndSendGeofence(const QJsonObject& json, const double& returnAltitude) final;
+    void         resetGimbal            ();
+    void         genericGimbal          (QString axis, QString value);
+    void         moveGimbalTundra       (QString value);
+    void         moveGimbal             (QString axis, QString value);
+    QJsonObject  getGimbalCapabilities  ();
+    QJsonArray   getCameras             ();
+    void         setZoom                (float value);
+    void         loadAndSendGeofence    (const QJsonObject& json);
 
 public slots:
     void setVtolInFwdFlight                 (bool vtolInFwdFlight);
@@ -1035,8 +1035,8 @@ private:
         {"4F:4E:49:44:4C:41:54:49", {"UAS-FR-651384", "1H82582569285", "Gazebo"}},
         {"00:00:00:00:00:00:00:00", {"UAS-FR-652384", "2H82582569285", "ArduCopter"}}
     };
-    QStringList           specialGimbalList   = { "Tundra 2" };                       // special aircraft list
-    QStringList           axisList            = { "pitch", "yaw", "roll", "thrust" }; // global axis list
+    QStringList         specialGimbalList   = { "Tundra 2" };                       // special aircraft list
+    QStringList         axisList            = { "pitch", "yaw", "roll", "thrust" }; // global axis list
     
     QString         _dgSn = "";
     QString         _dgUas = "";

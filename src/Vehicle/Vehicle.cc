@@ -602,14 +602,15 @@ void Vehicle::setZoom(float value)
     qCWarning(VehicleLog) << "==============  SET_ZOOM  ==============";
 }
 
-void Vehicle::loadAndSendGeofence(const QJsonObject& json, double& returnAltitude){ 
+void Vehicle::loadAndSendGeofence(const QJsonObject& json){ 
 
     QmlObjectListModel  polygons;
     QmlObjectListModel  circles;
     QGeoCoordinate      breachReturnPoint;
     QString             errorString;
     Fact                breachReturnAltitudeFact;
-    double              breachReturnDefaultAltitude =  returnAltitude ? returnAltitude : qQNaN();
+    double              defaultAlt = qgcApp()->toolbox()->settingsManager()->appSettings()->defaultMissionItemAltitude()->rawValue().toDouble();
+    double              breachReturnDefaultAltitude =  defaultAlt ? defaultAlt : qQNaN();
 
     QJsonArray jsonPolygonArray = json["polygons"].toArray();
     for (const QJsonValue jsonPolygonValue: jsonPolygonArray) {

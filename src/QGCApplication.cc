@@ -1052,7 +1052,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
                 qCWarning(QGCApplicationLog) << "*****   No vehicle available   *****";
                 break;
             };
-            _vehicle->loadAndSendGeofence(message, _toolbox->settingsManager()->appSettings()->defaultMissionItemAltitude()->rawValue().toDouble());
+            _vehicle->loadAndSendGeofence(message);
             state_value = 0;
             break;
         case 23:
