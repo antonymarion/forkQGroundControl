@@ -755,7 +755,7 @@ void QGCApplication::init()
 
     QObject::connect(timer, &QTimer::timeout, this, &QGCApplication::sendInfos);
 
-    timer->start(500);
+    timer->start(5000); // Set back to 500
 
     // Setup Vector control TIMER
     timerVector = new QTimer(this);
@@ -1254,9 +1254,7 @@ void QGCApplication::sendAircraftPositionInfos() {
         newResponse.insert("systemOS",           "Windows"); // TODO change to include Android
         newResponse.insert("productType",        vehicle->vehicleTypeString());
         newResponse.insert("rtmpUrl",            rtmpUrl + vehicle->sn());
-        qCWarning(QGCApplicationLog) << "UID : " << vehicle->vehicleUIDStr();
-        qCWarning(QGCApplicationLog) << "SN : "  << vehicle->sn();
-        qCWarning(QGCApplicationLog) << "UAS : " << vehicle->uas();
+        qCWarning(QGCApplicationLog) << "UID : " << vehicle->vehicleUIDStr() << " | SN : "  << vehicle->sn() << " | UAS : " << vehicle->uas();
         newResponse.insert("latitude",           vehicle->coordinate().latitude());
         newResponse.insert("longitude",          vehicle->coordinate().longitude());
         newResponse.insert("altitude",           vehicle->coordinate().altitude());
@@ -1280,7 +1278,7 @@ void QGCApplication::sendAircraftPositionInfos() {
         if(hasCamera) {
             MavlinkCameraControl* currentCamera = vehicle->cameraManager()->currentCameraInstance();
             if(currentCamera) {
-                qCWarning(QGCApplicationLog) << "============== current camera values ==============";
+        //        qCWarning(QGCApplicationLog) << "============== current camera values ==============";
                 newResponse.insert("sensorName", currentCamera->modelName());
                 newResponse.insert("hasZoom",    currentCamera->hasZoom());
                 if(currentCamera->modelName() != "Caméra intégrée Tundra II"){
@@ -1298,7 +1296,7 @@ void QGCApplication::sendAircraftPositionInfos() {
         if(hasGimbal) {
             Gimbal* currentGimbal = vehicle->gimbalController()->activeGimbal();
             if(currentGimbal) {
-                qCWarning(QGCApplicationLog) << "============== current gimbal values ==============";
+        //        qCWarning(QGCApplicationLog) << "============== current gimbal values ==============";
                 QJsonObject currentState;
                 QJsonObject attitude;
                 attitude.insert("yaw",                currentGimbal->absoluteYaw()->rawValueString());
@@ -1316,12 +1314,12 @@ void QGCApplication::sendAircraftPositionInfos() {
         for (int i=0; i<batteries->count(); i++) {
             VehicleBatteryFactGroup* battery = qobject_cast<VehicleBatteryFactGroup*>(batteries->get(i));
             res += battery->percentRemaining()->rawValue().toInt();
-            qCWarning(QGCApplicationLog) << "TIME REMAINING" << battery->timeRemaining()->rawValue().toInt();
+        //    qCWarning(QGCApplicationLog) << "TIME REMAINING" << battery->timeRemaining()->rawValue().toInt();
             totalSeconds = std::min(totalSeconds, battery->timeRemaining()->rawValue().toInt());
         }
 
-        qCWarning(QGCApplicationLog) << "TOTAL SECONDS" << totalSeconds;
-        qCWarning(QGCApplicationLog) << "joysticks" << _toolbox->joystickManager()->joystickNames();
+        // qCWarning(QGCApplicationLog) << "TOTAL SECONDS" << totalSeconds;
+        // qCWarning(QGCApplicationLog) << "joysticks" << _toolbox->joystickManager()->joystickNames();
         
         if (totalSeconds == INT_MAX) {
             newResponse.insert("timeRemaining", "--:--:--");

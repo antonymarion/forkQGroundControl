@@ -612,34 +612,38 @@ void Vehicle::loadAndSendGeofence(const QJsonObject& json){
     double              defaultAlt = qgcApp()->toolbox()->settingsManager()->appSettings()->defaultMissionItemAltitude()->rawValue().toDouble();
     double              breachReturnDefaultAltitude =  defaultAlt ? defaultAlt : qQNaN();
 
-    QJsonArray jsonPolygonArray = json["polygons"].toArray();
-    for (const QJsonValue jsonPolygonValue: jsonPolygonArray) {
-        if (jsonPolygonValue.type() != QJsonValue::Object) {
-            qCWarning(VehicleLog) << "GeoFence polygon not stored as object";
-            return;
-        }
+    if (json.contains("polygons")) {
+        QJsonArray jsonPolygonArray = json["polygons"].toArray();
+        for (const QJsonValue jsonPolygonValue: jsonPolygonArray) {
+            if (jsonPolygonValue.type() != QJsonValue::Object) {
+                qCWarning(VehicleLog) << "GeoFence polygon not stored as object";
+                return;
+            }
 
-        QGCFencePolygon* fencePolygon = new QGCFencePolygon(false /* inclusion */, this /* parent */);
-        if (!fencePolygon->loadFromJson(jsonPolygonValue.toObject(), true /* required */, errorString)) {
-            qCWarning(VehicleLog) << errorString;
-            return;
+            QGCFencePolygon* fencePolygon = new QGCFencePolygon(false /* inclusion */, this /* parent */);
+            if (!fencePolygon->loadFromJson(jsonPolygonValue.toObject(), true /* required */, errorString)) {
+                qCWarning(VehicleLog) << errorString;
+                return;
+            }
+            polygons.append(fencePolygon);
         }
-        polygons.append(fencePolygon);
     }
 
-    QJsonArray jsonCircleArray = json["circles"].toArray();
-    for (const QJsonValue jsonCircleValue: jsonCircleArray) {
-        if (jsonCircleValue.type() != QJsonValue::Object) {
-            qCWarning(VehicleLog) << "GeoFence circle not stored as object";
-            return;
-        }
+    if (json.contains("circles")) {
+        QJsonArray jsonCircleArray = json["circles"].toArray();
+        for (const QJsonValue jsonCircleValue: jsonCircleArray) {
+            if (jsonCircleValue.type() != QJsonValue::Object) {
+                qCWarning(VehicleLog) << "GeoFence circle not stored as object";
+                return;
+            }
 
-        QGCFenceCircle* fenceCircle = new QGCFenceCircle(this /* parent */);
-        if (!fenceCircle->loadFromJson(jsonCircleValue.toObject(), errorString)) {
-            qCWarning(VehicleLog) << errorString;
-            return;
+            QGCFenceCircle* fenceCircle = new QGCFenceCircle(this /* parent */);
+            if (!fenceCircle->loadFromJson(jsonCircleValue.toObject(), errorString)) {
+                qCWarning(VehicleLog) << errorString;
+                return;
+            }
+            circles.append(fenceCircle);
         }
-        circles.append(fenceCircle);
     }
 
     if (json.contains("breachReturn")) {
