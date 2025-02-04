@@ -829,7 +829,7 @@ public:
     QJsonObject  getGimbalCapabilities();
     QJsonArray   getCameras        ();
     void         setZoom           (float value);
-    void         uploadGeofencing  (QString fence);
+    void         loadAndSendGeofence(const QJsonObject& json, const double& returnAltitude);
 
 public slots:
     void setVtolInFwdFlight                 (bool vtolInFwdFlight);

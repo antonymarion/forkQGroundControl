@@ -601,8 +601,56 @@ void Vehicle::setZoom(float value)
     qCWarning(VehicleLog) << "==============  SET_ZOOM  ==============";
 }
 
-void Vehicle::uploadGeofencing(QString fence)
-{
+void QGCApplication::loadAndSendGeofence(const QJsonObject& json, double returnAltitude){ 
+
+    QmlObjectListModel  polygons;
+    QmlObjectListModel  circles;
+    QGeoCoordinate      breachReturnPoint;
+    Fact                breachReturnAltitudeFact;
+    double              breachReturnDefaultAltitude =  returnAltitude ? returnAltitude : qQNaN();
+
+    QJsonArray jsonPolygonArray = json["polygons"].toArray();
+    for (const QJsonValue jsonPolygonValue: jsonPolygonArray) {
+        if (jsonPolygonValue.type() != QJsonValue::Object) {
+            qCWarning(QGCApplicationLog) << "GeoFence polygon not stored as object";
+            return false;
+        }
+
+        QGCFencePolygon* fencePolygon = new QGCFencePolygon(false /* inclusion */, this /* parent */);
+        if (!fencePolygon->loadFromJson(jsonPolygonValue.toObject(), true /* required */, errorString)) {
+            qCWarning(QGCApplicationLog) << errorString;
+            return false;
+        }
+        polygons.append(fencePolygon);
+    }
+
+    QJsonArray jsonCircleArray = json["circles"].toArray();
+    for (const QJsonValue jsonCircleValue: jsonCircleArray) {
+        if (jsonCircleValue.type() != QJsonValue::Object) {
+            qCWarning(QGCApplicationLog) << "GeoFence circle not stored as object";
+            return false;
+        }
+
+        QGCFenceCircle* fenceCircle = new QGCFenceCircle(this /* parent */);
+        if (!fenceCircle->loadFromJson(jsonCircleValue.toObject(), errorString)) {
+            qCWarning(QGCApplicationLog) << errorString;
+            return false;
+        }
+        circles.append(fenceCircle);
+    }
+
+    if (json.contains("breachReturn")) {
+        if (!JsonHelper::loadGeoCoordinate(json["breachReturn"], true /* altitudeRequred */, breachReturnPoint, errorString)) {
+            qCWarning(QGCApplicationLog) << errorString;
+            return false;
+        }
+        breachReturnAltitudeFact.setRawValue(breachReturnPoint.altitude());
+    } else {
+        breachReturnPoint = QGeoCoordinate();
+        breachReturnAltitudeFact.setRawValue(breachReturnDefaultAltitude);
+    }
+
+    _geoFenceManager->sendToVehicle(breachReturnPoint, polygons, circles);
 }
 
 void Vehicle::_offlineFirmwareTypeSettingChanged(QVariant varFirmwareType)
