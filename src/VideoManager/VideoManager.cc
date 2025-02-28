@@ -300,7 +300,7 @@ VideoManager::stopVideo()
 }
 
 void
-VideoManager::startRecording(const QString& videoFile)
+VideoManager::startRecording(const QString& videoFile, QString* usedExt)
 {
     if (_app->runningUnitTests()) {
         return;
@@ -334,6 +334,7 @@ VideoManager::startRecording(const QString& videoFile)
     const QString ext = kFileExtension[fileFormat - VideoReceiver::FILE_FORMAT_MIN];
     const QString videoFile2 = _videoFile + "2." + ext;
     _videoFile += ext;
+    *usedExt += ext;
 
     const QStringList videoFiles = {_videoFile, videoFile2};
     for (VideoReceiverData &videoReceiver : _videoReceiverData) {

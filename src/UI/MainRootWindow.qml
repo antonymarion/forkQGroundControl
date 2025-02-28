@@ -108,17 +108,19 @@ ApplicationWindow {
 
 
     //MQTT TRY
-    Timer {
+    /* Timer {
         interval: 2000
         repeat: true
         running:true
         onTriggered: {
+            console.log("SendPos","===========================================================================");
             console.log(QGroundControl.multiVehicleManager.activeVehicle.latitude);
             console.log(QGroundControl.multiVehicleManager.activeVehicle.longitude);
             console.log("SendPos","===========================================================================");
-            console.log("testing");
         }
-    }
+    } */
+
+    
     //-------------------------------------------------------------------------
     //-- Global Scope Functions
 

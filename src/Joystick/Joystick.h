@@ -279,6 +279,7 @@ protected:
     float   _axisFrequencyHz        = _defaultAxisFrequencyHz;
     float   _buttonFrequencyHz      = _defaultButtonFrequencyHz;
     Vehicle* _activeVehicle         = nullptr;
+    bool    _isOverriding           = false;
 
     bool    _pollingStartedForCalibration = false;
 

@@ -3,6 +3,7 @@ find_package(Qt6
     COMPONENTS
         Core
         Core5Compat
+        Mqtt
         QuickControls2
         QuickWidgets
         Widgets
@@ -67,6 +68,7 @@ target_link_libraries(QGC
         Qt6::QuickWidgets
         Qt6::Core5Compat
         Qt6::Bluetooth
+        Qt6::Mqtt
         API
         ADSB
         AirLink
@@ -105,6 +107,7 @@ target_link_libraries(QGC
         Qt6::Core
         Qt6::CorePrivate
         Qt6::Widgets
+        gstqml6gl
 )
 
 if(QGC_CUSTOM_BUILD)
@@ -127,6 +130,7 @@ if(ANDROID)
             Qt6::CorePrivate
         PUBLIC
             Qt6::Core
+            Qt6::Mqtt
             Comms
             Joystick
     )

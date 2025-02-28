@@ -17,6 +17,7 @@
 #include <QtCore/QVariantList>
 #include <QtPositioning/QGeoCoordinate>
 #include <QtCore/QFile>
+#include <QMap>
 
 #include "HealthAndArmingCheckReport.h"
 #include "MAVLinkStreamConfig.h"
@@ -296,7 +297,7 @@ public:
     /// Resets link status counters
     Q_INVOKABLE void resetCounters  ();
 
-    Q_INVOKABLE void virtualTabletJoystickValue(double roll, double pitch, double yaw, double thrust);
+    Q_INVOKABLE void virtualTabletJoystickValue(double roll, double pitch, double yaw, double thrust, QString str);
 
     /// Command vehicle to return to launch
     Q_INVOKABLE void guidedModeRTL(bool smartRTL);
@@ -448,10 +449,16 @@ public:
 
     bool joystickEnabled            () const;
     void setJoystickEnabled         (bool enabled);
-    void sendJoystickDataThreadSafe (float roll, float pitch, float yaw, float thrust, quint16 buttons);
+    void sendJoystickDataThreadSafe (float roll, float pitch, float yaw, float thrust, quint16 buttons, QString str);
 
     // Property accesors
     int id() const{ return _id; }
+    QString sn () const{ return _dgSn; }
+    QString uas() const{ return _dgUas; }
+    QString productName() const{ return _dgProductName; }
+    void setSn (QString newSn)  { _dgSn = newSn; }
+    void setUas(QString newUas) { _dgUas = newUas; }
+    void setProductName(QString newProductName) { _dgProductName = newProductName; }
     int compId() const{ return _compID; }
     MAV_AUTOPILOT firmwareType() const { return _firmwareType; }
     MAV_TYPE vehicleType() const { return _vehicleType; }
@@ -810,12 +817,27 @@ public:
 
     GimbalController* gimbalController  () { return _gimbalController; }
 
+    void         goToWaypoint           (double speed, double yaw, double lat, double lon, double alt);
+    void         servoCmd               (float servoId, float pwmValue);
+    void         getTelemetry           (double &lat, double &lon, double &alt, double &hSpeed, double &vSpeed, double &yaw, double &pitch, double &roll);
+    void         getCameraCapabilities  (bool &activeCamera, QString &cameraName, bool &hasZoom, QJsonObject &iso, QJsonObject &aperture);
+    
+    void         resetGimbal            ();
+    void         genericGimbal          (QString axis, QString value);
+    void         moveGimbalTundra       (QString value);
+    void         moveGimbal             (QString axis, QString value);
+    QJsonObject  getGimbalCapabilities  ();
+    QJsonArray   getCameras             ();
+    void         setZoom                (float value);
+    void         loadAndSendGeofence    (const QJsonObject& json);
+
 public slots:
     void setVtolInFwdFlight                 (bool vtolInFwdFlight);
     void _offlineFirmwareTypeSettingChanged (QVariant varFirmwareType); // Should only be used by MissionControler to set firmware from Plan file
     void _offlineVehicleTypeSettingChanged  (QVariant varVehicleType);  // Should only be used by MissionController to set vehicle type from Plan file
 
 signals:
+    void snChanged                      (QString newSn);
     void coordinateChanged              (QGeoCoordinate coordinate);
     void joystickEnabledChanged         (bool enabled);
     void mavlinkMessageReceived         (const mavlink_message_t& message);
@@ -909,6 +931,7 @@ signals:
     void logData                        (uint32_t ofs, uint16_t id, uint8_t count, const uint8_t* data);
 
 private slots:
+    void _setNewVehicleData                 ();
     void _mavlinkMessageReceived            (LinkInterface* link, mavlink_message_t message);
     void _sendMessageMultipleNext           ();
     void _parametersReady                   (bool parametersReady);
@@ -1007,9 +1030,20 @@ private:
 
     QTimer              _csvLogTimer;
     QFile               _csvLogFile;
+    
+    QMap<QString, QStringList> aircraftUasSnList = {
+        {"4F:4E:49:44:4C:41:54:49", {"UAS-FR-651384", "1H82582569285", "Gazebo"}},
+        {"00:00:00:00:00:00:00:00", {"UAS-FR-652384", "2H82582569285", "ArduCopter"}}
+    };
+    QStringList         specialGimbalList   = { "Tundra 2" };                       // special aircraft list
+    QStringList         axisList            = { "pitch", "yaw", "roll", "thrust" }; // global axis list
+    
+    QString         _dgSn = "";
+    QString         _dgUas = "";
+    QString         _dgProductName = "";
 
     bool            _joystickEnabled = false;
-    bool _isActiveVehicle = false;
+    bool            _isActiveVehicle = false;
 
     QGeoCoordinate  _coordinate;
     QGeoCoordinate  _homePosition;
