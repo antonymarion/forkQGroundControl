@@ -27,6 +27,7 @@
 #include <QtNetwork/QNetworkProxyFactory>
 #include <QtQml/QQmlContext>
 #include <QtQml/QQmlApplicationEngine>
+<<<<<<< HEAD
 #include <QTimer>
 #include <QtMqtt/QtMqtt>
 #include <QtMqtt/QMqttClient>
@@ -46,6 +47,9 @@
 #include <fstream>
 
 
+=======
+#include <QMqttClient>
+>>>>>>> master
 
 #include "Audio/AudioOutput.h"
 #include "QGCConfig.h"
