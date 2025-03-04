@@ -97,6 +97,7 @@ jobs:
           set CMAKE_PREFIX_PATH=$QT_INSTALL_DIR/$QT_VERSION/msvc2019_64/"
           set NINJA_DIR=$QT_INSTALL_DIR/Tools/Ninja"
           git clone git://code.qt.io/qt/qtmqtt.git --branch 5.15.2
+          dir
           cd qtmqtt
           mkdir build
           dir
