@@ -5,7 +5,7 @@ on:
     branches:
       - 'master'
       - 'Stable*'
-      - 'updated-gqc'
+      - 'updated-qgc'
     tags:
       - 'v*'
     paths-ignore:
