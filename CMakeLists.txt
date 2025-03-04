@@ -127,6 +127,7 @@ find_package(Qt5 ${QT_VERSION}
 		Concurrent
 		Core
 		Location
+		Mqtt
 		Multimedia
 		Network
 		Positioning

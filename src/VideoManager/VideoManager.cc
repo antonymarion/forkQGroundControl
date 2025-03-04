@@ -290,7 +290,7 @@ VideoManager::stopVideo()
 }
 
 void
-VideoManager::startRecording(const QString& videoFile)
+VideoManager::startRecording(const QString& videoFile, QString* usedExt)
 {
     if (qgcApp()->runningUnitTests()) {
         return;
@@ -324,6 +324,7 @@ VideoManager::startRecording(const QString& videoFile)
             + ".";
     QString videoFile2 = _videoFile + "2." + ext;
     _videoFile += ext;
+    *usedExt += ext;
 
     if (_videoReceiver[0] && _videoStarted[0]) {
         _videoReceiver[0]->startRecording(_videoFile, fileFormat);

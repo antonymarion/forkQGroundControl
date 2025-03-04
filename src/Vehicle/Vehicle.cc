@@ -11,10 +11,12 @@
 #include <QDateTime>
 #include <QLocale>
 #include <QQuaternion>
+#include <QMap>
 
 #include <Eigen/Eigen>
 
 #include "Vehicle.h"
+#include "JsonHelper.h"
 #include "MAVLinkProtocol.h"
 #include "FirmwarePluginManager.h"
 #include "LinkManager.h"
@@ -372,6 +374,7 @@ void Vehicle::_commonInit()
     connect(this, &Vehicle::homePositionChanged,    this, &Vehicle::_updateDistanceHeadingToHome);
     connect(this, &Vehicle::hobbsMeterChanged,      this, &Vehicle::_updateHobbsMeter);
     connect(this, &Vehicle::coordinateChanged,      this, &Vehicle::_updateAltAboveTerrain);
+    connect(this, &Vehicle::vehicleUIDChanged,      this, &Vehicle::_setNewVehicleData);
     // Initialize alt above terrain to Nan so frontend can display it correctly in case the terrain query had no response
     _altitudeAboveTerrFact.setRawValue(qQNaN());
 
@@ -549,6 +552,257 @@ void Vehicle::deleteGimbalController()
         delete _gimbalController;
         _gimbalController = nullptr;
     }
+}
+
+void Vehicle::goToWaypoint(double speed, double yaw, double lat, double lon, double alt)
+{
+    sendMavCommand(
+        _defaultComponentId,  // compId: Default vehicle component ID
+        MAV_CMD_DO_REPOSITION,           // command: MAV_CMD to set servo
+        true,                            // showError: Display error if command fails
+        speed,                           // param1: (Speed)	    Ground speed, less than 0 (-1) for default	min: -1	m/s
+        MAV_DO_REPOSITION_FLAGS_CHANGE_MODE,    // param2: (Bitmask)	Bitmask of option flags.	MAV_DO_REPOSITION_FLAGS	
+        0,                               // param3: (Radius)	Loiter radius for planes. Positive values only, direction is controlled by Yaw value. A value of zero or NaN is ignored. m
+        yaw,                             // param4: (Yaw)	    Yaw heading. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.). For planes indicates loiter direction (0: clockwise, 1: counter clockwise)		deg
+        lat,                             // param5: (Latitude)	Latitude
+        lon,                             // param6: (Longitude)	Longitude	
+        alt                              // param7: (Altitude)	Altitude
+    );
+}
+
+void Vehicle::servoCmd(float servoId, float pwmValue)
+{
+    // Sends the MAV_CMD_DO_SET_SERVO command to the vehicle.
+    // If no acknowledgment (Ack) is received, the command will be retried.
+    // If another sendMavCommand is already in progress,
+    // the current command will be queued and sent once the previous one completes.
+
+    // @param compId : Component ID to send the command to.
+    // @param command : The MAV_CMD to send.
+    // @param showError : true to display an error if the command fails, false to suppress the error display.
+    // @param param1 to param7 : Optional parameters to send with the MAV_CMD.
+
+    // Signals: mavCommandResult emitted on success or failure of the command.
+    sendMavCommand(
+        _defaultComponentId,  // compId: Default vehicle component ID
+        MAV_CMD_DO_SET_SERVO,            // command: MAV_CMD to set servo
+        true,                            // showError: Display error if command fails
+        servoId,                         // param1: Specify which servo to set (e.g., 1)
+        pwmValue,                        // param2: PWM value to set for the servo (e.g., 1500)
+        0,                               // param3: Not used (set to 0)
+        0,                               // param4: Not used (set to 0)
+        0,                               // param5: Not used (set to 0)
+        0,                               // param6: Not used (set to 0)
+        0                                // param7: Not used (set to 0)
+    ); // ************** SERVO ID, SURTOUT PAS 1 2 3 4 13 14 **********************
+}
+
+void Vehicle::getTelemetry(double &lat, double &lon, double &alt, double &hSpeed, double &vSpeed, double &yaw, double &pitch, double &roll) {
+  lat = _coordinate.latitude();
+  lon = _coordinate.longitude();
+  alt = _coordinate.altitude();
+  hSpeed = _vehicleFactGroup->groundSpeed()->rawValue().toDouble();
+  vSpeed = _vehicleFactGroup->climbRate()->rawValue().toDouble();
+  yaw = _vehicleFactGroup->heading()->rawValue().toDouble();
+  pitch = _vehicleFactGroup->pitch()->rawValue().toDouble();
+  roll = _vehicleFactGroup->roll()->rawValue().toDouble();
+}
+
+void Vehicle::resetGimbal()
+{   
+    Gimbal* activeGimbal = _gimbalController->activeGimbal();
+    if(!activeGimbal) return;
+
+    activeGimbal->setAbsolutePitch(0);
+    activeGimbal->setBodyYaw(0);
+    activeGimbal->setAbsoluteRoll(0);
+    qCWarning(VehicleLog) << "==============   RESET_GIMBAL   ==============";
+}
+
+void Vehicle::genericGimbal(QString axis, QString value)
+{
+    switch (specialGimbalList.indexOf(_dgProductName)){
+        case 0:
+            moveGimbalTundra(value);
+            break;
+        default:
+            moveGimbal(axis, value);
+    }
+    qCWarning(VehicleLog) << "==============   MOVE_GIMBAL   ==============";
+}
+
+void Vehicle::moveGimbalTundra(QString value)
+{
+    if(value == "+") servoCmd(9, 1801);
+    if(value == "-") servoCmd(9, 1201);
+    if(value == "0") servoCmd(9, 1501);
+}
+
+void Vehicle::moveGimbal(QString axis, QString value)
+{
+    Gimbal* activeGimbal = _gimbalController->activeGimbal();
+    if(!activeGimbal) return;
+
+    switch (axisList.indexOf(axis)) {
+        case 0:
+            qCWarning(VehicleLog) << "=====   PITCH CHANGED  =====";
+            activeGimbal->setAbsolutePitch(value.toFloat());
+            break;
+        case 1:
+            qCWarning(VehicleLog) << "=====   YAW CHANGED   =====";
+            activeGimbal->setBodyYaw(value.toFloat());
+            break;
+        case 2:
+            qCWarning(VehicleLog) << "=====   ROLL CHANGED   =====";
+            activeGimbal->setAbsoluteRoll(value.toFloat());
+            break;
+        default:
+            qCWarning(VehicleLog) << "*****   INVALID AXIS   *****";
+    }
+}
+
+QJsonObject Vehicle::getGimbalCapabilities()
+{
+    QJsonObject capabilities;
+    Gimbal* activeGimbal = _gimbalController->activeGimbal();
+    if(activeGimbal) {
+        QJsonObject yawCap;
+        QJsonObject pitchCap;
+        QJsonObject rollCap;
+        qCWarning(VehicleLog) << "minYaw : " << activeGimbal->absoluteYaw()->cookedMinString();
+        qCWarning(VehicleLog) << "maxYaw : " << activeGimbal->absoluteYaw()->cookedMaxString();
+        yawCap.insert("min",          activeGimbal->bodyYaw()->cookedMinString());
+        yawCap.insert("max",          activeGimbal->bodyYaw()->cookedMaxString());
+        pitchCap.insert("min",        activeGimbal->absolutePitch()->cookedMinString());
+        pitchCap.insert("max",        activeGimbal->absolutePitch()->cookedMaxString());
+        rollCap.insert("min",         activeGimbal->absoluteRoll()->cookedMinString());
+        rollCap.insert("max",         activeGimbal->absoluteRoll()->cookedMaxString());
+        capabilities.insert("yaw",    yawCap);
+        capabilities.insert("pitch",  pitchCap);
+        capabilities.insert("roll",   rollCap);
+    }
+    return capabilities;
+}
+
+void Vehicle::getCameraCapabilities(bool &activeCamera, QString &cameraName, bool &hasZoom, QJsonObject &iso, QJsonObject &aperture)
+{
+    MavlinkCameraControl* currentCamera = _cameraManager->currentCameraInstance();
+    if(currentCamera) {
+        activeCamera = true;
+        hasZoom = currentCamera->hasZoom();
+        cameraName = currentCamera->modelName();
+
+        if(cameraName != "Caméra intégrée Tundra II"){
+            iso.insert("min", currentCamera->iso()->cookedMinString());
+            iso.insert("max", currentCamera->iso()->cookedMaxString());
+            aperture.insert("min", currentCamera->aperture()->cookedMinString());
+            aperture.insert("max", currentCamera->aperture()->cookedMaxString());
+        }
+        return;
+    }
+    activeCamera = false;
+    return;
+}
+
+QJsonArray Vehicle::getCameras()
+{
+    QJsonArray cameraList;
+    QmlObjectListModel *cameras = _cameraManager->cameras();
+    for (int i = 0; i < cameras->count(); i++) {
+        MavlinkCameraControl *camera = qobject_cast<MavlinkCameraControl*>(cameras->get(i));
+        QJsonObject thisCamera;
+        thisCamera.insert("index",i);
+        thisCamera.insert("name",camera->modelName());
+        cameraList.append(thisCamera);
+    }
+    return cameraList;
+}
+
+void Vehicle::setZoom(float value)
+{
+    MavlinkCameraControl* currentCamera = _cameraManager->currentCameraInstance();
+    if(!currentCamera) {
+        qCWarning(VehicleLog) << "*****   No active camera   *****";
+        return;
+    }
+    currentCamera->setZoomLevel(value);
+    qCWarning(VehicleLog) << "==============  SET_ZOOM  ==============";
+}
+
+void Vehicle::loadAndSendGeofence(const QJsonObject& json){ 
+
+    QmlObjectListModel  polygons;
+    QmlObjectListModel  circles;
+    QGeoCoordinate      breachReturnPoint;
+    QString             errorString;
+    Fact                breachReturnAltitudeFact;
+    double              defaultAlt = qgcApp()->toolbox()->settingsManager()->appSettings()->defaultMissionItemAltitude()->rawValue().toDouble();
+    double              breachReturnDefaultAltitude =  defaultAlt ? defaultAlt : qQNaN();
+
+    if (json.contains("polygons")) {
+        QJsonArray jsonPolygonArray = json["polygons"].toArray();
+        for (const QJsonValue jsonPolygonValue: jsonPolygonArray) {
+            if (jsonPolygonValue.type() != QJsonValue::Object) {
+                qCWarning(VehicleLog) << "GeoFence polygon not stored as object";
+                return;
+            }
+
+            QGCFencePolygon* fencePolygon = new QGCFencePolygon(false /* inclusion */, this /* parent */);
+            if (!fencePolygon->loadFromJson(jsonPolygonValue.toObject(), true /* required */, errorString)) {
+                qCWarning(VehicleLog) << errorString;
+                return;
+            }
+            polygons.append(fencePolygon);
+        }
+    }
+
+    if (json.contains("circles")) {
+        QJsonArray jsonCircleArray = json["circles"].toArray();
+        for (const QJsonValue jsonCircleValue: jsonCircleArray) {
+            if (jsonCircleValue.type() != QJsonValue::Object) {
+                qCWarning(VehicleLog) << "GeoFence circle not stored as object";
+                return;
+            }
+
+            QGCFenceCircle* fenceCircle = new QGCFenceCircle(this /* parent */);
+            if (!fenceCircle->loadFromJson(jsonCircleValue.toObject(), errorString)) {
+                qCWarning(VehicleLog) << errorString;
+                return;
+            }
+            circles.append(fenceCircle);
+        }
+    }
+
+    if (json.contains("breachReturn")) {
+        if (!JsonHelper::loadGeoCoordinate(json["breachReturn"], true /* altitudeRequred */, breachReturnPoint, errorString)) {
+            qCWarning(VehicleLog) << errorString;
+            return;
+        }
+        breachReturnAltitudeFact.setRawValue(breachReturnPoint.altitude());
+    } else {
+        breachReturnPoint = QGeoCoordinate();
+        breachReturnAltitudeFact.setRawValue(breachReturnDefaultAltitude);
+    }
+
+    _geoFenceManager->sendToVehicle(breachReturnPoint, polygons, circles);
+}
+
+void Vehicle::_setNewVehicleData()
+{
+    QStringList uasSn = aircraftUasSnList.value(vehicleUIDStr());
+    if(uasSn.isEmpty()) {
+        qCWarning(VehicleLog) << "*****  Vehicle Data Not Found   *****";
+        qCWarning(VehicleLog) << "UID : "<< vehicleUIDStr();
+        return;
+    }
+
+    _dgUas = uasSn[0];
+    _dgSn = uasSn[1];
+    _dgProductName = uasSn[2];
+    qCWarning(VehicleLog) << "Set new uas to : "<< _dgUas;
+    qCWarning(VehicleLog) << "Set new sn to : "<< _dgSn;
+    qCWarning(VehicleLog) << "Set new productName to : "<< _dgProductName;
+    emit snChanged(_dgSn);
 }
 
 void Vehicle::_offlineFirmwareTypeSettingChanged(QVariant varFirmwareType)
@@ -2544,7 +2798,7 @@ void Vehicle::_remoteControlRSSIChanged(uint8_t rssi)
     }
 }
 
-void Vehicle::virtualTabletJoystickValue(double roll, double pitch, double yaw, double thrust)
+void Vehicle::virtualTabletJoystickValue(double roll, double pitch, double yaw, double thrust, QString str)
 {
     // The following if statement prevents the virtualTabletJoystick from sending values if the standard joystick is enabled
     if (!_joystickEnabled) {
@@ -2553,7 +2807,8 @@ void Vehicle::virtualTabletJoystickValue(double roll, double pitch, double yaw, 
                     static_cast<float>(pitch),
                     static_cast<float>(yaw),
                     static_cast<float>(thrust),
-                    0);
+                    0,
+                    str);
     }
 }
 
@@ -4431,7 +4686,7 @@ void Vehicle::clearAllParamMapRC(void)
     }
 }
 
-void Vehicle::sendJoystickDataThreadSafe(float roll, float pitch, float yaw, float thrust, quint16 buttons)
+void Vehicle::sendJoystickDataThreadSafe(float roll, float pitch, float yaw, float thrust, quint16 buttons, QString str)
 {
     SharedLinkInterfacePtr sharedLink = vehicleLinkManager()->primaryLink().lock();
     if (!sharedLink) {

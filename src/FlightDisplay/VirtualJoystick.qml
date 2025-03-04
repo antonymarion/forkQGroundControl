@@ -21,6 +21,7 @@ Item {
     // property bool autoCenterThrottle - true: throttle will snap back to center when released
 
     property var _activeVehicle: QGroundControl.multiVehicleManager.activeVehicle
+    property var   hasControl:                false
 
     Timer {
         interval:   40  // 25Hz, same as real joystick rate
@@ -28,7 +29,18 @@ Item {
         repeat:     true
         onTriggered: {
             if (_activeVehicle) {
-                _activeVehicle.virtualTabletJoystickValue(rightStick.xAxis, rightStick.yAxis, leftStick.xAxis, leftStick.yAxis)
+                 // if all value 0 do not run this, else use qgcapp function to stop the timer and set overtake to true
+                var rx : rightStick.xAxis
+                var ry : rightStick.yAxis
+                var lx : leftStick.xAxis
+                var ly : leftStick.yAxis
+                if(rx != 0 || ry !=0 || lx != 0 || ly != 0.5){
+                    if(!hasControl){
+                        hasControl = true;
+                        QGroundControl.vectorControlOverride();
+                    }
+                    _activeVehicle.virtualTabletJoystickValue(rx, ry, lx, ly, "JOYSTICKS")
+                }
             }
         }
     }

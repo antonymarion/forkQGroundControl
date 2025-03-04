@@ -163,6 +163,7 @@ target_link_libraries(qgc
 	PUBLIC
 		Qt5::QuickWidgets
 		Qt5::Widgets
+		Qt5::Mqtt
 
 		ADSB
 		AnalyzeView

@@ -16,6 +16,17 @@
 #include <QSet>
 #include <QMetaMethod>
 #include <QMetaObject>
+#include <QtMqtt/QtMqtt>
+#include <QtMqtt/QMqttClient>
+#include <QtMqtt/QMqttMessage>
+#include <QtMqtt/QMqttSubscription>
+#include <QJsonObject>
+#include <QProcess>
+#include <QFuture>
+#include <gst/gst.h>
+#include <thread>
+#include <gst/app/gstappsink.h>
+#include <iostream>
 
 // These private headers are require to implement the signal compress support below
 #include <private/qthread_p.h>
@@ -40,6 +51,12 @@
 class QQmlApplicationEngine;
 class QGCSingleton;
 class QGCToolbox;
+class Vehicle;
+class MavlinkCameraControl;
+class VehicleCameraControl;
+class MultiVehicleManager;
+class Gimbal;
+class VideoManager;
 
 /**
  * @brief The main application and management class.
@@ -105,6 +122,8 @@ public:
 
     static QString cachedParameterMetaDataFile(void);
     static QString cachedAirframeMetaDataFile(void);
+
+    void vectorControlOverride(); // Take over station control
 
 public slots:
     /// You can connect to this slot to show an information message box from a different thread.
@@ -241,6 +260,114 @@ private:
 
     /// Unit Test have access to creating and destroying singletons
     friend class UnitTest;
+
+    // MQTT
+    void updateLogStateChange();
+    void brokerDisconnected  ();
+    void brokerConnected     ();
+    void updateMessage       (const QMqttMessage &msg);
+    void updateStatus        (QMqttSubscription::SubscriptionState state);
+    void sendEventMessage    (QString command, int value, QString sn);
+
+    // Send info timer
+    void sendInfos();
+    void sendRemotePilote();
+    void sendAircraftPositionInfos();
+
+    // Vehicles signal receivers
+    void _setActiveVehicle        (Vehicle* vehicle); 
+    void _setupNewVehicle         (Vehicle* vehicle); 
+    void _setupNewMqttSubscription(QString newSn);
+    void _setIsFlying             (bool flying);
+    void _setActiveCamera         ();
+    void _notifyRecording         ();
+
+    // Station Commands
+
+    void         startStream       ();
+    void         stopStream        ();
+    int          takePhoto         ();
+    int          startRecording    ();
+    int          stopRecording     ();
+    void         vectorControl     ();
+    void         pauseAll          ();
+
+    // Utilities
+    bool isFileEmpty(const std::string& filePath);
+    void delay(int sec);
+
+    QString               rtmpUrl             = "rtmp://ome.stationdrone.net/app/";                      // streaming URL
+    QString               loggedEmail         = "graphx.stephaneroma@gmail.com";  // Remote pilote logged email
+    // QString               registrationNumber  = "UAS-FR-458156";         // Aircraft registration number
+    // QString               uavSn               = "1600FTR2STD24289930B";  // Aircraft serial number
+    bool                  isStreaming         = false;                   // is currently streaming on rtmp URL
+    QMqttClient*          m_client            = nullptr;                 // mqtt client
+    bool                  clientState         = false;
+    bool                  _isFlying;                                     // is aircraft currently flying
+    bool                  _recording;
+    bool                  canControl          = true;                    // false if remote pilote override commands
+    Vehicle*              _vehicle{nullptr};                             // current vehicle
+    VideoManager*         _videoManager{nullptr};
+    MultiVehicleManager*  _vehicleManager{nullptr};
+    MavlinkCameraControl* _activeCamera{nullptr};
+    QTimer*               timerVector = nullptr;                         // send vector command timer
+    QStringList           simulatedMAC        = {                        // global axis list
+        "4F:4E:49:44:4C:41:54:49",
+        "00:00:00:00:00:00:00:00" 
+        };
+    QStringList           commandsList        = {                        // front-end commmand list
+        "OPEN_STREAM",
+        "STOP_STREAM",
+        "RESET_GIMBAL",
+        "MOVE_GIMBAL",
+        "GET_CAMERAS",
+        "SET_CAMERA",
+        "SET_CAMERA_INTRINSICS",
+        "GET_CAMERA",
+        "ZOOM_CAMERA",
+        "TAKE_PHOTO",
+        "START_RECORDING",
+        "STOP_RECORDING",
+        "MAV_CMD_DO_SET_SERVO",
+        "MOVE_VECTOR",
+        "TAKE_OFF",
+        "RETURN_TO_HOME",
+        "VERTICAL_LANDING",
+        "FLYING_TERMINATION_SYSTEM",
+        "TELEMETRY",
+        "GO_TO_WAYPOINT",
+        "PAUSE_ALL",
+        "SET_DATA",
+        "SET_GEOFENCING",
+        "TESTING_1",
+        "TESTING_2"
+    };
+
+    // Vector neutral joysticks
+    double _roll   = 0;
+    double _pitch  = 0;
+    double _yaw    = 0;
+    double _thrust = 0.5; // interface slider command
+
+    // Gstreamer
+    //======================================================================================================================
+    /// Our global data, serious gstreamer apps should always have this !
+    struct GoblinData {
+        GstElement *pipeline = nullptr;
+        GstElement *sinkVideo = nullptr;
+    };
+    void codeThreadBus(GstElement *pipeline, GoblinData &data, QString prefix);
+    bool busProcessMsg(GstElement *pipeline, GstMessage *msg, QString prefix);
+    GoblinData data;
+    QFuture<void> future;
+    GstElement *pipeline = nullptr;
+    GstBus *bus;
+    QString videoFile = "";
+    QString videoFileS3 = "";
+    bool isRecording = false;
+    void testing1();
+    void testing2(double speed);
+    void testing3();
 };
 
 /// @brief Returns the QGCApplication object singleton.
