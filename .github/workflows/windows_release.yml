@@ -100,7 +100,7 @@ jobs:
           cd qtmqtt
           mkdir build
           cd build/
-          where D:/a/_temp/Qt/5.15.2/msvc2019_64/bin
+          where qt-configure-module.bat
         
       - name: Setup QMQTT Second Part
         run: |
