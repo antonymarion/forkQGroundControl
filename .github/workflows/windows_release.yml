@@ -99,8 +99,7 @@ jobs:
           git clone git://code.qt.io/qt/qtmqtt.git --branch 5.15.2
           cd qtmqtt
           mkdir build
-          cd build/
-          dir D:/a
+          dir
         
       - name: Setup QMQTT Second Part
         run: |
