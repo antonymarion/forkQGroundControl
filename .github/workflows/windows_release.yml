@@ -100,7 +100,7 @@ jobs:
           cd qtmqtt
           mkdir build
           cd build/
-          where .
+          ls
         
       - name: Setup QMQTT Second Part
         run: |
