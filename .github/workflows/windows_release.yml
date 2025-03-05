@@ -52,10 +52,6 @@ jobs:
           modules:      qtcharts
           setup-python: false
 
-      - name: Set up Qt environment
-        run: |
-          aqt list-qt windows desktop --modules 5.15.2 win64_msvc2019_64
-          
       - name: Download JOM
         uses: suisei-cn/actions-download-file@v1.3.0
         with:
@@ -91,6 +87,19 @@ jobs:
         uses: egor-tensin/vs-shell@v2
         with:
           arch: x64
+
+      - name: Setup QMQTT First Part
+        run: |
+          set QT_VERSION=5.15.2
+          set QT_INSTALL_DIR=D:/a/_temp/Qt
+          set QMAKE_BIN_DIR=%QT_INSTALL_DIR%/%QT_VERSION%/msvc2019_64/bin
+          git clone git://code.qt.io/qt/qtmqtt.git --branch 5.15.2
+          cd qtmqtt
+          mkdir build
+          cd build
+          %QMAKE_BIN_DIR%/qmake ../qtmqtt.pro
+          nmake
+          nmake install
 
       - name: Build
         working-directory: ${{ runner.temp }}\shadow_build_dir
