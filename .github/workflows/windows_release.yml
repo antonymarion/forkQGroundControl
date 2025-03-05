@@ -99,9 +99,7 @@ jobs:
           git clone git://code.qt.io/qt/qtmqtt.git --branch 5.15.2
           dir
           mkdir build
-          cd D:/a/_temp/Qt/5.15.2
-          dir
-          cd msvc2019_64
+          cd D:/a/_temp/Qt/5.15.2/msvc2019_64/bin
           dir
         
       - name: Setup QMQTT Second Part
