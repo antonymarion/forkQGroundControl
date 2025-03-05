@@ -685,8 +685,8 @@ void Joystick::_handleAxis()
                 pitch = -_exponential*powf(pitch,3) + (1+_exponential)*pitch;
                 yaw =   -_exponential*powf(yaw,  3) + (1+_exponential)*yaw;
             }
-            float t_moeu; // margin error up
-            float t_moed; // margin error down
+            double t_moeu; // margin error up
+            double t_moed; // margin error down
 
             // Adjust throttle to 0:1 range
             if (_throttleMode == ThrottleModeCenterZero && _activeVehicle->supportsThrottleModeCenterZero()) {
