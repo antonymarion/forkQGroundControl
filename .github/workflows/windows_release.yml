@@ -98,9 +98,8 @@ jobs:
           set NINJA_DIR=$QT_INSTALL_DIR/Tools/Ninja"
           git clone git://code.qt.io/qt/qtmqtt.git --branch 5.15.2
           dir
-          cd qtmqtt
           mkdir build
-          cd D:\a
+          cd D:/a
           dir
           cd _temp
           dir
