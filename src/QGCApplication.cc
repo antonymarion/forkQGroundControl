@@ -906,7 +906,7 @@ void QGCApplication::_initCommon()
 
 void QGCApplication::updateLogStateChange()
 {
-    qCWarning(QGCApplicationLog) << "State Change : " + QString::number(m_client->state());
+    qWarning() << "State Change : " + QString::number(m_client->state());
 }
 
 void QGCApplication::brokerConnected()
@@ -916,30 +916,30 @@ void QGCApplication::brokerConnected()
         Vehicle* vehicle = qobject_cast<Vehicle*>(vehicles->get(i));
 
         if(!vehicle->isInitialConnectComplete()) {
-            qCWarning(QGCApplicationLog) << "*****   Aircraft init not completed   *****";
+            qWarning() << "*****   Aircraft init not completed   *****";
             continue;
         }
         // Setup Subscription
         QString topic = "REQUEST/+/" + vehicle->sn() + "/+";
         QMqttSubscription *subscription = m_client->subscribe(topic, 1);
         if(!subscription) {
-            qCWarning(QGCApplicationLog) << "***** Can't connect "+vehicle->sn()+" with Mqtt *****";
+            qWarning() << "***** Can't connect "+vehicle->sn()+" with Mqtt *****";
             continue;
         }
         QObject::connect(subscription, &QMqttSubscription::messageReceived, this, &QGCApplication::updateMessage);
     }
     clientState = true;
 
-    qCWarning(QGCApplicationLog) << "Mqtt Connected";
+    qWarning() << "Mqtt Connected";
 }
 
 void QGCApplication::brokerDisconnected()
 {
     clientState = false;
-    qCWarning(QGCApplicationLog) << m_client->error();
-    qCWarning(QGCApplicationLog) << "Mqtt Disconnected";
+    qWarning() << m_client->error();
+    qWarning() << "Mqtt Disconnected";
     delay(5);
-    qCWarning(QGCApplicationLog) << "Trying to reconnect";
+    qWarning() << "Trying to reconnect";
     m_client->connectToHost();
 }
 
@@ -962,77 +962,77 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
     int state_value = -1;
     switch (commandsList.indexOf(message["instruction"].toString())){
         case 0:
-            qCWarning(QGCApplicationLog) << "=================================================";
-            qCWarning(QGCApplicationLog) << "recieved OPEN_STREAM";
-            qCWarning(QGCApplicationLog) << "=================================================";
+            qWarning() << "=================================================";
+            qWarning() << "recieved OPEN_STREAM";
+            qWarning() << "=================================================";
             QGCApplication::startStream();
             state_value = 0;
             break;
         case 1:
-            qCWarning(QGCApplicationLog) << "=================================================";
-            qCWarning(QGCApplicationLog) << "recieved STOP_STREAM";
-            qCWarning(QGCApplicationLog) << "=================================================";
+            qWarning() << "=================================================";
+            qWarning() << "recieved STOP_STREAM";
+            qWarning() << "=================================================";
             QGCApplication::stopStream();
             state_value = 0;
             break;
         case 2:
-            qCWarning(QGCApplicationLog) << "=================================================";
-            qCWarning(QGCApplicationLog) << "recieved RESET_GIMBAL";
-            qCWarning(QGCApplicationLog) << "=================================================";
+            qWarning() << "=================================================";
+            qWarning() << "recieved RESET_GIMBAL";
+            qWarning() << "=================================================";
             if(!requestVehicle) {
-                qCWarning(QGCApplicationLog) << "*****   No vehicle available   *****";
+                qWarning() << "*****   No vehicle available   *****";
                 break;
             };
             requestVehicle->resetGimbal();
             state_value = 0;
             break;
         case 3:
-            qCWarning(QGCApplicationLog) << "=================================================";
-            qCWarning(QGCApplicationLog) << "recieved MOVE_GIMBAL";
-            qCWarning(QGCApplicationLog) << "=================================================";
+            qWarning() << "=================================================";
+            qWarning() << "recieved MOVE_GIMBAL";
+            qWarning() << "=================================================";
             if(!requestVehicle) {
-                qCWarning(QGCApplicationLog) << "*****   No vehicle available   *****";
+                qWarning() << "*****   No vehicle available   *****";
                 break;
             };
             requestVehicle->genericGimbal(message["axis"].toString(), message["value"].toString());
             state_value = 0;
             break;
         case 4:
-            qCWarning(QGCApplicationLog) << "=================================================";
-            qCWarning(QGCApplicationLog) << "recieved GET_CAMERAS";
-            qCWarning(QGCApplicationLog) << "=================================================";
+            qWarning() << "=================================================";
+            qWarning() << "recieved GET_CAMERAS";
+            qWarning() << "=================================================";
             if(!requestVehicle) {
-                qCWarning(QGCApplicationLog) << "*****   No vehicle available   *****";
+                qWarning() << "*****   No vehicle available   *****";
                 break;
             };
             message.insert("availableCameraListData", requestVehicle->getCameras());
             state_value = 0;
             break;
         case 5:
-            qCWarning(QGCApplicationLog) << "=================================================";
-            qCWarning(QGCApplicationLog) << "recieved SET_CAMERA";
-            qCWarning(QGCApplicationLog) << "=================================================";
+            qWarning() << "=================================================";
+            qWarning() << "recieved SET_CAMERA";
+            qWarning() << "=================================================";
             state_value = 0;
             break;
         case 6:
-            qCWarning(QGCApplicationLog) << "=================================================";
-            qCWarning(QGCApplicationLog) << "recieved SET_CAMERA_INTRINSICS";
-            qCWarning(QGCApplicationLog) << "=================================================";
+            qWarning() << "=================================================";
+            qWarning() << "recieved SET_CAMERA_INTRINSICS";
+            qWarning() << "=================================================";
             state_value = 0;
             break;
         case 7:
-            qCWarning(QGCApplicationLog) << "=================================================";
-            qCWarning(QGCApplicationLog) << "recieved GET_CAMERA";
-            qCWarning(QGCApplicationLog) << "=================================================";
+            qWarning() << "=================================================";
+            qWarning() << "recieved GET_CAMERA";
+            qWarning() << "=================================================";
             if(!requestVehicle) {
-                qCWarning(QGCApplicationLog) << "*****   No vehicle available   *****";
+                qWarning() << "*****   No vehicle available   *****";
                 break;
             };
             message.insert("gimbalRange", requestVehicle->getGimbalCapabilities());
             bool activeCamera, hasZoom;
             requestVehicle->getCameraCapabilities(activeCamera, cameraName, hasZoom, iso, aperture);
             if(!activeCamera) {
-                qCWarning(QGCApplicationLog) << "============== camera ranges ==============";
+                qWarning() << "============== camera ranges ==============";
                 message.insert("hasZoom", hasZoom);
                 if(cameraName != "Caméra intégrée Tundra II"){
                     message.insert("isoRange", iso);
@@ -1042,55 +1042,55 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             state_value = 0;
             break;
         case 8:
-            qCWarning(QGCApplicationLog) << "=================================================";
-            qCWarning(QGCApplicationLog) << "recieved ZOOM_CAMERA";
-            qCWarning(QGCApplicationLog) << "=================================================";
+            qWarning() << "=================================================";
+            qWarning() << "recieved ZOOM_CAMERA";
+            qWarning() << "=================================================";
             if(!requestVehicle) {
-                qCWarning(QGCApplicationLog) << "*****   No vehicle available   *****";
+                qWarning() << "*****   No vehicle available   *****";
                 break;
             };
             requestVehicle->setZoom(message["zoomValue"].toDouble());
             state_value = 0;
             break;
         case 9:
-            qCWarning(QGCApplicationLog) << "=================================================";
-            qCWarning(QGCApplicationLog) << "recieved TAKE_PHOTO";
-            qCWarning(QGCApplicationLog) << "=================================================";
+            qWarning() << "=================================================";
+            qWarning() << "recieved TAKE_PHOTO";
+            qWarning() << "=================================================";
             state_value = QGCApplication::takePhoto();
             break;
         case 10:
-            qCWarning(QGCApplicationLog) << "=================================================";
-            qCWarning(QGCApplicationLog) << "recieved START_RECORDING";
-            qCWarning(QGCApplicationLog) << "=================================================";
+            qWarning() << "=================================================";
+            qWarning() << "recieved START_RECORDING";
+            qWarning() << "=================================================";
             state_value = QGCApplication::startRecording();
             break;
         case 11:
-            qCWarning(QGCApplicationLog) << "=================================================";
-            qCWarning(QGCApplicationLog) << "recieved STOP_RECORDING";
-            qCWarning(QGCApplicationLog) << "=================================================";
+            qWarning() << "=================================================";
+            qWarning() << "recieved STOP_RECORDING";
+            qWarning() << "=================================================";
             state_value = QGCApplication::stopRecording();
             break;
         case 12:
-            qCWarning(QGCApplicationLog) << "=================================================";
-            qCWarning(QGCApplicationLog) << "recieved MAV_CMD_DO_SET_SERVO";
-            qCWarning(QGCApplicationLog) << "=================================================";
+            qWarning() << "=================================================";
+            qWarning() << "recieved MAV_CMD_DO_SET_SERVO";
+            qWarning() << "=================================================";
             if(!requestVehicle) {
-                qCWarning(QGCApplicationLog) << "*****   No vehicle available   *****";
+                qWarning() << "*****   No vehicle available   *****";
                 break;
             };
             requestVehicle->servoCmd(message["param1"].toDouble(), message["param2"].toDouble()); 
             state_value = 0;
             break; // ************** SERVO ID, SURTOUT PAS 1 2 3 4 13 14 **********************
         case 13:
-            qCWarning(QGCApplicationLog) << "=================================================";
-            qCWarning(QGCApplicationLog) << "recieved MOVE_VECTOR";
-            qCWarning(QGCApplicationLog) << "=================================================";
+            qWarning() << "=================================================";
+            qWarning() << "recieved MOVE_VECTOR";
+            qWarning() << "=================================================";
             if(!_vehicle) {
-                qCWarning(QGCApplicationLog) << "*****   No vehicle available   *****";
+                qWarning() << "*****   No vehicle available   *****";
                 break;
             };
             if(!timerVector) {
-                qCWarning(QGCApplicationLog) << "*****   Timer not available   *****";
+                qWarning() << "*****   Timer not available   *****";
                 break;
             };
             _roll = message["roll"].toDouble();
@@ -1100,39 +1100,39 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             state_value = 0;
             break;
         case 14:
-            qCWarning(QGCApplicationLog) << "=================================================";
-            qCWarning(QGCApplicationLog) << "recieved TAKE_OFF";
-            qCWarning(QGCApplicationLog) << "=================================================";
+            qWarning() << "=================================================";
+            qWarning() << "recieved TAKE_OFF";
+            qWarning() << "=================================================";
             requestVehicle->guidedModeTakeoff(1);
             state_value = 0;
             break;
         case 15:
-            qCWarning(QGCApplicationLog) << "=================================================";
-            qCWarning(QGCApplicationLog) << "recieved RETURN_TO_HOME";
-            qCWarning(QGCApplicationLog) << "=================================================";
+            qWarning() << "=================================================";
+            qWarning() << "recieved RETURN_TO_HOME";
+            qWarning() << "=================================================";
             requestVehicle->guidedModeRTL(false);
             state_value = 0;
             break;
         case 16:
-            qCWarning(QGCApplicationLog) << "=================================================";
-            qCWarning(QGCApplicationLog) << "recieved VERTICAL_LANDING";
-            qCWarning(QGCApplicationLog) << "=================================================";
+            qWarning() << "=================================================";
+            qWarning() << "recieved VERTICAL_LANDING";
+            qWarning() << "=================================================";
             requestVehicle->guidedModeLand();
             state_value = 0;
             break;
         case 17:
-            qCWarning(QGCApplicationLog) << "=================================================";
-            qCWarning(QGCApplicationLog) << "recieved FLYING_TERMINATION_SYSTEM";
-            qCWarning(QGCApplicationLog) << "=================================================";
+            qWarning() << "=================================================";
+            qWarning() << "recieved FLYING_TERMINATION_SYSTEM";
+            qWarning() << "=================================================";
             requestVehicle->emergencyStop();
             state_value = 0;
             break;
         case 18:
-            qCWarning(QGCApplicationLog) << "=================================================";
-            qCWarning(QGCApplicationLog) << "recieved TELEMETRY";
-            qCWarning(QGCApplicationLog) << "=================================================";
+            qWarning() << "=================================================";
+            qWarning() << "recieved TELEMETRY";
+            qWarning() << "=================================================";
             if(!requestVehicle) {
-                qCWarning(QGCApplicationLog) << "*****   No vehicle available   *****";
+                qWarning() << "*****   No vehicle available   *****";
                 break;
             };
             double t_lat, t_lon, t_alt, t_hSpeed, t_vSpeed, t_yaw, t_pitch, t_roll;
@@ -1149,11 +1149,11 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             state_value = 0;
             break;
         case 19:
-            qCWarning(QGCApplicationLog) << "=================================================";
-            qCWarning(QGCApplicationLog) << "recieved GO_TO_WAYPOINT";
-            qCWarning(QGCApplicationLog) << "=================================================";
+            qWarning() << "=================================================";
+            qWarning() << "recieved GO_TO_WAYPOINT";
+            qWarning() << "=================================================";
             if(!requestVehicle) {
-                qCWarning(QGCApplicationLog) << "*****   No vehicle available   *****";
+                qWarning() << "*****   No vehicle available   *****";
                 break;
             };
             double w_speed, w_yaw, w_lat, w_lon, w_alt;
@@ -1166,18 +1166,18 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             state_value = 0;
             break;
         case 20:
-            qCWarning(QGCApplicationLog) << "=================================================";
-            qCWarning(QGCApplicationLog) << "recieved PAUSE_ALL";
-            qCWarning(QGCApplicationLog) << "=================================================";
+            qWarning() << "=================================================";
+            qWarning() << "recieved PAUSE_ALL";
+            qWarning() << "=================================================";
             QGCApplication::pauseAll();
             state_value = 0;
             break;
         case 21:
-            qCWarning(QGCApplicationLog) << "=================================================";
-            qCWarning(QGCApplicationLog) << "recieved SET_DATA";
-            qCWarning(QGCApplicationLog) << "=================================================";
+            qWarning() << "=================================================";
+            qWarning() << "recieved SET_DATA";
+            qWarning() << "=================================================";
             if(!_vehicle) {
-                qCWarning(QGCApplicationLog) << "*****   No vehicle available   *****";
+                qWarning() << "*****   No vehicle available   *****";
                 break;
             };
             _vehicle->setUas(message["uas"].toString());
@@ -1185,32 +1185,32 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             state_value = 0;
             break;
         case 22:
-            qCWarning(QGCApplicationLog) << "=================================================";
-            qCWarning(QGCApplicationLog) << "recieved SET_GEOFENCING";
-            qCWarning(QGCApplicationLog) << "=================================================";
+            qWarning() << "=================================================";
+            qWarning() << "recieved SET_GEOFENCING";
+            qWarning() << "=================================================";
             if(!_vehicle) {
-                qCWarning(QGCApplicationLog) << "*****   No vehicle available   *****";
+                qWarning() << "*****   No vehicle available   *****";
                 break;
             };
             _vehicle->loadAndSendGeofence(message);
             state_value = 0;
             break;
         case 23:
-            qCWarning(QGCApplicationLog) << "=================================================";
-            qCWarning(QGCApplicationLog) << "recieved TESTING_1";
-            qCWarning(QGCApplicationLog) << "=================================================";
+            qWarning() << "=================================================";
+            qWarning() << "recieved TESTING_1";
+            qWarning() << "=================================================";
             if(!_vehicle) {
-                qCWarning(QGCApplicationLog) << "*****   No vehicle available   *****";
+                qWarning() << "*****   No vehicle available   *****";
                 break;
             };
-            qCWarning(QGCApplicationLog) << _vehicle->uas();
-            qCWarning(QGCApplicationLog) << _vehicle->sn();
+            qWarning() << _vehicle->uas();
+            qWarning() << _vehicle->sn();
             state_value = 0;
             break;
         case 24:
-            qCWarning(QGCApplicationLog) << "=================================================";
-            qCWarning(QGCApplicationLog) << "recieved TESTING_2";
-            qCWarning(QGCApplicationLog) << "=================================================";
+            qWarning() << "=================================================";
+            qWarning() << "recieved TESTING_2";
+            qWarning() << "=================================================";
             QGCApplication::testing3();
             state_value = 0;
             break;
@@ -1240,22 +1240,22 @@ void QGCApplication::updateStatus(QMqttSubscription::SubscriptionState state)
 {
     switch (state) {
     case QMqttSubscription::Unsubscribed:
-        qCWarning(QGCApplicationLog) << "Unsubscribed";
+        qWarning() << "Unsubscribed";
         break;
     case QMqttSubscription::SubscriptionPending:
-        qCWarning(QGCApplicationLog) << "Pending";
+        qWarning() << "Pending";
         break;
     case QMqttSubscription::Subscribed:
-        qCWarning(QGCApplicationLog) << "Subscribed";
+        qWarning() << "Subscribed";
         break;
     case QMqttSubscription::Error:
-        qCWarning(QGCApplicationLog) << "Error";
+        qWarning() << "Error";
         break;
     case QMqttSubscription::UnsubscriptionPending:
-        qCWarning(QGCApplicationLog) << "Pending Unsubscription";
+        qWarning() << "Pending Unsubscription";
         break;
     default:
-        qCWarning(QGCApplicationLog) << "--Unknown--";
+        qWarning() << "--Unknown--";
         break;
     }
 }
@@ -1277,12 +1277,12 @@ void QGCApplication::_setActiveVehicle(Vehicle* vehicle)
     _vehicle = vehicle;
 
     if(!_vehicle) {
-        qCWarning(QGCApplicationLog) << "*****   No vehicle available   *****";
+        qWarning() << "*****   No vehicle available   *****";
         return;
     }
 
-    qCWarning(QGCApplicationLog) << "*****   Vehicle changed   *****";
-    qCWarning(QGCApplicationLog) << _vehicle->id();
+    qWarning() << "*****   Vehicle changed   *****";
+    qWarning() << _vehicle->id();
 
     QObject::connect(_vehicle, &Vehicle::flyingChanged, this, &QGCApplication::_setIsFlying);
     _setIsFlying(_vehicle->flying());
@@ -1293,7 +1293,7 @@ void QGCApplication::_setActiveVehicle(Vehicle* vehicle)
         _setActiveCamera();
     }
     else{
-        qCWarning(QGCApplicationLog) << "*****   No camera on vehicle   *****";
+        qWarning() << "*****   No camera on vehicle   *****";
     }
 }
 
@@ -1308,7 +1308,7 @@ void QGCApplication::_setupNewMqttSubscription(QString newSn)
     QString topic = "REQUEST/+/" + newSn + "/+";
     QMqttSubscription *subscription = m_client->subscribe(topic, 1);
     if(!subscription) {
-        qCWarning(QGCApplicationLog) << "***** Can't connect "+newSn+" with Mqtt *****";
+        qWarning() << "***** Can't connect "+newSn+" with Mqtt *****";
         return;
     }
     QObject::connect(subscription, &QMqttSubscription::messageReceived, this, &QGCApplication::updateMessage);
@@ -1335,19 +1335,19 @@ void QGCApplication::_setActiveCamera()
 
 void QGCApplication::_notifyRecording(){
     _recording = _videoManager->recording();
-    qCWarning(QGCApplicationLog) << "recording notification : "+_recording;
+    qWarning() << "recording notification : "+_recording;
 }
 
 void QGCApplication::sendInfos()
 {
     if(!clientState) {
-        qCWarning(QGCApplicationLog) << "*****   Mqtt not available   *****";
+        qWarning() << "*****   Mqtt not available   *****";
         return;
     }
     QGCApplication::sendRemotePilote();
     QGCApplication::sendAircraftPositionInfos();
 
-    qCWarning(QGCApplicationLog) << "==============  Infos sent  ==============";
+    qWarning() << "==============  Infos sent  ==============";
 }
 
 void QGCApplication::sendRemotePilote()
@@ -1359,7 +1359,7 @@ void QGCApplication::sendRemotePilote()
     for(int i=0; i<vehicles->count(); i++){
         Vehicle* vehicle = qobject_cast<Vehicle*>(vehicles->get(i));
         if(!vehicle->isInitialConnectComplete()) {
-            qCWarning(QGCApplicationLog) << "*****   Aircraft init not completed   *****";
+            qWarning() << "*****   Aircraft init not completed   *****";
             continue;
         }
         newResponse.insert("registrationNumber", vehicle->uas());
@@ -1374,13 +1374,13 @@ void QGCApplication::sendAircraftPositionInfos() {
     QmlObjectListModel* vehicles = _vehicleManager->vehicles();
     for(int i=0; i<vehicles->count(); i++){
         Vehicle* vehicle = qobject_cast<Vehicle*>(vehicles->get(i));
-        qCWarning(QGCApplicationLog) << "============== start send position ==============";
+        qWarning() << "============== start send position ==============";
         if(!vehicle) {
-            qCWarning(QGCApplicationLog) << "*****   No vehicle available   *****";
+            qWarning() << "*****   No vehicle available   *****";
             continue;
         };
         if(!vehicle->isInitialConnectComplete()) {
-            qCWarning(QGCApplicationLog) << "*****   Aircraft init not completed   *****";
+            qWarning() << "*****   Aircraft init not completed   *****";
             continue;
         }
 
@@ -1394,7 +1394,7 @@ void QGCApplication::sendAircraftPositionInfos() {
         newResponse.insert("systemOS",           "Windows"); // TODO change to include Android
         newResponse.insert("productType",        vehicle->vehicleTypeString());
         newResponse.insert("rtmpUrl",            rtmpUrl + vehicle->sn());
-        qCWarning(QGCApplicationLog) << "UID : " << vehicle->vehicleUIDStr() << " | SN : "  << vehicle->sn() << " | UAS : " << vehicle->uas();
+        qWarning() << "UID : " << vehicle->vehicleUIDStr() << " | SN : "  << vehicle->sn() << " | UAS : " << vehicle->uas();
         newResponse.insert("latitude",           vehicle->coordinate().latitude());
         newResponse.insert("longitude",          vehicle->coordinate().longitude());
         newResponse.insert("altitude",           vehicle->coordinate().altitude());
@@ -1418,7 +1418,7 @@ void QGCApplication::sendAircraftPositionInfos() {
         if(hasCamera) {
             MavlinkCameraControl* currentCamera = vehicle->cameraManager()->currentCameraInstance();
             if(currentCamera) {
-        //        qCWarning(QGCApplicationLog) << "============== current camera values ==============";
+        //        qWarning() << "============== current camera values ==============";
                 newResponse.insert("sensorName", currentCamera->modelName());
                 newResponse.insert("hasZoom",    currentCamera->hasZoom());
                 if(currentCamera->modelName() != "Caméra intégrée Tundra II"){
@@ -1436,7 +1436,7 @@ void QGCApplication::sendAircraftPositionInfos() {
         if(hasGimbal) {
             Gimbal* currentGimbal = vehicle->gimbalController()->activeGimbal();
             if(currentGimbal) {
-        //        qCWarning(QGCApplicationLog) << "============== current gimbal values ==============";
+        //        qWarning() << "============== current gimbal values ==============";
                 QJsonObject currentState;
                 QJsonObject attitude;
                 attitude.insert("yaw",                currentGimbal->absoluteYaw()->rawValueString());
@@ -1454,12 +1454,12 @@ void QGCApplication::sendAircraftPositionInfos() {
         for (int i=0; i<batteries->count(); i++) {
             VehicleBatteryFactGroup* battery = qobject_cast<VehicleBatteryFactGroup*>(batteries->get(i));
             res += battery->percentRemaining()->rawValue().toInt();
-        //    qCWarning(QGCApplicationLog) << "TIME REMAINING" << battery->timeRemaining()->rawValue().toInt();
+        //    qWarning() << "TIME REMAINING" << battery->timeRemaining()->rawValue().toInt();
             totalSeconds = std::min(totalSeconds, battery->timeRemaining()->rawValue().toInt());
         }
 
-        // qCWarning(QGCApplicationLog) << "TOTAL SECONDS" << totalSeconds;
-        // qCWarning(QGCApplicationLog) << "joysticks" << _toolbox->joystickManager()->joystickNames();
+        // qWarning() << "TOTAL SECONDS" << totalSeconds;
+        // qWarning() << "joysticks" << _toolbox->joystickManager()->joystickNames();
 
         if (totalSeconds == INT_MAX) {
             newResponse.insert("timeRemaining", "--:--:--");
@@ -1537,12 +1537,12 @@ void QGCApplication::setCamera(int i){
 void QGCApplication::startStream()
 {
     if(this->future.isValid() && this->future.isRunning()) {
-        qCWarning(QGCApplicationLog) << "*****   Stream already active  *****";
+        qWarning() << "*****   Stream already active  *****";
         return;
     }
 
     if(!_activeCamera) {
-        qCWarning(QGCApplicationLog) << "*****   No active camera  *****";
+        qWarning() << "*****   No active camera  *****";
         return;
     }
 
@@ -1558,7 +1558,7 @@ void QGCApplication::startStream()
     });
 
     this->isStreaming = true;
-    qCWarning(QGCApplicationLog) << "==============  OPEN_STREAM  ==============";
+    qWarning() << "==============  OPEN_STREAM  ==============";
 }
 
 //======================================================================================================================
@@ -1566,51 +1566,51 @@ void QGCApplication::startStream()
 bool QGCApplication::busProcessMsg(GstElement *pipeline, GstMessage *msg, QString prefix)
 {
     GstMessageType mType = GST_MESSAGE_TYPE(msg);
-    qCWarning(QGCApplicationLog) << "[" << prefix << "] : mType = " << mType << " ";
+    qWarning() << "[" << prefix << "] : mType = " << mType << " ";
     GError *err = nullptr;
     gchar *dbg = nullptr;
     switch (mType) {
         case (GST_MESSAGE_ERROR):
-            qCWarning(QGCApplicationLog) << " ERROR !";
+            qWarning() << " ERROR !";
             // Parse error and exit program, hard exit
             gst_message_parse_error(msg, &err, &dbg);
             if(err) {
-                qCWarning(QGCApplicationLog) << "ERR = " << err->message << " FROM " << GST_OBJECT_NAME(msg->src);
+                qWarning() << "ERR = " << err->message << " FROM " << GST_OBJECT_NAME(msg->src);
                 g_clear_error(&err);
             } else {
-                qCWarning(QGCApplicationLog) << "NO ERR";
+                qWarning() << "NO ERR";
             }
             if(dbg) {
-                qCWarning(QGCApplicationLog) << "DBG = " << dbg;
+                qWarning() << "DBG = " << dbg;
                 g_free(dbg);
             } else {
-                qCWarning(QGCApplicationLog) << "NO DBG";
+                qWarning() << "NO DBG";
             }
             return false;
         case (GST_MESSAGE_EOS) :
             // Soft exit on EOS
-            qCWarning(QGCApplicationLog) << " EOS !";
+            qWarning() << " EOS !";
             return false;
         case (GST_MESSAGE_STATE_CHANGED):
             // Parse state change, print extra info for pipeline only
-            qCWarning(QGCApplicationLog) << "State changed !";
+            qWarning() << "State changed !";
             if (GST_MESSAGE_SRC(msg) == GST_OBJECT(pipeline)) {
                 GstState sOld, sNew, sPenging;
                 gst_message_parse_state_changed(msg, &sOld, &sNew, &sPenging);
-                qCWarning(QGCApplicationLog) << "Pipeline changed from " << gst_element_state_get_name(sOld) << " to " << gst_element_state_get_name(sNew);
+                qWarning() << "Pipeline changed from " << gst_element_state_get_name(sOld) << " to " << gst_element_state_get_name(sNew);
             }
             break;
         case (GST_MESSAGE_STEP_START):
-            qCWarning(QGCApplicationLog) << "STEP START !";
+            qWarning() << "STEP START !";
             break;
         case (GST_MESSAGE_STREAM_STATUS):
-            qCWarning(QGCApplicationLog) << "STREAM STATUS !";
+            qWarning() << "STREAM STATUS !";
             break;
         case (GST_MESSAGE_ELEMENT):
-            qCWarning(QGCApplicationLog) << "MESSAGE ELEMENT !";
+            qWarning() << "MESSAGE ELEMENT !";
             break;
         default:
-            qCWarning(QGCApplicationLog) << "default";
+            qWarning() << "default";
     }
     return true;
 }
@@ -1629,7 +1629,7 @@ void QGCApplication::codeThreadBus(GstElement *pipeline, GoblinData &data, QStri
             break;
     }
     gst_object_unref(bus);
-    qCWarning(QGCApplicationLog) << "BUS THREAD FINISHED : " << prefix;
+    qWarning() << "BUS THREAD FINISHED : " << prefix;
 }
 
 void QGCApplication::stopStream()
@@ -1640,14 +1640,14 @@ void QGCApplication::stopStream()
     if(this->future.isValid() && this->future.isRunning()) {
         this->future.cancel();
     }
-    qCWarning(QGCApplicationLog) << "==============  STOP_STREAM  ==============";
+    qWarning() << "==============  STOP_STREAM  ==============";
 }
 
 int QGCApplication::takePhoto()
 {
     /*
     if(!_activeCamera) {
-        qCWarning(QGCApplicationLog) << "*****   No active camera   *****";
+        qWarning() << "*****   No active camera   *****";
         return;
     }
     _activeCamera->setCameraModePhoto();
@@ -1660,14 +1660,14 @@ int QGCApplication::takePhoto()
     _videoManager->grabImage(imageFile);
     return !QGCApplication::isFileEmpty(imageFile.toStdString().c_str()) ? 1 : -1;
 
-    qCWarning(QGCApplicationLog) << "==============   TAKE_PHOTO   =============="; // NEED TO UPDATE FOR OTHER CAMS
+    qWarning() << "==============   TAKE_PHOTO   =============="; // NEED TO UPDATE FOR OTHER CAMS
 }
 
 int QGCApplication::startRecording()
 {
     /*
     if(!_activeCamera) {
-        qCWarning(QGCApplicationLog) << "*****   No active camera   *****";
+        qWarning() << "*****   No active camera   *****";
         return;
     }
     _activeCamera->setCameraModeVideo();
@@ -1685,9 +1685,9 @@ int QGCApplication::startRecording()
     this->videoFileS3 = "station-drone/aircrafts/operatorID-16/sn-" + _vehicle->sn() + "/videos/" + baseVideoFileName + "." + ext;
 
     this->isRecording = true;
-    qCWarning(QGCApplicationLog) << this->isRecording;
+    qWarning() << this->isRecording;
     return this->isRecording ? 0 : -1;
-    qCWarning(QGCApplicationLog) << "==============   START_RECORDING   =============="; // NEED TO UPDATE FOR OTHER CAMS
+    qWarning() << "==============   START_RECORDING   =============="; // NEED TO UPDATE FOR OTHER CAMS
 }
 
 int QGCApplication::stopRecording()
@@ -1700,10 +1700,10 @@ int QGCApplication::stopRecording()
     }
     _videoManager->stopRecording();
     this->isRecording = false;
-    qCWarning(QGCApplicationLog) << this->videoFile;
+    qWarning() << this->videoFile;
     return !this->isRecording && !QGCApplication::isFileEmpty(this->videoFile.toStdString().c_str()) ? 1 : -1;
 
-    qCWarning(QGCApplicationLog) << "==============   STOP_RECORDING   =============="; // NEED TO UPDATE FOR OTHER CAMS
+    qWarning() << "==============   STOP_RECORDING   =============="; // NEED TO UPDATE FOR OTHER CAMS
 }
 
 void QGCApplication::vectorControl()
@@ -1718,7 +1718,7 @@ void QGCApplication::vectorControl()
 }
 
 void QGCApplication::vectorControlOverride(){
-    qCWarning(QGCApplicationLog) << "=====   RECEIVED OVERRIDE  =====";
+    qWarning() << "=====   RECEIVED OVERRIDE  =====";
     canControl = false;
     if(timerVector->isActive()){
         timerVector->stop();
@@ -1729,7 +1729,7 @@ bool QGCApplication::isFileEmpty(const std::string& filePath)
 {
     std::ifstream file(filePath, std::ios::binary | std::ios::ate);
     if (!file.is_open()) {
-        qCWarning(QGCApplicationLog) << "Erreur : Impossible d'ouvrir le fichier.";
+        qWarning() << "Erreur : Impossible d'ouvrir le fichier.";
         return false; // Retourne false pour indiquer que le fichier n'existe pas ou n'est pas accessible.
     }
 
