@@ -112,7 +112,7 @@
 #include "LogReplayLink.h"
 #include "VehicleObjectAvoidance.h"
 #include "TrajectoryPoints.h"
-#include "VehicleCameraControl.h"
+#include "QGCCameraControl.h"
 #include "RCToParamDialogController.h"
 #include "QGCImageProvider.h"
 #include "TerrainProfile.h"
