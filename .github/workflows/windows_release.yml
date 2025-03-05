@@ -88,6 +88,10 @@ jobs:
         with:
           arch: x64
 
+      - name: Install pkg-config
+        run: |
+          choco install pkgconfiglite
+
       - name: Setup QMQTT First Part
         run: |
           set QT_VERSION=5.15.2
@@ -97,13 +101,12 @@ jobs:
           set CMAKE_PREFIX_PATH=$QT_INSTALL_DIR/$QT_VERSION/msvc2019_64/"
           set NINJA_DIR=$QT_INSTALL_DIR/Tools/Ninja"
           git clone git://code.qt.io/qt/qtmqtt.git --branch 5.15.2
-          dir
           mkdir build
           cd build
           "C:\Program Files\CMake\bin\cmake" -G "Ninja" -DCMAKE_PREFIX_PATH=%CMAKE_PREFIX_PATH% -DCMAKE_INSTALL_PREFIX=%CMAKE_PREFIX_PATH% ..
           "C:\Program Files\CMake\bin\cmake" --build .
           "C:\Program Files\CMake\bin\cmake" --install . --verbose
-          
+
       - name: Build
         working-directory: ${{ runner.temp }}\shadow_build_dir
         run:  |
