@@ -103,14 +103,7 @@ jobs:
           "C:\Program Files\CMake\bin\cmake" -G "Ninja" -DCMAKE_PREFIX_PATH=%CMAKE_PREFIX_PATH% -DCMAKE_INSTALL_PREFIX=%CMAKE_PREFIX_PATH% ..
           "C:\Program Files\CMake\bin\cmake" --build .
           "C:\Program Files\CMake\bin\cmake" --install . --verbose
-        
-      - name: Setup QMQTT Second Part
-        run: |
-          cd D:\a\forkQGroundControl\forkQGroundControl\qtmqtt\build
-          "C:\Program Files\CMake\bin\cmake" --build .
-          "C:\Program Files\CMake\bin\cmake" --install . --verbose
-
-
+          
       - name: Build
         working-directory: ${{ runner.temp }}\shadow_build_dir
         run:  |
