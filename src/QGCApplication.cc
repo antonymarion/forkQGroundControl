@@ -1398,18 +1398,18 @@ void QGCApplication::sendAircraftPositionInfos() {
         newResponse.insert("latitude",           vehicle->coordinate().latitude());
         newResponse.insert("longitude",          vehicle->coordinate().longitude());
         newResponse.insert("altitude",           vehicle->coordinate().altitude());
-        newResponse.insert("altitudeRelative",   qobject_cast<VehicleFactGroup*>(vehicle->altitudeRelative())->rawValueString());
+        newResponse.insert("altitudeRelative",   qobject_cast<Fact*>(vehicle->altitudeRelative())->rawValueString());
         newResponse.insert("isFlying",           vehicle->flying());
-        newResponse.insert("flightDistance",     qobject_cast<VehicleFactGroup*>(vehicle->flightDistance())->rawValueString());
-        newResponse.insert("verticalSpeed",      qobject_cast<VehicleFactGroup*>(vehicle->climbRate())->rawValueString());
-        newResponse.insert("horizontalSpeed",    qobject_cast<VehicleFactGroup*>(vehicle->groundSpeed())->rawValueString());
+        newResponse.insert("flightDistance",     qobject_cast<Fact*>(vehicle->flightDistance())->rawValueString());
+        newResponse.insert("verticalSpeed",      qobject_cast<Fact*>(vehicle->climbRate())->rawValueString());
+        newResponse.insert("horizontalSpeed",    qobject_cast<Fact*>(vehicle->groundSpeed())->rawValueString());
         newResponse.insert("gpsSatelliteCount",  qobject_cast<VehicleGPSFactGroup*>(vehicle->gpsFactGroup())->count()->rawValueString());
         newResponse.insert("firmwareVersionUav", vehicle->firmwarePatchVersion());
         newResponse.insert("firmwareVersion",    _buildVersion);
         QJsonObject dAttitude;
-        dAttitude.insert("yaw",                  qobject_cast<VehicleFactGroup*>(vehicle->heading())->rawValueString());
-        dAttitude.insert("pitch",                qobject_cast<VehicleFactGroup*>(vehicle->pitch())->rawValueString());
-        dAttitude.insert("roll",                 qobject_cast<VehicleFactGroup*>(vehicle->roll())->rawValueString());
+        dAttitude.insert("yaw",                  qobject_cast<Fact*>(vehicle->heading())->rawValueString());
+        dAttitude.insert("pitch",                qobject_cast<Fact*>(vehicle->pitch())->rawValueString());
+        dAttitude.insert("roll",                 qobject_cast<Fact*>(vehicle->roll())->rawValueString());
         newResponse.insert("attitude",           dAttitude);
 
 
