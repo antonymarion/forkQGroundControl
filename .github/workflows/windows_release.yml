@@ -49,7 +49,7 @@ jobs:
           target:       desktop
           arch:         win64_msvc2019_64
           dir:          ${{ runner.temp }}
-          modules:      qtcharts,qtmqtt
+          modules:      qtcharts
           setup-python: false
 
       - name: Set up Qt environment
