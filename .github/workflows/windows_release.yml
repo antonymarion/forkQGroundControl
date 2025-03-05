@@ -98,6 +98,7 @@ jobs:
           set NINJA_DIR=$QT_INSTALL_DIR/Tools/Ninja"
           git clone git://code.qt.io/qt/qtmqtt.git --branch 5.15.2
           cd qtmqtt
+          dir
           mkdir build
           cd build
           "C:\Program Files\CMake\bin\cmake" -G "Ninja" -DCMAKE_PREFIX_PATH=%CMAKE_PREFIX_PATH% -DCMAKE_INSTALL_PREFIX=%CMAKE_PREFIX_PATH% ..
