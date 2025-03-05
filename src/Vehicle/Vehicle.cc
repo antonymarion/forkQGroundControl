@@ -31,6 +31,7 @@
 #include "FlightPathSegment.h"
 #include "QGCApplication.h"
 #include "QGCImageProvider.h"
+#include "QGCCameraControl.h"
 #include "MissionCommandTree.h"
 #include "SettingsManager.h"
 #include "QGCQGeoCoordinate.h"
@@ -601,11 +602,11 @@ void Vehicle::getTelemetry(double &lat, double &lon, double &alt, double &hSpeed
   lat = _coordinate.latitude();
   lon = _coordinate.longitude();
   alt = _coordinate.altitude();
-  hSpeed = _vehicleFactGroup->groundSpeed()->rawValue().toDouble();
-  vSpeed = _vehicleFactGroup->climbRate()->rawValue().toDouble();
-  yaw = _vehicleFactGroup->heading()->rawValue().toDouble();
-  pitch = _vehicleFactGroup->pitch()->rawValue().toDouble();
-  roll = _vehicleFactGroup->roll()->rawValue().toDouble();
+  hSpeed = _groundSpeedFact->rawValue().toDouble();
+  vSpeed = _climbRateFact->rawValue().toDouble();
+  yaw = _headingFact->rawValue().toDouble();
+  pitch = _pitchFact->rawValue().toDouble();
+  roll = _rollFact->rawValue().toDouble();
 }
 
 void Vehicle::resetGimbal()
@@ -686,7 +687,7 @@ QJsonObject Vehicle::getGimbalCapabilities()
 
 void Vehicle::getCameraCapabilities(bool &activeCamera, QString &cameraName, bool &hasZoom, QJsonObject &iso, QJsonObject &aperture)
 {
-    MavlinkCameraControl* currentCamera = _cameraManager->currentCameraInstance();
+    QGCCameraControl* currentCamera = _cameraManager->currentCameraInstance();
     if(currentCamera) {
         activeCamera = true;
         hasZoom = currentCamera->hasZoom();
@@ -709,7 +710,7 @@ QJsonArray Vehicle::getCameras()
     QJsonArray cameraList;
     QmlObjectListModel *cameras = _cameraManager->cameras();
     for (int i = 0; i < cameras->count(); i++) {
-        MavlinkCameraControl *camera = qobject_cast<MavlinkCameraControl*>(cameras->get(i));
+        QGCCameraControl *camera = qobject_cast<QGCCameraControl*>(cameras->get(i));
         QJsonObject thisCamera;
         thisCamera.insert("index",i);
         thisCamera.insert("name",camera->modelName());
@@ -720,7 +721,7 @@ QJsonArray Vehicle::getCameras()
 
 void Vehicle::setZoom(float value)
 {
-    MavlinkCameraControl* currentCamera = _cameraManager->currentCameraInstance();
+    QGCCameraControl* currentCamera = _cameraManager->currentCameraInstance();
     if(!currentCamera) {
         qCWarning(VehicleLog) << "*****   No active camera   *****";
         return;
