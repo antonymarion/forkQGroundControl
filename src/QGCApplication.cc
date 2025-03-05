@@ -1203,7 +1203,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
                 qWarning() << "*****   No vehicle available   *****";
                 break;
             };
-            qWarning() << _vehicle->uas();
+            qWarning() << _vehicle->uasString();
             qWarning() << _vehicle->sn();
             state_value = 0;
             break;
@@ -1362,7 +1362,7 @@ void QGCApplication::sendRemotePilote()
             qWarning() << "*****   Aircraft init not completed   *****";
             continue;
         }
-        newResponse.insert("registrationNumber", vehicle->uas());
+        newResponse.insert("registrationNumber", vehicle->uasString());
         QJsonDocument doc(newResponse);
         QString responseMessage(doc.toJson(QJsonDocument::Compact));
         m_client->publish("REMOTE_PILOT/" + vehicle->sn(), responseMessage.toUtf8());
@@ -1385,7 +1385,7 @@ void QGCApplication::sendAircraftPositionInfos() {
         }
 
         QJsonObject newResponse;
-        newResponse.insert("registrationNumber", vehicle->uas());
+        newResponse.insert("registrationNumber", vehicle->uasString());
         newResponse.insert("emailRemotePilot",   loggedEmail);
         newResponse.insert("isStreaming",        isStreaming);
         newResponse.insert("system",             vehicle->firmwareTypeString());
@@ -1394,7 +1394,7 @@ void QGCApplication::sendAircraftPositionInfos() {
         newResponse.insert("systemOS",           "Windows"); // TODO change to include Android
         newResponse.insert("productType",        vehicle->vehicleTypeString());
         newResponse.insert("rtmpUrl",            rtmpUrl + vehicle->sn());
-        qWarning() << "UID : " << vehicle->vehicleUIDStr() << " | SN : "  << vehicle->sn() << " | UAS : " << vehicle->uas();
+        qWarning() << "UID : " << vehicle->vehicleUIDStr() << "UID2 : " << vehicle->uas()->getUASID() << " | SN : "  << vehicle->sn() << " | UAS : " << vehicle->uasString();
         newResponse.insert("latitude",           vehicle->coordinate().latitude());
         newResponse.insert("longitude",          vehicle->coordinate().longitude());
         newResponse.insert("altitude",           vehicle->coordinate().altitude());

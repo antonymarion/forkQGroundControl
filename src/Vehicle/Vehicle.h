@@ -497,7 +497,7 @@ public:
     // Property accesors
     int id() const{ return _id; }
     QString sn () const{ return _dgSn; }
-    QString uas() const{ return _dgUas; }
+    QString uasString() const{ return _dgUas; }
     QString productName() const{ return _dgProductName; }
     void setSn (QString newSn)  { _dgSn = newSn; }
     void setUas(QString newUas) { _dgUas = newUas; }
