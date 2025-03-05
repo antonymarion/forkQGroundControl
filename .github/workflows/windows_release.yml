@@ -40,7 +40,6 @@ jobs:
         working-directory:  ${{ github.workspace }}
         run: |
           git fetch --all --tags -f --depth 1
-          aqt list-qt windows desktop --modules 5.15.2 <arch>
 
       - name: Install Qt
         uses: jurplel/install-qt-action@v3
@@ -53,6 +52,10 @@ jobs:
           modules:      qtcharts,qtmqtt
           setup-python: false
 
+      - name: Set up Qt environment
+        run: |
+          aqt list-qt windows desktop --modules 5.15.2
+          
       - name: Download JOM
         uses: suisei-cn/actions-download-file@v1.3.0
         with:
