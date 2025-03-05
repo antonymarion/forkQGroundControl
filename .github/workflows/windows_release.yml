@@ -49,13 +49,13 @@ jobs:
           target:       desktop
           arch:         win64_msvc2019_64
           dir:          ${{ runner.temp }}
-          modules:      qtcharts,qtmqtt
+          modules:      qtcharts
           setup-python: false
 
       - name: Set up Qt environment
         run: |
           aqt list-qt windows desktop --modules 5.15.2
-          
+
       - name: Download JOM
         uses: suisei-cn/actions-download-file@v1.3.0
         with:
