@@ -602,11 +602,11 @@ void Vehicle::getTelemetry(double &lat, double &lon, double &alt, double &hSpeed
   lat = _coordinate.latitude();
   lon = _coordinate.longitude();
   alt = _coordinate.altitude();
-  hSpeed = _groundSpeedFact->rawValue().toDouble();
-  vSpeed = _climbRateFact->rawValue().toDouble();
-  yaw = _headingFact->rawValue().toDouble();
-  pitch = _pitchFact->rawValue().toDouble();
-  roll = _rollFact->rawValue().toDouble();
+  hSpeed = _groundSpeedFact.rawValue().toDouble();
+  vSpeed = _climbRateFact.rawValue().toDouble();
+  yaw = _headingFact.rawValue().toDouble();
+  pitch = _pitchFact.rawValue().toDouble();
+  roll = _rollFact.rawValue().toDouble();
 }
 
 void Vehicle::resetGimbal()
