@@ -52,7 +52,7 @@ class QQmlApplicationEngine;
 class QGCSingleton;
 class QGCToolbox;
 class Vehicle;
-class MavlinkCameraControl;
+class QGCCameraControl;
 class VehicleCameraControl;
 class MultiVehicleManager;
 class Gimbal;
@@ -309,7 +309,7 @@ private:
     Vehicle*              _vehicle{nullptr};                             // current vehicle
     VideoManager*         _videoManager{nullptr};
     MultiVehicleManager*  _vehicleManager{nullptr};
-    MavlinkCameraControl* _activeCamera{nullptr};
+    QGCCameraControl*     _activeCamera{nullptr};
     QTimer*               timerVector = nullptr;                         // send vector command timer
     QStringList           simulatedMAC        = {                        // global axis list
         "4F:4E:49:44:4C:41:54:49",
