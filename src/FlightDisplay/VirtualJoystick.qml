@@ -30,10 +30,10 @@ Item {
         onTriggered: {
             if (_activeVehicle) {
                  // if all value 0 do not run this, else use qgcapp function to stop the timer and set overtake to true
-                var rx : rightStick.xAxis
-                var ry : rightStick.yAxis
-                var lx : leftStick.xAxis
-                var ly : leftStick.yAxis
+                var rx = rightStick.xAxis
+                var ry = rightStick.yAxis
+                var lx = leftStick.xAxis
+                var ly = leftStick.yAxis
                 if(rx != 0 || ry !=0 || lx != 0 || ly != 0.5){
                     if(!hasControl){
                         hasControl = true;
