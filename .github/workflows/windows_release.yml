@@ -99,14 +99,17 @@ jobs:
           git clone git://code.qt.io/qt/qtmqtt.git --branch 5.15.2
           dir
           mkdir build
-          cd D:/a/_temp/Qt/5.15.2/msvc2019_64/bin
-          dir
+          cd build
+          "C:\Program Files\CMake\bin\cmake" -G "Ninja" -DCMAKE_PREFIX_PATH=%CMAKE_PREFIX_PATH% -DCMAKE_INSTALL_PREFIX=%CMAKE_PREFIX_PATH% ..
+          "C:\Program Files\CMake\bin\cmake" --build .
+          "C:\Program Files\CMake\bin\cmake" --install . --verbose
         
       - name: Setup QMQTT Second Part
         run: |
           cd D:\a\forkQGroundControl\forkQGroundControl\qtmqtt\build
           "C:\Program Files\CMake\bin\cmake" --build .
           "C:\Program Files\CMake\bin\cmake" --install . --verbose
+
 
       - name: Build
         working-directory: ${{ runner.temp }}\shadow_build_dir
