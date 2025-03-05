@@ -54,7 +54,7 @@ jobs:
 
       - name: Set up Qt environment
         run: |
-          aqt list-qt windows desktop --modules 5.15.2 x64
+          aqt list-qt windows desktop --modules 5.15.2 win64_msvc2019_64
           
       - name: Download JOM
         uses: suisei-cn/actions-download-file@v1.3.0
