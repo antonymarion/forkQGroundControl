@@ -742,7 +742,7 @@ void QGCApplication::_shutdown()
 {
     gst_element_set_state(this->data.pipeline, GST_STATE_NULL);
     gst_object_unref(this->data.pipeline);
-    if(this->future.isValid() && this->future.isRunning()) {
+    if(this->future.isRunning()) {
         this->future.cancel();
         this->future.waitForFinished();
     }
@@ -1536,7 +1536,7 @@ void QGCApplication::setCamera(int i){
 
 void QGCApplication::startStream()
 {
-    if(this->future.isValid() && this->future.isRunning()) {
+    if(this->future.isRunning()) {
         qWarning() << "*****   Stream already active  *****";
         return;
     }
@@ -1637,7 +1637,7 @@ void QGCApplication::stopStream()
     gst_element_set_state(this->data.pipeline, GST_STATE_NULL);
     gst_object_unref(this->data.pipeline);
     this->isStreaming = false;
-    if(this->future.isValid() && this->future.isRunning()) {
+    if(this->future.isRunning()) {
         this->future.cancel();
     }
     qWarning() << "==============  STOP_STREAM  ==============";
@@ -1750,7 +1750,7 @@ void QGCApplication::testing1()
 
     _vehicle->guidedModeGotoLocation(actualCoordinate);
     _vehicle->guidedModeChangeAltitude(20, false);
-    _vehicle->guidedModeChangeHeading(QGeoCoordinate(actualCoordinate.latitude() - 0.001, actualCoordinate.longitude(), 100));
+    // _vehicle->guidedModeChangeHeading(QGeoCoordinate(actualCoordinate.latitude() - 0.001, actualCoordinate.longitude(), 100));
 }
 
 void QGCApplication::testing2(double speed)
