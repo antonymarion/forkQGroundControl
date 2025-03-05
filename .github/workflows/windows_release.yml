@@ -98,8 +98,8 @@ jobs:
           mkdir build
           cd build
           %QMAKE_BIN_DIR%/qmake ../qtmqtt.pro
-          %QMAKE_BIN_DIR%/jom -j2
-          %QMAKE_BIN_DIR%/jom install
+          nmake
+          nmake install
 
       - name: Build
         working-directory: ${{ runner.temp }}\shadow_build_dir
