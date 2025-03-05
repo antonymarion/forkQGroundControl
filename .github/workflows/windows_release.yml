@@ -88,10 +88,6 @@ jobs:
         with:
           arch: x64
 
-      - name: Install pkg-config
-        run: |
-          choco install pkgconfiglite
-
       - name: Setup QMQTT First Part
         run: |
           set QT_VERSION=5.15.2
