@@ -244,6 +244,7 @@ QT += \
     concurrent \
     gui \
     location \
+    mqtt \
     network \
     opengl \
     positioning \
