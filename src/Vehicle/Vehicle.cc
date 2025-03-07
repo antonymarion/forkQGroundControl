@@ -790,7 +790,7 @@ void Vehicle::loadAndSendGeofence(const QJsonObject& json){
 
 void Vehicle::_setNewVehicleData()
 {
-    QStringList uasSn = "00:00:00:00:00:00:00:00";
+    QStringList uasSn = QStringList() << "00:00:00:00:00:00:00:00";
     if(uasSn.isEmpty()) {
         qCWarning(VehicleLog) << "*****  Vehicle Data Not Found   *****";
         qCWarning(VehicleLog) << "UID : "<< vehicleUIDStr();
