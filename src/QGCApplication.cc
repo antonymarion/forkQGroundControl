@@ -1448,7 +1448,7 @@ void QGCApplication::sendAircraftPositionInfos() {
                 currentState.insert("keyYawRelativeToAircraftHeading", currentGimbal->bodyYaw()->rawValueString()); // TODO
                 newResponse.insert("gimbal",          currentState);
             }
-        }
+        }/* 
         QmlObjectListModel* batteries = vehicle->batteries();
         int res = 0;
         int totalSeconds = INT_MAX;
@@ -1462,7 +1462,7 @@ void QGCApplication::sendAircraftPositionInfos() {
         // qWarning() << "TOTAL SECONDS" << totalSeconds;
         // qWarning() << "joysticks" << _toolbox->joystickManager()->joystickNames();
 
-        /* if (totalSeconds == INT_MAX) {
+        if (totalSeconds == INT_MAX) {
             newResponse.insert("timeRemaining", "--:--:--");
         } else {
             int hours           = totalSeconds / 3600;
@@ -1478,8 +1478,8 @@ void QGCApplication::sendAircraftPositionInfos() {
             else {
                 newResponse.insert("timeRemaining", QString::asprintf("%02dH:%02dM:%02dS", hours, minutes, seconds));
             }
-        } */
-        newResponse.insert("batteryPowerPercentUav", res/batteries->count());
+        }
+        newResponse.insert("batteryPowerPercentUav", res/batteries->count()); */
 
         QJsonDocument doc(newResponse);
         QString responseMessage(doc.toJson(QJsonDocument::Compact));
