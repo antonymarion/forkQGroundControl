@@ -1461,7 +1461,7 @@ void QGCApplication::sendAircraftPositionInfos() {
 
         // qWarning() << "TOTAL SECONDS" << totalSeconds;
         // qWarning() << "joysticks" << _toolbox->joystickManager()->joystickNames();
-
+/* 
         if (totalSeconds == INT_MAX) {
             newResponse.insert("timeRemaining", "--:--:--");
         } else {
@@ -1479,7 +1479,7 @@ void QGCApplication::sendAircraftPositionInfos() {
                 newResponse.insert("timeRemaining", QString::asprintf("%02dH:%02dM:%02dS", hours, minutes, seconds));
             }
         }
-        newResponse.insert("batteryPowerPercentUav", res/batteries->count());
+        newResponse.insert("batteryPowerPercentUav", res/batteries->count()); */
 
         QJsonDocument doc(newResponse);
         QString responseMessage(doc.toJson(QJsonDocument::Compact));
