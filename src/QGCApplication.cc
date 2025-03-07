@@ -1430,7 +1430,7 @@ void QGCApplication::sendAircraftPositionInfos() {
                     newResponse.insert("intrinsics",     currentValues);
                 }
             }
-        }
+        }/* 
 
         bool hasGimbal = vehicle->gimbalController()->gimbals()->count() != 0;
         newResponse.insert("hasGimbal", hasGimbal);
@@ -1448,7 +1448,7 @@ void QGCApplication::sendAircraftPositionInfos() {
                 currentState.insert("keyYawRelativeToAircraftHeading", currentGimbal->bodyYaw()->rawValueString()); // TODO
                 newResponse.insert("gimbal",          currentState);
             }
-        }/* 
+        } */
         QmlObjectListModel* batteries = vehicle->batteries();
         int res = 0;
         int totalSeconds = INT_MAX;
@@ -1457,7 +1457,7 @@ void QGCApplication::sendAircraftPositionInfos() {
             res += battery->percentRemaining()->rawValue().toInt();
         //    qWarning() << "TIME REMAINING" << battery->timeRemaining()->rawValue().toInt();
             totalSeconds = std::min(totalSeconds, battery->timeRemaining()->rawValue().toInt());
-        } */
+        }
 
         // qWarning() << "TOTAL SECONDS" << totalSeconds;
         // qWarning() << "joysticks" << _toolbox->joystickManager()->joystickNames();
