@@ -1413,7 +1413,7 @@ void QGCApplication::sendAircraftPositionInfos() {
         dAttitude.insert("roll",                 qobject_cast<Fact*>(vehicle->roll())->rawValueString());
         newResponse.insert("attitude",           dAttitude);
 
-/* 
+
         bool hasCamera = vehicle->cameraManager()->cameras()->count() != 0;
         newResponse.insert("hasCamera", hasCamera);
         if(hasCamera) {
@@ -1430,7 +1430,7 @@ void QGCApplication::sendAircraftPositionInfos() {
                     newResponse.insert("intrinsics",     currentValues);
                 }
             }
-        } */
+        }
 
         bool hasGimbal = vehicle->gimbalController()->gimbals()->count() != 0;
         newResponse.insert("hasGimbal", hasGimbal);
@@ -1462,7 +1462,7 @@ void QGCApplication::sendAircraftPositionInfos() {
         // qWarning() << "TOTAL SECONDS" << totalSeconds;
         // qWarning() << "joysticks" << _toolbox->joystickManager()->joystickNames();
 
-        if (totalSeconds == INT_MAX) {
+        /* if (totalSeconds == INT_MAX) {
             newResponse.insert("timeRemaining", "--:--:--");
         } else {
             int hours           = totalSeconds / 3600;
@@ -1478,7 +1478,7 @@ void QGCApplication::sendAircraftPositionInfos() {
             else {
                 newResponse.insert("timeRemaining", QString::asprintf("%02dH:%02dM:%02dS", hours, minutes, seconds));
             }
-        }
+        } */
         newResponse.insert("batteryPowerPercentUav", res/batteries->count());
 
         QJsonDocument doc(newResponse);

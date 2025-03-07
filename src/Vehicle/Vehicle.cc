@@ -375,7 +375,7 @@ void Vehicle::_commonInit()
     connect(this, &Vehicle::homePositionChanged,    this, &Vehicle::_updateDistanceHeadingToHome);
     connect(this, &Vehicle::hobbsMeterChanged,      this, &Vehicle::_updateHobbsMeter);
     connect(this, &Vehicle::coordinateChanged,      this, &Vehicle::_updateAltAboveTerrain);
-    // connect(this, &Vehicle::vehicleUIDChanged,      this, &Vehicle::_setNewVehicleData);
+    connect(this, &Vehicle::vehicleUIDChanged,      this, &Vehicle::_setNewVehicleData);
     // Initialize alt above terrain to Nan so frontend can display it correctly in case the terrain query had no response
     _altitudeAboveTerrFact.setRawValue(qQNaN());
 
@@ -790,7 +790,7 @@ void Vehicle::loadAndSendGeofence(const QJsonObject& json){
 
 void Vehicle::_setNewVehicleData()
 {
-    QStringList uasSn = QStringList() << "00:00:00:00:00:00:00:00";
+    QStringList uasSn = aircraftUasSnList.value(vehicleUIDStr());
     if(uasSn.isEmpty()) {
         qCWarning(VehicleLog) << "*****  Vehicle Data Not Found   *****";
         qCWarning(VehicleLog) << "UID : "<< vehicleUIDStr();
