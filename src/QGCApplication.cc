@@ -1346,7 +1346,7 @@ void QGCApplication::sendInfos()
         return;
     }
     QGCApplication::sendRemotePilote();
-    // QGCApplication::sendAircraftPositionInfos();
+    QGCApplication::sendAircraftPositionInfos();
 
     qWarning() << "==============  Infos sent  ==============";
 }
@@ -1395,10 +1395,10 @@ void QGCApplication::sendAircraftPositionInfos() {
         newResponse.insert("systemOS",           "Windows"); // TODO change to include Android
         newResponse.insert("productType",        vehicle->vehicleTypeString());
         newResponse.insert("rtmpUrl",            rtmpUrl + vehicle->sn());
-        qWarning() << "UID : " << vehicle->vehicleUIDStr() << "UID2 : " << vehicle->uas()->getUASID() << " | SN : "  << vehicle->sn() << " | UAS : " << vehicle->uasString();
+        qWarning() << "UID : " << vehicle->vehicleUIDStr() << "UID2 : " << vehicle->uas()->getUASID() << " | SN : "  << vehicle->sn() << " | UAS : " << vehicle->uasString();/* 
         newResponse.insert("latitude",           vehicle->coordinate().latitude());
         newResponse.insert("longitude",          vehicle->coordinate().longitude());
-        newResponse.insert("altitude",           vehicle->coordinate().altitude());
+        newResponse.insert("altitude",           vehicle->coordinate().altitude()); */
         newResponse.insert("altitudeRelative",   qobject_cast<Fact*>(vehicle->altitudeRelative())->rawValueString());
         newResponse.insert("isFlying",           vehicle->flying());
         newResponse.insert("flightDistance",     qobject_cast<Fact*>(vehicle->flightDistance())->rawValueString());
