@@ -789,19 +789,25 @@ void Vehicle::loadAndSendGeofence(const QJsonObject& json){
 }
 
 QStringList Vehicle::getMacAddresses(const QString& ipAddressRange) {
-    QProcess process;
-    process.start("nmap -sP " + ipAddressRange + "/24");
-    process.waitForFinished();
-    QString output = process.readAllStandardOutput();
-    QRegularExpression macRegex("([0-9A-F:]{17})");
-    QRegularExpressionMatchIterator i = macRegex.globalMatch(output);
     QStringList macAddresses;
-    while (i.hasNext()) {
-        QRegularExpressionMatch match = i.next();
-        if (match.hasMatch()) {
-            macAddresses.append(match.captured(1));
+    QProcess* process = new QProcess(this);
+    connect(process, &QProcess::finished, this, [process, &macAddresses](int exitCode, QProcess::ExitStatus exitStatus) {
+        if (exitStatus == QProcess::NormalExit && exitCode == 0) {
+            QString output = process->readAllStandardOutput();
+            QRegularExpression macRegex("([0-9A-F:]{17})");
+            QRegularExpressionMatchIterator i = macRegex.globalMatch(output);
+            while (i.hasNext()) {
+                QRegularExpressionMatch match = i.next();
+                if (match.hasMatch()) {
+                    macAddresses.append(match.captured(1));
+                }
+            }
+        } else {
+            qWarning() << "nmap process failed to finish.";
         }
-    }
+        process->deleteLater();
+    });
+    process->start("nmap -sP " + ipAddressRange + "/24");
     return macAddresses;
 }
 
