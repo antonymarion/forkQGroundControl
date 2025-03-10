@@ -807,8 +807,9 @@ QStringList Vehicle::getMacAddresses(const QString& ipAddressRange) {
 
 void Vehicle::_setNewVehicleData()
 {
+    QStringList uasSn;
     if(vehicleUIDStr() != "00:00:00:00:00:00:00:00") {
-        QStringList uasSn = aircraftUasSnList.value(vehicleUIDStr());
+        uasSn = aircraftUasSnList.value(vehicleUIDStr());
         if (uasSn.isEmpty()) {
             qCWarning(VehicleLog) << "*****  Vehicle Data Not Found UID  *****";
             qCWarning(VehicleLog) << "UID : " << vehicleUIDStr();
@@ -822,7 +823,6 @@ void Vehicle::_setNewVehicleData()
             qCWarning(VehicleLog) << "*****  No adresses found   *****";
             return;
         }
-        QStringList uasSn;
         for(const QString& macAddress : macAddresses) {
             if(qgcApp()->excludeList.contains(macAddress)) {
             continue;
@@ -834,11 +834,11 @@ void Vehicle::_setNewVehicleData()
             qgcApp()->excludeList.append(macAddress);
             break;
         }  
-        if (uasSn.isEmpty()) {
-            qCWarning(VehicleLog) << "*****  Vehicle Data Not Found MAC  *****";
-            qCWarning(VehicleLog) << "UID : " << vehicleUIDStr();
-            return;
-        }
+    }
+    if (uasSn.isEmpty()) {
+        qCWarning(VehicleLog) << "*****  Vehicle Data Not Found MAC  *****";
+        qCWarning(VehicleLog) << "UID : " << vehicleUIDStr();
+        return;
     }
 
     _dgUas = uasSn[0];
