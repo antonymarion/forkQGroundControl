@@ -1090,7 +1090,6 @@ private slots:
     void _altitudeAboveTerrainReceived      (bool sucess, QList<double> heights);
 
 private:
-    QStringList getMacAddresses         (const QString& ipAddressRange);
     void _loadJoystickSettings          ();
     void _activeVehicleChanged          (Vehicle* newActiveVehicle);
     void _captureJoystick               ();
@@ -1173,10 +1172,11 @@ private:
     QMap<QString, QStringList> aircraftUasSnList = {
         {"4F:4E:49:44:4C:41:54:49", {"UAS-FR-651384", "1H82582569285", "Gazebo"}},
         {"00:00:00:00:00:00:00:00", {"UAS-FR-652384", "2H82582569285", "ArduCopter"}}
-        {"20:97:27:49:3B:2F", {"UAS-FR-486654", "20:97:27:49:3B:2F", "SL-450-NG"}} // redefine serial number
+        {"20:97:27:49:3B:2F", {"UAS-FR-486654", "2H825869285", "SL-450-NG"}} // redefine serial number
     };
 
     
+    QStringList         excludeList         = { "EC:64:C9:EB:17:98" };              // exclude mac list
     QStringList         specialGimbalList   = { "Tundra 2" };                       // special aircraft list
     QStringList         axisList            = { "pitch", "yaw", "roll", "thrust" }; // global axis list
 
