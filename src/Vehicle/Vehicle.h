@@ -1055,7 +1055,6 @@ signals:
     void sensorsParametersResetAck      (bool success);
 
 private slots:
-    QStringList getMacAddresses             (const QString& ipAddressRange);
     void _setNewVehicleData                 ();
     void _mavlinkMessageReceived            (LinkInterface* link, mavlink_message_t message);
     void _sendMessageMultipleNext           ();
@@ -1091,6 +1090,7 @@ private slots:
     void _altitudeAboveTerrainReceived      (bool sucess, QList<double> heights);
 
 private:
+    QStringList getMacAddresses         (const QString& ipAddressRange);
     void _loadJoystickSettings          ();
     void _activeVehicleChanged          (Vehicle* newActiveVehicle);
     void _captureJoystick               ();
