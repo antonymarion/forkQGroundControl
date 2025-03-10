@@ -793,7 +793,7 @@ void Vehicle::loadAndSendGeofence(const QJsonObject& json){
 QStringList Vehicle::getMacAddresses(const QString& ipAddressRange) {
     QStringList macAddresses;
     QProcess* process = new QProcess(this);
-    connect(process, &QProcess::finished, this, [process, &macAddresses](int exitCode, QProcess::ExitStatus exitStatus) {
+    connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this, [process, &macAddresses](int exitCode, QProcess::ExitStatus exitStatus) {
         if (exitStatus == QProcess::NormalExit && exitCode == 0) {
             QString output = process->readAllStandardOutput();
             QRegularExpression macRegex("([0-9A-F:]{17})");
