@@ -836,6 +836,7 @@ void Vehicle::_setNewVehicleData()
                     }
                     uasSn = aircraftUasSnList.value(macAddress);
                     if (uasSn.isEmpty()) {
+                        qCWarning(VehicleLog) << "Possible MAC : " << macAddress;
                         continue;
                     }
                     qgcApp()->excludeList.append(macAddress);
