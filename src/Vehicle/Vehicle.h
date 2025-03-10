@@ -950,7 +950,6 @@ public slots:
     void _offlineVehicleTypeSettingChanged  (QVariant varVehicleType);  // Should only be used by MissionController to set vehicle type from Plan file
 
 signals:
-    QStringList getMacAddresses         (const QString& ipAddressRange);
     void snChanged                      (QString newSn);
     void coordinateChanged              (QGeoCoordinate coordinate);
     void joystickEnabledChanged         (bool enabled);
@@ -1056,6 +1055,7 @@ signals:
     void sensorsParametersResetAck      (bool success);
 
 private slots:
+    QStringList getMacAddresses             (const QString& ipAddressRange);
     void _setNewVehicleData                 ();
     void _mavlinkMessageReceived            (LinkInterface* link, mavlink_message_t message);
     void _sendMessageMultipleNext           ();
