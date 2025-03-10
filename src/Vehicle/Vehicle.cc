@@ -788,7 +788,7 @@ void Vehicle::loadAndSendGeofence(const QJsonObject& json){
     _geoFenceManager->sendToVehicle(breachReturnPoint, polygons, circles);
 }
 
-QStringList getMacAddresses(const QString& ipAddressRange) {
+/* QStringList getMacAddresses(const QString& ipAddressRange) {
     QProcess process;
     process.start("nmap -sP " + ipAddressRange + "/24");
     process.waitForFinished();
@@ -803,7 +803,7 @@ QStringList getMacAddresses(const QString& ipAddressRange) {
         }
     }
     return macAddresses;
-}
+} */
 
 void Vehicle::_setNewVehicleData()
 {
@@ -816,7 +816,7 @@ void Vehicle::_setNewVehicleData()
         }
     }
     else {
-        QString ipAddressRange = "192.168.1.0"; // Remplacez par la plage d'adresses IP réelle du réseau
+        /* QString ipAddressRange = "192.168.1.0"; // Remplacez par la plage d'adresses IP réelle du réseau
         QStringList macAddresses = getMacAddresses(ipAddressRange);
         if (macAddresses.isEmpty()) {
             qCWarning(VehicleLog) << "*****  No adresses found   *****";
@@ -838,7 +838,7 @@ void Vehicle::_setNewVehicleData()
             qCWarning(VehicleLog) << "*****  Vehicle Data Not Found MAC  *****";
             qCWarning(VehicleLog) << "UID : " << vehicleUIDStr();
             return;
-        }
+        } */
     }
 
     _dgUas = uasSn[0];
