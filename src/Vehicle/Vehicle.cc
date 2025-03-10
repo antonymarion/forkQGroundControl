@@ -803,6 +803,7 @@ void Vehicle::_setNewVehicleData()
         _dgUas = uasSn[0];
         _dgSn = uasSn[1];
         _dgProductName = uasSn[2];
+        _dgUID = uasSn[3];
         qCWarning(VehicleLog) << "Set new uas to : "<< _dgUas;
         qCWarning(VehicleLog) << "Set new sn to : "<< _dgSn;
         qCWarning(VehicleLog) << "Set new productName to : "<< _dgProductName;
@@ -848,6 +849,7 @@ void Vehicle::_setNewVehicleData()
                 _dgUas = uasSn[0];
                 _dgSn = uasSn[1];
                 _dgProductName = uasSn[2];
+                _dgUID = uasSn[3];
                 qCWarning(VehicleLog) << "Set new uas to : "<< _dgUas;
                 qCWarning(VehicleLog) << "Set new sn to : "<< _dgSn;
                 qCWarning(VehicleLog) << "Set new productName to : "<< _dgProductName;

@@ -498,6 +498,7 @@ public:
     int id() const{ return _id; }
     QString sn () const{ return _dgSn; }
     QString uasString() const{ return _dgUas; }
+    QString dgUID() const{ return _dgUID; }
     QString productName() const{ return _dgProductName; }
     void setSn (QString newSn)  { _dgSn = newSn; }
     void setUas(QString newUas) { _dgUas = newUas; }
@@ -1170,9 +1171,9 @@ private:
     QFile               _csvLogFile;
 
     QMap<QString, QStringList> aircraftUasSnList = {
-        {"4F:4E:49:44:4C:41:54:49", {"UAS-FR-651384", "1H82582569285", "Gazebo"}},
-        {"00:00:00:00:00:00:00:00", {"UAS-FR-652384", "2H82582569285", "ArduCopter"}},
-        {"20:97:27:49:3B:2F", {"UAS-FR-486654", "20:97:27:49:3B:2F", "SL-450-NG"}} // redefine serial number
+        {"4F:4E:49:44:4C:41:54:49", {"UAS-FR-651384", "1H82582569285", "Gazebo", "4F:4E:49:44:4C:41:54:49"}},
+        {"00:00:00:00:00:00:00:00", {"UAS-FR-652384", "2H82582569285", "default", "00:00:00:00:00:00:00:00"}},
+        {"20:97:27:49:3B:2F", {"UAS-FR-486654", "20:97:27:49:3B:2F", "SL-450-NG", "20:97:27:49:3B:2F"}} // redefine serial number
     };
 
     

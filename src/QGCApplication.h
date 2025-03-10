@@ -279,6 +279,7 @@ private:
     // Vehicles signal receivers
     void _setActiveVehicle        (Vehicle* vehicle); 
     void _setupNewVehicle         (Vehicle* vehicle); 
+    void _removeVehicle           (Vehicle* vehicle); 
     void _setupNewMqttSubscription(QString newSn);
     void _setIsFlying             (bool flying);
     void _setActiveCamera         ();

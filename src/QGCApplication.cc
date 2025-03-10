@@ -885,6 +885,7 @@ void QGCApplication::_initCommon()
     _vehicleManager = _toolbox->multiVehicleManager();
     connect(_vehicleManager, &MultiVehicleManager::activeVehicleChanged, this, &QGCApplication::_setActiveVehicle);
     connect(_vehicleManager, &MultiVehicleManager::vehicleAdded, this, &QGCApplication::_setupNewVehicle);
+    connect(_vehicleManager, &MultiVehicleManager::vehicleRemoved, this, &QGCApplication::_removeVehicle);
     _setActiveVehicle(_vehicleManager->activeVehicle());
 
     _videoManager = toolbox()->videoManager();
@@ -1301,6 +1302,12 @@ void QGCApplication::_setActiveVehicle(Vehicle* vehicle)
 void QGCApplication::_setupNewVehicle(Vehicle* vehicle)
 {
     QObject::connect(vehicle, &Vehicle::snChanged, this, &QGCApplication::_setupNewMqttSubscription);
+}
+
+void QGCApplication::_removeVehicle(Vehicle* vehicle)
+{
+    excludeList.removeOne(vehicle->dgUID());
+    qWarning() << "*****   Vehicle removed   *****";
 }
 
 void QGCApplication::_setupNewMqttSubscription(QString newSn)
