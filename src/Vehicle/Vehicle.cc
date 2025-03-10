@@ -13,7 +13,6 @@
 #include <QQuaternion>
 #include <QMap>
 #include <QProcess>
-#include <QDebug>
 #include <QRegularExpression>
 
 #include <Eigen/Eigen>
