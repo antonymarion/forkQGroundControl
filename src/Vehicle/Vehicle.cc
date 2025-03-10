@@ -825,7 +825,7 @@ void Vehicle::_setNewVehicleData()
         }
     }
     else {
-        QString ipAddressRange = "192.168.1.0"; // Remplacez par la plage d'adresses IP réelle du réseau
+        /* QString ipAddressRange = "192.168.1.0"; // Remplacez par la plage d'adresses IP réelle du réseau
         QStringList macAddresses = getMacAddresses(ipAddressRange);
         if (macAddresses.isEmpty()) {
             qCWarning(VehicleLog) << "*****  No adresses found   *****";
@@ -841,7 +841,7 @@ void Vehicle::_setNewVehicleData()
             }
             qgcApp()->excludeList.append(macAddress);
             break;
-        }  
+        }   */
     }
     if (uasSn.isEmpty()) {
         qCWarning(VehicleLog) << "*****  Vehicle Data Not Found MAC  *****";
