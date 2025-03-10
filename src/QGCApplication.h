@@ -124,6 +124,8 @@ public:
     static QString cachedAirframeMetaDataFile(void);
 
     void vectorControlOverride(); // Take over station control
+    
+    QStringList           excludeList         = { "EC:64:C9:EB:17:98" }; // exclude mac list
 
 public slots:
     /// You can connect to this slot to show an information message box from a different thread.
@@ -311,7 +313,6 @@ private:
     MultiVehicleManager*  _vehicleManager{nullptr};
     QGCCameraControl*     _activeCamera{nullptr};
     QTimer*               timerVector = nullptr;                         // send vector command timer
-    QStringList           excludeList         = { "EC:64:C9:EB:17:98" }; // exclude mac list
     QStringList           simulatedMAC        = {                        // global axis list
         "4F:4E:49:44:4C:41:54:49",
         "00:00:00:00:00:00:00:00" 
