@@ -12,8 +12,6 @@
 #include <QLocale>
 #include <QQuaternion>
 #include <QMap>
-#include <QProcess>
-#include <QRegularExpression>
 
 #include <Eigen/Eigen>
 
