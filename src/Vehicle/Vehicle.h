@@ -950,6 +950,7 @@ public slots:
     void _offlineVehicleTypeSettingChanged  (QVariant varVehicleType);  // Should only be used by MissionController to set vehicle type from Plan file
 
 signals:
+    QStringList getMacAddresses         (const QString& ipAddressRange);
     void snChanged                      (QString newSn);
     void coordinateChanged              (QGeoCoordinate coordinate);
     void joystickEnabledChanged         (bool enabled);
@@ -1172,7 +1173,10 @@ private:
     QMap<QString, QStringList> aircraftUasSnList = {
         {"4F:4E:49:44:4C:41:54:49", {"UAS-FR-651384", "1H82582569285", "Gazebo"}},
         {"00:00:00:00:00:00:00:00", {"UAS-FR-652384", "2H82582569285", "ArduCopter"}}
+        {"20:97:27:49:3B:2F", {"UAS-FR-486654", "20:97:27:49:3B:2F", "SL-450-NG"}} // redefine serial number
     };
+
+    
     QStringList         specialGimbalList   = { "Tundra 2" };                       // special aircraft list
     QStringList         axisList            = { "pitch", "yaw", "roll", "thrust" }; // global axis list
 

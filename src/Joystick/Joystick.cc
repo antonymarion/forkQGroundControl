@@ -714,7 +714,7 @@ void Joystick::_handleAxis()
             emit axisValues(roll, pitch, yaw, throttle);
 
             uint16_t shortButtons = static_cast<uint16_t>(buttonPressedBits & 0xFFFF);
-            if(true){ // _isOverriding || roll < -0.1 || roll > 0.1 ||  pitch < -0.1 ||  pitch > 0.1 || yaw < -0.1 || yaw > 0.1 || throttle < t_moed || throttle > t_moeu
+            if(_isOverriding || roll < -0.1 || roll > 0.1 ||  pitch < -0.1 ||  pitch > 0.1 || yaw < -0.1 || yaw > 0.1 || throttle < t_moed || throttle > t_moeu){
                 qCWarning(JoystickValuesLog) << "JOYSTICK       ACTIVE";
                 qCWarning(JoystickValuesLog) << "name:roll:pitch:yaw:throttle:gimbalPitch:gimbalYaw" << name() << roll << -pitch << yaw << throttle << gimbalPitch << gimbalYaw;
                 _activeVehicle->sendJoystickDataThreadSafe(roll, pitch, yaw, throttle, shortButtons, "JOYSTICKS");
