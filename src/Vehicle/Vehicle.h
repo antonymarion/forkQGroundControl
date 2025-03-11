@@ -1183,6 +1183,7 @@ private:
     QString         _dgSn = "";
     QString         _dgUas = "";
     QString         _dgProductName = "";
+    QString         _dgUID = "";
 
     bool            _isActiveVehicle = false;
     bool            _joystickEnabled = false;
