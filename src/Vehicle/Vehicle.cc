@@ -839,6 +839,7 @@ void Vehicle::_setNewVehicleData()
                 }
                 uasSn = aircraftUasSnList.value(macAddress);
                 if (uasSn.isEmpty()) {
+                qCWarning(VehicleLog) << "*****  Vehicle Data Not Found MAC  *****";
                 qCWarning(VehicleLog) << "Possible MAC : " << macAddress;
                 continue;
                 }
@@ -846,7 +847,7 @@ void Vehicle::_setNewVehicleData()
                 break;
             }
             if (uasSn.isEmpty()) {
-                qCWarning(VehicleLog) << "*****  Vehicle Data Not Found MAC  *****";
+                qCWarning(VehicleLog) << "*****  No MAC available  *****";
                 return;
             }
             _dgUas = uasSn[0];

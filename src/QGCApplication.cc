@@ -897,7 +897,7 @@ void QGCApplication::_initCommon()
 
     QObject::connect(timer, &QTimer::timeout, this, &QGCApplication::sendInfos);
 
-    timer->start(5000); // Set back to 500
+    timer->start(500); // Set back to 500
 
     // Setup Vector control TIMER
     timerVector = new QTimer(this);
