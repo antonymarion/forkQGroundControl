@@ -807,11 +807,13 @@ void Vehicle::_setNewVehicleData()
         qCWarning(VehicleLog) << "Set new uas to : "<< _dgUas;
         qCWarning(VehicleLog) << "Set new sn to : "<< _dgSn;
         qCWarning(VehicleLog) << "Set new productName to : "<< _dgProductName;
+        qCWarning(VehicleLog) << "Set new UID to : "<< _dgUID;
         emit snChanged(_dgSn);
         return;
     }
     else {
         QString ipAddressRange = "192.168.1.0"; // Remplacez par la plage d'adresses IP réelle du réseau
+        QString ipAddressTundra = "192.168.144.0"; // Remplacez par la plage d'adresses IP réelle du réseau
         QProcess* process = new QProcess(this);
         connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this, [this, process](int exitCode, QProcess::ExitStatus exitStatus) {
             if (exitStatus == QProcess::NormalExit && exitCode == 0) {
@@ -826,7 +828,7 @@ void Vehicle::_setNewVehicleData()
                     }
                 }
                 if (macAddresses.isEmpty()) {
-                    qCWarning(VehicleLog) << "*****  No addresses found   *****";
+                    qCWarning(VehicleLog) << "*****  No addresses found  *****";
                     return;
                 }
                 QStringList uasSn;
@@ -854,6 +856,7 @@ void Vehicle::_setNewVehicleData()
                 qCWarning(VehicleLog) << "Set new uas to : "<< _dgUas;
                 qCWarning(VehicleLog) << "Set new sn to : "<< _dgSn;
                 qCWarning(VehicleLog) << "Set new productName to : "<< _dgProductName;
+                qCWarning(VehicleLog) << "Set new UID to : "<< _dgUID;
                 emit snChanged(_dgSn);
             } else {
                 qWarning() << "nmap process failed to finish.";
@@ -861,6 +864,7 @@ void Vehicle::_setNewVehicleData()
             process->deleteLater();
         });
         process->start("nmap -sP " + ipAddressRange + "/24");
+        process->start("nmap -sP " + ipAddressTundra + "/24");
     }
 }
 
