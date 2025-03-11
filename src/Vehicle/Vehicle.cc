@@ -813,7 +813,7 @@ void Vehicle::_setNewVehicleData()
     }
     else {
         QString ipAddressRange = "192.168.1.0"; // Remplacez par la plage d'adresses IP réelle du réseau
-        QString ipAddressTundra = "192.168.144.0"; // Remplacez par la plage d'adresses IP réelle du réseau
+        QString ipAddressTundra = "192.168.144.43"; // Remplacez par la plage d'adresses IP réelle du réseau
         QProcess* process = new QProcess(this);
         connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this, [this, process](int exitCode, QProcess::ExitStatus exitStatus) {
             if (exitStatus == QProcess::NormalExit && exitCode == 0) {
@@ -864,7 +864,7 @@ void Vehicle::_setNewVehicleData()
             process->deleteLater();
         });
         process->start("nmap -sP " + ipAddressRange + "/24");
-        process->start("nmap -sP " + ipAddressTundra + "/24");
+        process->start("nmap -sP " + ipAddressTundra);
     }
 }
 

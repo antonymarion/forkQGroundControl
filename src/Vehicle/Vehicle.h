@@ -1171,9 +1171,10 @@ private:
     QFile               _csvLogFile;
 
     QMap<QString, QStringList> aircraftUasSnList = {
-        {"4F:4E:49:44:4C:41:54:49", {"UAS-FR-651384", "1H82582569285", "Gazebo", "4F:4E:49:44:4C:41:54:49"}},
+        {"4F:4E:49:44:4C:41:54:49", {"UAS-FR-651384", "1H82582569285", "Gazebo", "4F:4E:49:44:4C:41:54:49"}}, 
         {"00:00:00:00:00:00:00:00", {"UAS-FR-652384", "2H82582569285", "default", "00:00:00:00:00:00:00:00"}},
-        {"20:97:27:49:3B:2F", {"UAS-FR-486654", "20:97:27:49:3B:2F", "SL-450-NG", "20:97:27:49:3B:2F"}} // redefine serial number
+        {"EC:64:C9:EB:17:98", {"UAS-FR-486654", "EC:64:C9:EB:17:98", "SL-450-NG", "EC:64:C9:EB:17:98"}} // redefine serial number
+        {"2C:CF:67:07:93:0B", {"UAS-FR-458156", "1600FTR2STD24289930B", "TUNDRA 2", "2C:CF:67:07:93:0B"}}
     };
 
     
