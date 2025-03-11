@@ -710,14 +710,18 @@ void Vehicle::getCameraCapabilities(bool &activeCamera, QString &cameraName, boo
 QJsonArray Vehicle::getCameras()
 {
     QJsonArray cameraList;
-    QmlObjectListModel *cameras = _cameraManager->cameras();
+    /* QmlObjectListModel *cameras = _cameraManager->cameras();
     for (int i = 0; i < cameras->count(); i++) {
         QGCCameraControl *camera = qobject_cast<QGCCameraControl*>(cameras->get(i));
         QJsonObject thisCamera;
         thisCamera.insert("index",i);
         thisCamera.insert("name",camera->modelName());
         cameraList.append(thisCamera);
-    }
+    } */
+    QJsonObject thisCamera;
+    thisCamera.insert("index",0);
+    thisCamera.insert("name","Caméra intégrée Tundra II");
+    cameraList.append(thisCamera);
     return cameraList;
 }
 
