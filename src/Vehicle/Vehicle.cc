@@ -815,56 +815,64 @@ void Vehicle::_setNewVehicleData()
         QString ipAddressRange = "192.168.1.0"; // Remplacez par la plage d'adresses IP réelle du réseau
         QString ipAddressTundra = "192.168.144.43"; // Remplacez par la plage d'adresses IP réelle du réseau
         QProcess* process = new QProcess(this);
-        connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this, [this, process](int exitCode, QProcess::ExitStatus exitStatus) {
+        QProcess* processTundra = new QProcess(this);
+        auto handleProcessFinished = [this](QProcess* process, int exitCode, QProcess::ExitStatus exitStatus) {
             if (exitStatus == QProcess::NormalExit && exitCode == 0) {
-                QString output = process->readAllStandardOutput();
-                QRegularExpression macRegex("([0-9A-F:]{17})");
-                QRegularExpressionMatchIterator i = macRegex.globalMatch(output);
-                QStringList macAddresses;
-                while (i.hasNext()) {
-                    QRegularExpressionMatch match = i.next();
-                    if (match.hasMatch()) {
-                        macAddresses.append(match.captured(1));
-                    }
+            QString output = process->readAllStandardOutput();
+            QRegularExpression macRegex("([0-9A-F:]{17})");
+            QRegularExpressionMatchIterator i = macRegex.globalMatch(output);
+            QStringList macAddresses;
+            while (i.hasNext()) {
+                QRegularExpressionMatch match = i.next();
+                if (match.hasMatch()) {
+                macAddresses.append(match.captured(1));
                 }
-                if (macAddresses.isEmpty()) {
-                    qCWarning(VehicleLog) << "*****  No addresses found  *****";
-                    return;
+            }
+            if (macAddresses.isEmpty()) {
+                qCWarning(VehicleLog) << "*****  No addresses found  *****";
+                return;
+            }
+            QStringList uasSn;
+            for(const QString& macAddress : macAddresses) {
+                if(qgcApp()->excludeList.contains(macAddress)) {
+                continue;
                 }
-                QStringList uasSn;
-                for(const QString& macAddress : macAddresses) {
-                    if(qgcApp()->excludeList.contains(macAddress)) {
-                        continue;
-                    }
-                    uasSn = aircraftUasSnList.value(macAddress);
-                    if (uasSn.isEmpty()) {
-                        qCWarning(VehicleLog) << "Possible MAC : " << macAddress;
-                        continue;
-                    }
-                    qgcApp()->excludeList.append(macAddress);
-                    break;
-                }
+                uasSn = aircraftUasSnList.value(macAddress);
                 if (uasSn.isEmpty()) {
-                    qCWarning(VehicleLog) << "*****  Vehicle Data Not Found MAC  *****";
-                    qCWarning(VehicleLog) << "UID : " << vehicleUIDStr();
-                    return;
+                qCWarning(VehicleLog) << "Possible MAC : " << macAddress;
+                continue;
                 }
-                _dgUas = uasSn[0];
-                _dgSn = uasSn[1];
-                _dgProductName = uasSn[2];
-                _dgUID = uasSn[3];
-                qCWarning(VehicleLog) << "Set new uas to : "<< _dgUas;
-                qCWarning(VehicleLog) << "Set new sn to : "<< _dgSn;
-                qCWarning(VehicleLog) << "Set new productName to : "<< _dgProductName;
-                qCWarning(VehicleLog) << "Set new UID to : "<< _dgUID;
-                emit snChanged(_dgSn);
+                qgcApp()->excludeList.append(macAddress);
+                break;
+            }
+            if (uasSn.isEmpty()) {
+                qCWarning(VehicleLog) << "*****  Vehicle Data Not Found MAC  *****";
+                return;
+            }
+            _dgUas = uasSn[0];
+            _dgSn = uasSn[1];
+            _dgProductName = uasSn[2];
+            _dgUID = uasSn[3];
+            qCWarning(VehicleLog) << "Set new uas to : "<< _dgUas;
+            qCWarning(VehicleLog) << "Set new sn to : "<< _dgSn;
+            qCWarning(VehicleLog) << "Set new productName to : "<< _dgProductName;
+            qCWarning(VehicleLog) << "Set new UID to : "<< _dgUID;
+            emit snChanged(_dgSn);
             } else {
-                qWarning() << "nmap process failed to finish.";
+            qWarning() << "nmap process failed to finish.";
             }
             process->deleteLater();
+        };
+
+        connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this, [handleProcessFinished, process](int exitCode, QProcess::ExitStatus exitStatus) {
+            handleProcessFinished(process, exitCode, exitStatus);
         });
+
+        connect(processTundra, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this, [handleProcessFinished, processTundra](int exitCode, QProcess::ExitStatus exitStatus) {
+            handleProcessFinished(processTundra, exitCode, exitStatus);
+        });
+        processTundra->start("nmap -sP " + ipAddressTundra);
         process->start("nmap -sP " + ipAddressRange + "/24");
-        process->start("nmap -sP " + ipAddressTundra);
     }
 }
 
