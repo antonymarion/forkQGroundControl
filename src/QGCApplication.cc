@@ -1455,38 +1455,40 @@ void QGCApplication::sendAircraftPositionInfos() {
                 currentState.insert("keyYawRelativeToAircraftHeading", currentGimbal->bodyYaw()->rawValueString()); // TODO
                 newResponse.insert("gimbal",          currentState);
             }
-        }/* 
-        QmlObjectListModel* batteries = vehicle->batteries();
-        int res = 0;
-        int totalSeconds = INT_MAX;
-        for (int i=0; i<batteries->count(); i++) {
-            VehicleBatteryFactGroup* battery = qobject_cast<VehicleBatteryFactGroup*>(batteries->get(i));
-            res += battery->percentRemaining()->rawValue().toInt();
-        //    qWarning() << "TIME REMAINING" << battery->timeRemaining()->rawValue().toInt();
-            totalSeconds = std::min(totalSeconds, battery->timeRemaining()->rawValue().toInt());
         }
-
-        // qWarning() << "TOTAL SECONDS" << totalSeconds;
-        // qWarning() << "joysticks" << _toolbox->joystickManager()->joystickNames();
-
-        if (totalSeconds == INT_MAX) {
-            newResponse.insert("timeRemaining", "--:--:--");
-        } else {
-            int hours           = totalSeconds / 3600;
-            int minutes         = (totalSeconds % 3600) / 60;
-            int seconds         = totalSeconds % 60;
-
-            if(minutes <= 0 && hours <= 0) {
-                newResponse.insert("timeRemaining", QString::asprintf("%02dS", seconds));
+        if(vehicle->productName() != "SL-450-NG"){
+            QmlObjectListModel* batteries = vehicle->batteries();
+            int res = 0;
+            int totalSeconds = INT_MAX;
+            for (int i=0; i<batteries->count(); i++) {
+                VehicleBatteryFactGroup* battery = qobject_cast<VehicleBatteryFactGroup*>(batteries->get(i));
+                res += battery->percentRemaining()->rawValue().toInt();
+            //    qWarning() << "TIME REMAINING" << battery->timeRemaining()->rawValue().toInt();
+                totalSeconds = std::min(totalSeconds, battery->timeRemaining()->rawValue().toInt());
             }
-            else if (hours <= 0) {
-                newResponse.insert("timeRemaining", QString::asprintf("%02dM:%02dS", minutes, seconds));
+
+            // qWarning() << "TOTAL SECONDS" << totalSeconds;
+            // qWarning() << "joysticks" << _toolbox->joystickManager()->joystickNames();
+
+            if (totalSeconds == INT_MAX) {
+                newResponse.insert("timeRemaining", "--:--:--");
+            } else {
+                int hours           = totalSeconds / 3600;
+                int minutes         = (totalSeconds % 3600) / 60;
+                int seconds         = totalSeconds % 60;
+
+                if(minutes <= 0 && hours <= 0) {
+                    newResponse.insert("timeRemaining", QString::asprintf("%02dS", seconds));
+                }
+                else if (hours <= 0) {
+                    newResponse.insert("timeRemaining", QString::asprintf("%02dM:%02dS", minutes, seconds));
+                }
+                else {
+                    newResponse.insert("timeRemaining", QString::asprintf("%02dH:%02dM:%02dS", hours, minutes, seconds));
+                }
             }
-            else {
-                newResponse.insert("timeRemaining", QString::asprintf("%02dH:%02dM:%02dS", hours, minutes, seconds));
-            }
+            newResponse.insert("batteryPowerPercentUav", res/batteries->count());
         }
-        newResponse.insert("batteryPowerPercentUav", res/batteries->count()); */
 
         QJsonDocument doc(newResponse);
         QString responseMessage(doc.toJson(QJsonDocument::Compact));
@@ -1549,7 +1551,7 @@ void QGCApplication::startStream()
         return;
     }
 
-    if(!_activeCamera) {
+    if(!_activeCamera && !_vehicle->productName() != "TUNDRA 2") {
         qWarning() << "*****   No active camera  *****";
         return;
     }
