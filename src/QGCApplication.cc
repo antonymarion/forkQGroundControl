@@ -1652,9 +1652,9 @@ void QGCApplication::codeThreadBus(GstElement *pipeline, GoblinData &data, QStri
 void QGCApplication::stopStream()
 {
     gst_element_set_state(this->data.pipeline, GST_STATE_NULL);
-    if(this->future.isRunning(){
+    if(this->future.isRunning()){
         this->future.cancel();
-    });
+    };
     this->isStreaming = false;
     qWarning() << "==============  STOP_STREAM  ==============";
 }
