@@ -1648,6 +1648,7 @@ void QGCApplication::stopStream()
     gst_object_unref(this->data.pipeline);
     this->isStreaming = false;
     if(this->future.isRunning()) {
+        qWarning() << "*****  Stopping stream  *****";
         this->future.cancel();
     }
     qWarning() << "==============  STOP_STREAM  ==============";
