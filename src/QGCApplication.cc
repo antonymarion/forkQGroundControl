@@ -1414,6 +1414,20 @@ void QGCApplication::sendAircraftPositionInfos() {
         newResponse.insert("gpsSatelliteCount",  qobject_cast<VehicleGPSFactGroup*>(vehicle->gpsFactGroup())->count()->rawValueString());
         newResponse.insert("firmwareVersionUav", vehicle->firmwarePatchVersion());
         newResponse.insert("firmwareVersion",    _buildVersion);
+        int totalFlightTime = vehicle->_flightTimeFact->rawValue().toInt();
+        int hours           = totalFlightTime / 3600;
+        int minutes         = (totalFlightTime % 3600) / 60;
+        int seconds         = totalFlightTime % 60;
+
+        if(minutes <= 0 && hours <= 0) {
+            newResponse.insert("flightTime", QString::asprintf("%02dS", seconds));
+        }
+        else if (hours <= 0) {
+            newResponse.insert("flightTime", QString::asprintf("%02dM:%02dS", minutes, seconds));
+        }
+        else {
+            newResponse.insert("flightTime", QString::asprintf("%02dH:%02dM:%02dS", hours, minutes, seconds));
+        }
         QJsonObject dAttitude;
         dAttitude.insert("yaw",                  qobject_cast<Fact*>(vehicle->heading())->rawValueString());
         dAttitude.insert("pitch",                qobject_cast<Fact*>(vehicle->pitch())->rawValueString());
@@ -1463,29 +1477,6 @@ void QGCApplication::sendAircraftPositionInfos() {
             for (int i=0; i<batteries->count(); i++) {
                 VehicleBatteryFactGroup* battery = qobject_cast<VehicleBatteryFactGroup*>(batteries->get(i));
                 res += battery->percentRemaining()->rawValue().toInt();
-            //    qWarning() << "TIME REMAINING" << battery->timeRemaining()->rawValue().toInt();
-                totalSeconds = std::min(totalSeconds, battery->timeRemaining()->rawValue().toInt());
-            }
-
-            // qWarning() << "TOTAL SECONDS" << totalSeconds;
-            // qWarning() << "joysticks" << _toolbox->joystickManager()->joystickNames();
-
-            if (totalSeconds == INT_MAX) {
-                newResponse.insert("timeRemaining", "--:--:--");
-            } else {
-                int hours           = totalSeconds / 3600;
-                int minutes         = (totalSeconds % 3600) / 60;
-                int seconds         = totalSeconds % 60;
-
-                if(minutes <= 0 && hours <= 0) {
-                    newResponse.insert("timeRemaining", QString::asprintf("%02dS", seconds));
-                }
-                else if (hours <= 0) {
-                    newResponse.insert("timeRemaining", QString::asprintf("%02dM:%02dS", minutes, seconds));
-                }
-                else {
-                    newResponse.insert("timeRemaining", QString::asprintf("%02dH:%02dM:%02dS", hours, minutes, seconds));
-                }
             }
             newResponse.insert("batteryPowerPercentUav", res/batteries->count());
         }
@@ -1651,11 +1642,10 @@ void QGCApplication::codeThreadBus(GstElement *pipeline, GoblinData &data, QStri
 
 void QGCApplication::stopStream()
 {
-    gst_element_set_state(this->data.pipeline, GST_STATE_NULL);
-    gst_element_set_state(this->data.pipeline, GST_STATE_NULL);
-    if(this->future.isRunning()){
-        this->future.cancel();
-    };
+    if (this->future.isRunning()) {
+        gst_element_send_event(this->data.pipeline, gst_event_new_eos());
+        this->future.waitForFinished();
+    }
     this->isStreaming = false;
     qWarning() << "==============  STOP_STREAM  ==============";
 }
