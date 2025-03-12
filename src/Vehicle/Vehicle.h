@@ -706,6 +706,7 @@ public:
     Fact* flightDistance                    () { return &_flightDistanceFact; }
     Fact* distanceToHome                    () { return &_distanceToHomeFact; }
     Fact* timeToHome                        () { return &_timeToHomeFact; }
+    Fact* flightTime                        () { return &_flightTimeFact; }
     Fact* missionItemIndex                  () { return &_missionItemIndexFact; }
     Fact* headingToNextWP                   () { return &_headingToNextWPFact; }
     Fact* distanceToNextWP                  () { return &_distanceToNextWPFact; }

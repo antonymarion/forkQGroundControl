@@ -1414,7 +1414,7 @@ void QGCApplication::sendAircraftPositionInfos() {
         newResponse.insert("gpsSatelliteCount",  qobject_cast<VehicleGPSFactGroup*>(vehicle->gpsFactGroup())->count()->rawValueString());
         newResponse.insert("firmwareVersionUav", vehicle->firmwarePatchVersion());
         newResponse.insert("firmwareVersion",    _buildVersion);
-        int totalFlightTime = qobject_cast<Fact*>(vehicle->_flightTimeFact)->rawValue().toInt();
+        int totalFlightTime = qobject_cast<Fact*>(vehicle->flightTime())->rawValue().toInt();
         int hours           = totalFlightTime / 3600;
         int minutes         = (totalFlightTime % 3600) / 60;
         int seconds         = totalFlightTime % 60;
