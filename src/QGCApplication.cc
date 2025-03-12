@@ -1564,7 +1564,7 @@ void QGCApplication::startStream()
 
         // Play the pipeline
         gst_element_set_state(this->data.pipeline, GST_STATE_PLAYING);
-        codeThreadBus(this->data.pipeline, this->data, (QString)"DEBUG");
+        codeThreadBus(this->data.pipeline, this->data, (QString)"STARTING");
     });
 
     this->isStreaming = true;
@@ -1608,6 +1608,15 @@ bool QGCApplication::busProcessMsg(GstElement *pipeline, GstMessage *msg, QStrin
                 GstState sOld, sNew, sPenging;
                 gst_message_parse_state_changed(msg, &sOld, &sNew, &sPenging);
                 qWarning() << "Pipeline changed from " << gst_element_state_get_name(sOld) << " to " << gst_element_state_get_name(sNew);
+                if(prefix == "ENDING" && sNew == GST_STATE_NULL) {
+                    qWarning() << "STREAMING ENDED !";
+                    gst_object_unref(this->data.pipeline);
+                    return false;
+                }
+                if(prefix == "STARTING" && sNew == GST_STATE_PLAYING) {
+                    qWarning() << "STREAMING STARTED !";
+                    return false;
+                }
             }
             break;
         case (GST_MESSAGE_STEP_START):
@@ -1644,13 +1653,11 @@ void QGCApplication::codeThreadBus(GstElement *pipeline, GoblinData &data, QStri
 
 void QGCApplication::stopStream()
 {
-    gst_element_set_state(this->data.pipeline, GST_STATE_NULL);
-    gst_object_unref(this->data.pipeline);
-    this->isStreaming = false;
-    if(this->future.isRunning()) {
-        qWarning() << "*****  Stopping stream  *****";
-        this->future.end();
-    }
+    QtConcurrent::run([this]() {
+        gst_element_set_state(this->data.pipeline, GST_STATE_NULL);
+        codeThreadBus(this->data.pipeline, this->data, (QString)"ENDING");
+        this->isStreaming = false;
+    });
     qWarning() << "==============  STOP_STREAM  ==============";
 }
 
