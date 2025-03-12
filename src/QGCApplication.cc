@@ -1551,7 +1551,7 @@ void QGCApplication::startStream()
         return;
     }
 
-    if(!_activeCamera && !_vehicle->productName() != "TUNDRA 2") {
+    if(!_activeCamera && _vehicle->productName() != "TUNDRA 2") {
         qWarning() << "*****   No active camera  *****";
         return;
     }
