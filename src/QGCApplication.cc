@@ -1611,11 +1611,9 @@ bool QGCApplication::busProcessMsg(GstElement *pipeline, GstMessage *msg, QStrin
                 if(prefix == "ENDING" && sNew == GST_STATE_NULL) {
                     qWarning() << "STREAMING ENDED !";
                     gst_object_unref(this->data.pipeline);
-                    return false;
                 }
                 if(prefix == "STARTING" && sNew == GST_STATE_PLAYING) {
                     qWarning() << "STREAMING STARTED !";
-                    return false;
                 }
             }
             break;
@@ -1653,11 +1651,11 @@ void QGCApplication::codeThreadBus(GstElement *pipeline, GoblinData &data, QStri
 
 void QGCApplication::stopStream()
 {
-    QtConcurrent::run([this]() {
-        gst_element_set_state(this->data.pipeline, GST_STATE_NULL);
-        codeThreadBus(this->data.pipeline, this->data, (QString)"ENDING");
-        this->isStreaming = false;
+    gst_element_set_state(this->data.pipeline, GST_STATE_NULL);
+    if(this->future.IsRunning(){
+        this->future.cancel();
     });
+    this->isStreaming = false;
     qWarning() << "==============  STOP_STREAM  ==============";
 }
 
