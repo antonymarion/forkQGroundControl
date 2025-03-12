@@ -1650,6 +1650,7 @@ void QGCApplication::stopStream()
     if(this->future.isRunning()) {
         qWarning() << "*****  Stopping stream  *****";
         this->future.cancel();
+        this->future.kill();
     }
     qWarning() << "==============  STOP_STREAM  ==============";
 }
