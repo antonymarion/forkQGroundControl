@@ -1473,7 +1473,6 @@ void QGCApplication::sendAircraftPositionInfos() {
         if(vehicle->productName() != "SL-450-NG"){
             QmlObjectListModel* batteries = vehicle->batteries();
             int res = 0;
-            int totalSeconds = INT_MAX;
             for (int i=0; i<batteries->count(); i++) {
                 VehicleBatteryFactGroup* battery = qobject_cast<VehicleBatteryFactGroup*>(batteries->get(i));
                 res += battery->percentRemaining()->rawValue().toInt();
