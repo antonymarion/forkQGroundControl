@@ -1105,9 +1105,11 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qWarning() << "=================================================";
             qWarning() << "recieved TAKE_OFF";
             qWarning() << "=================================================";
-            double takeOfHeight = message["takeOffHeight"].toDouble();
-            requestVehicle->guidedModeTakeoff(takeOfHeight ? takeOfHeight : 1);
-            state_value = 0;
+            {
+                double takeOfHeight = message["takeOffHeight"].toDouble();
+                requestVehicle->guidedModeTakeoff(takeOfHeight ? takeOfHeight : 1);
+                state_value = 0;
+            }
             break;
         case 15:
             qWarning() << "=================================================";
