@@ -1105,7 +1105,8 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qWarning() << "=================================================";
             qWarning() << "recieved TAKE_OFF";
             qWarning() << "=================================================";
-            requestVehicle->guidedModeTakeoff(1);
+            const takeOfHeight = message["takeOffHeight"].toDouble();
+            requestVehicle->guidedModeTakeoff(takeOfHeight ? takeOfHeight : 1);
             state_value = 0;
             break;
         case 15:
@@ -1397,7 +1398,7 @@ void QGCApplication::sendAircraftPositionInfos() {
         newResponse.insert("emailRemotePilot",   loggedEmail);
         newResponse.insert("isStreaming",        isStreaming);
         newResponse.insert("system",             vehicle->firmwareTypeString());
-        newResponse.insert("systemVersion",      "V1"); // TODO ???
+        newResponse.insert("systemVersion",      "MAVLINK"); // TODO ???
         newResponse.insert("simulated",          simulatedMAC.contains(vehicle->vehicleUIDStr()));
         newResponse.insert("systemOS",           "Windows"); // TODO change to include Android
         newResponse.insert("productType",        vehicle->vehicleTypeString());

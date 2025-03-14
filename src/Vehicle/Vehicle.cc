@@ -822,7 +822,7 @@ void Vehicle::_setNewVehicleData()
         QString ipAddressTundra = "192.168.144.43"; // Remplacez par la plage d'adresses IP réelle du réseau
         QProcess* process = new QProcess(this);
         QProcess* processTundra = new QProcess(this);
-        auto handleProcessFinished = [this](QProcess* process, int exitCode, QProcess::ExitStatus exitStatus) {
+        auto handleProcessFinished = [this](QProcess* process, int exitCode, QProcess::ExitStatus exitStatus, QString debug) {
             if (exitStatus == QProcess::NormalExit && exitCode == 0) {
             QString output = process->readAllStandardOutput();
             QRegularExpression macRegex("([0-9A-F:]{17})");
@@ -834,6 +834,7 @@ void Vehicle::_setNewVehicleData()
                 macAddresses.append(match.captured(1));
                 }
             }
+            qCWarning(VehicleLog) << "MAC List " << debug << " : "<< macAddresses;
             if (macAddresses.isEmpty()) {
                 qCWarning(VehicleLog) << "*****  No addresses found  *****";
                 return;
@@ -872,11 +873,11 @@ void Vehicle::_setNewVehicleData()
         };
 
         connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this, [handleProcessFinished, process](int exitCode, QProcess::ExitStatus exitStatus) {
-            handleProcessFinished(process, exitCode, exitStatus);
+            handleProcessFinished(process, exitCode, exitStatus, "General");
         });
 
         connect(processTundra, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this, [handleProcessFinished, processTundra](int exitCode, QProcess::ExitStatus exitStatus) {
-            handleProcessFinished(processTundra, exitCode, exitStatus);
+            handleProcessFinished(processTundra, exitCode, exitStatus, "Tundra");
         });
         processTundra->start("nmap -sP " + ipAddressTundra);
         process->start("nmap -sP " + ipAddressRange + "/24");
