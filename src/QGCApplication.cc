@@ -741,8 +741,6 @@ void QGCApplication::setLanguage()
 
 void QGCApplication::_shutdown()
 {
-    gst_element_set_state(this->data.pipeline, GST_STATE_NULL);
-    gst_object_unref(this->data.pipeline);
     if(this->future.isRunning()) {
         gst_element_send_event(this->data.pipeline, gst_event_new_eos());
         this->future.waitForFinished();
