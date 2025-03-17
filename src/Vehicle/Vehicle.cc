@@ -796,6 +796,19 @@ void Vehicle::loadAndSendGeofence(const QJsonObject& json){
     _geoFenceManager->sendToVehicle(breachReturnPoint, polygons, circles);
 }
 
+void Vehicle::_setUAVSn(QStringList uasSn){
+    _dgUas = uasSn[0];
+    _dgSn = uasSn[1];
+    _dgProductName = uasSn[2];
+    _dgUID = uasSn[3];
+    qCWarning(VehicleLog) << "Set new uas to : "<< _dgUas;
+    qCWarning(VehicleLog) << "Set new sn to : "<< _dgSn;
+    qCWarning(VehicleLog) << "Set new productName to : "<< _dgProductName;
+    qCWarning(VehicleLog) << "Set new UID to : "<< _dgUID;
+    emit snChanged(_dgSn);
+    return;
+}
+
 void Vehicle::_setNewVehicleData()
 {
     QStringList uasSn;
@@ -806,15 +819,7 @@ void Vehicle::_setNewVehicleData()
             qCWarning(VehicleLog) << "UID : " << vehicleUIDStr();
             return;
         }
-        _dgUas = uasSn[0];
-        _dgSn = uasSn[1];
-        _dgProductName = uasSn[2];
-        _dgUID = uasSn[3];
-        qCWarning(VehicleLog) << "Set new uas to : "<< _dgUas;
-        qCWarning(VehicleLog) << "Set new sn to : "<< _dgSn;
-        qCWarning(VehicleLog) << "Set new productName to : "<< _dgProductName;
-        qCWarning(VehicleLog) << "Set new UID to : "<< _dgUID;
-        emit snChanged(_dgSn);
+        _setUAVSn(uasSn)
         return;
     }
     else {
@@ -858,15 +863,7 @@ void Vehicle::_setNewVehicleData()
                 qCWarning(VehicleLog) << "*****  No MAC available  *****";
                 return;
             }
-            _dgUas = uasSn[0];
-            _dgSn = uasSn[1];
-            _dgProductName = uasSn[2];
-            _dgUID = uasSn[3];
-            qCWarning(VehicleLog) << "Set new uas to : "<< _dgUas;
-            qCWarning(VehicleLog) << "Set new sn to : "<< _dgSn;
-            qCWarning(VehicleLog) << "Set new productName to : "<< _dgProductName;
-            qCWarning(VehicleLog) << "Set new UID to : "<< _dgUID;
-            emit snChanged(_dgSn);
+            _setUAVSn(uasSn)
             } else {
             qWarning() << "nmap process failed to finish.";
             }
