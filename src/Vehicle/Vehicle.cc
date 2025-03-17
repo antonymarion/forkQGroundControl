@@ -863,7 +863,7 @@ void Vehicle::_setNewVehicleData()
                 qCWarning(VehicleLog) << "*****  No MAC available  *****";
                 return;
             }
-            _setUAVSn(uasSn)
+            _setUAVSn(uasSn);
             } else {
             qWarning() << "nmap process failed to finish.";
             }
