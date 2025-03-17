@@ -823,6 +823,7 @@ void Vehicle::_setNewVehicleData()
         QProcess* process = new QProcess(this);
         QProcess* processTundra = new QProcess(this);
         auto handleProcessFinished = [this](QProcess* process, int exitCode, QProcess::ExitStatus exitStatus, QString debug) {
+            qCWarning(VehicleLog) << "*****  Scan On "<< debug <<"  *****";
             if (exitStatus == QProcess::NormalExit && exitCode == 0) {
             QString output = process->readAllStandardOutput();
             QRegularExpression macRegex("([0-9A-F:]{17})");
