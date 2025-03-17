@@ -819,7 +819,7 @@ void Vehicle::_setNewVehicleData()
             qCWarning(VehicleLog) << "UID : " << vehicleUIDStr();
             return;
         }
-        _setUAVSn(uasSn)
+        _setUAVSn(uasSn);
         return;
     }
     else {
