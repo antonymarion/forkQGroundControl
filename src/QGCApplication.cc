@@ -744,8 +744,11 @@ void QGCApplication::_shutdown()
     gst_element_set_state(this->data.pipeline, GST_STATE_NULL);
     gst_object_unref(this->data.pipeline);
     if(this->future.isRunning()) {
-        this->future.cancel();
+        gst_element_send_event(this->data.pipeline, gst_event_new_eos());
         this->future.waitForFinished();
+        gst_element_set_state(this->data.pipeline, GST_STATE_NULL);
+        gst_object_unref(this->data.pipeline);
+        this->data.pipeline = nullptr;
     }
     // Close out all Qml before we delete toolbox. This way we don't get all sorts of null reference complaints from Qml.
     delete _qmlAppEngine;
@@ -1647,6 +1650,7 @@ void QGCApplication::stopStream()
     if (this->future.isRunning()) {
         gst_element_send_event(this->data.pipeline, gst_event_new_eos());
         this->future.waitForFinished();
+        gst_element_set_state(this->data.pipeline, GST_STATE_NULL);
         gst_object_unref(this->data.pipeline);
         this->data.pipeline = nullptr;
     }
