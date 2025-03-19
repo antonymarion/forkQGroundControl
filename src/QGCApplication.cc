@@ -1404,7 +1404,7 @@ void QGCApplication::sendAircraftPositionInfos() {
         newResponse.insert("systemVersion",      "MAVLINK"); // TODO ???
         newResponse.insert("simulated",          simulatedMAC.contains(vehicle->vehicleUIDStr()));
         newResponse.insert("systemOS",           "Windows"); // TODO change to include Android
-        newResponse.insert("productType",        vehicle->vehicleTypeString());
+        newResponse.insert("productType",        vehicle->productName());
         newResponse.insert("rtmpUrl",            rtmpUrl + vehicle->sn());
         qWarning() << "UID : " << vehicle->dgUID() << " | SN : "  << vehicle->sn() << " | UAS : " << vehicle->uasString();
         newResponse.insert("latitude",           vehicle->coordinate().latitude());

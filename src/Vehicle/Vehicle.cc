@@ -721,7 +721,7 @@ QJsonArray Vehicle::getCameras()
     if(_dgProductName == "TUNDRA 2"){
         QJsonObject thisCamera;
         thisCamera.insert("index",0);
-        thisCamera.insert("name","Caméra intégrée Tundra II");
+        thisCamera.insert("name","Caméra intégrée Tundra 2");
         cameraList.append(thisCamera);
     }
     if(_dgProductName == "SL-450-NG"){
