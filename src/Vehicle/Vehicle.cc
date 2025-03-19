@@ -724,6 +724,12 @@ QJsonArray Vehicle::getCameras()
         thisCamera.insert("name","Caméra intégrée Tundra II");
         cameraList.append(thisCamera);
     }
+    if(_dgProductName == "SL-450-NG"){
+        QJsonObject thisCamera;
+        thisCamera.insert("index",0);
+        thisCamera.insert("name","Caméra intégrée SL-450-NG");
+        cameraList.append(thisCamera);
+    }
     return cameraList;
 }
 
