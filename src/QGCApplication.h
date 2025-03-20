@@ -188,6 +188,12 @@ public:
 
     QQmlApplicationEngine* qmlAppEngine() { return _qmlAppEngine; }
 
+    // Vector neutral joysticks
+    double _roll   = 0;
+    double _pitch  = 0;
+    double _yaw    = 0;
+    double _thrust = 0; // interface slider command
+
 public:
     // Although public, these methods are internal and should only be called by UnitTest code
 
@@ -345,12 +351,6 @@ private:
         "TESTING_1",
         "TESTING_2"
     };
-
-    // Vector neutral joysticks
-    double _roll   = 0;
-    double _pitch  = 0;
-    double _yaw    = 0;
-    double _thrust = 0.5; // interface slider command
 
     // Gstreamer
     //======================================================================================================================
