@@ -727,8 +727,8 @@ void Joystick::_handleAxis()
                 _activeVehicle->sendJoystickDataThreadSafe(roll, pitch, yaw, throttle, shortButtons, "JOYSTICKS");
             }
             else {
-                if(qgcApp()->_roll < -0.1 || qgcApp()->_roll > 0.1 ||  qgcApp()->_pitch < -0.1 ||  qgcApp()->_pitch > 0.1 || qgcApp()->_yaw < -0.1 || qgcApp()->_yaw > 0.1 || qgcApp()->_throttle < t_moed || qgcApp()->_throttle > t_moeu){
-                    _activeVehicle->sendJoystickDataThreadSafe(qgcApp()->_roll, qgcApp()->_pitch, qgcApp()->_yaw, qgcApp()->_throttle, shortButtons, "JOYSTICKS");
+                if(qgcApp()->_roll < -0.1 || qgcApp()->_roll > 0.1 ||  qgcApp()->_pitch < -0.1 ||  qgcApp()->_pitch > 0.1 || qgcApp()->_yaw < -0.1 || qgcApp()->_yaw > 0.1 || qgcApp()->_thrust < t_moed || qgcApp()->_thrust > t_moeu){
+                    _activeVehicle->sendJoystickDataThreadSafe(qgcApp()->_roll, qgcApp()->_pitch, qgcApp()->_yaw, qgcApp()->_thrust, shortButtons, "JOYSTICKS");
                 }
                 else{
                     _activeVehicle->sendJoystickDataThreadSafe(roll, pitch, yaw, throttle, shortButtons, "JOYSTICKS");
