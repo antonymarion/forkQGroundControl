@@ -761,6 +761,62 @@ Rectangle {
                                 }
                             }
                         }
+
+                        RowLayout {
+                            FactComboBox {
+                                id: stringSelector
+                                Layout.preferredWidth: _comboFieldWidth
+                                fact: QGroundControl.settingsManager.appSettings.someStringList
+                                indexModel: false
+                                onActivated: {
+                                    dialogBox.visible = true
+                                }
+                            }
+
+                            MessageDialog {
+                                id: dialogBox
+                                visible: false
+                                title: qsTr("Custom Input")
+                                standardButtons: StandardButton.Ok | StandardButton.Cancel
+                                onAccepted: {
+                                    console.log("Text1:", textField1.text)
+                                    console.log("Text2:", textField2.text)
+                                    console.log("Text3:", textField3.text)
+                                    console.log("Checkbox:", checkbox.checked)
+                                }
+
+                                ColumnLayout {
+                                    QGCLabel {
+                                        text: qsTr("Field 1:")
+                                    }
+                                    QGCTextField {
+                                        id: textField1
+                                        placeholderText: qsTr("Enter value for Field 1")
+                                    }
+
+                                    QGCLabel {
+                                        text: qsTr("Field 2:")
+                                    }
+                                    QGCTextField {
+                                        id: textField2
+                                        placeholderText: qsTr("Enter value for Field 2")
+                                    }
+
+                                    QGCLabel {
+                                        text: qsTr("Field 3:")
+                                    }
+                                    QGCTextField {
+                                        id: textField3
+                                        placeholderText: qsTr("Enter value for Field 3")
+                                    }
+
+                                    QGCCheckBox {
+                                        id: checkbox
+                                        text: qsTr("Enable Option")
+                                    }
+                                }
+                            }
+                        }
                     }
 
                     Item { width: 1; height: _margins; visible: telemetryLogSectionLabel.visible }
