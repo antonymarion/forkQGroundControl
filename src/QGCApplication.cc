@@ -1474,15 +1474,15 @@ void QGCApplication::sendAircraftPositionInfos() {
                 newResponse.insert("gimbal",          currentState);
             }
         }
-        if(vehicle->productName() != "SL-450-NG"){
-            QmlObjectListModel* batteries = vehicle->batteries();
-            int res = 0;
-            for (int i=0; i<batteries->count(); i++) {
-                VehicleBatteryFactGroup* battery = qobject_cast<VehicleBatteryFactGroup*>(batteries->get(i));
-                res += battery->percentRemaining()->rawValue().toInt();
-            }
-            newResponse.insert("batteryPowerPercentUav", res/batteries->count());
+        QmlObjectListModel* batteries = vehicle->batteries();
+        int res = 0;
+        for (int i=0; i<batteries->count(); i++) {
+            VehicleBatteryFactGroup* battery = qobject_cast<VehicleBatteryFactGroup*>(batteries->get(i));
+            res += battery->percentRemaining()->rawValue().toInt();
         }
+        newResponse.insert("batteryPowerPercentUav", res/batteries->count());
+
+        // battery &&& add add aircraft menu
 
         QJsonDocument doc(newResponse);
         QString responseMessage(doc.toJson(QJsonDocument::Compact));
