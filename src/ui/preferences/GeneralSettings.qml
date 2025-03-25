@@ -764,6 +764,7 @@ Rectangle {
 
                         RowLayout {
                             QGCButton {
+                                id: newAircraft
                                 text: qsTr("Add new aircraft")
                                 onClicked: {
                                     dialogBox.visible = true
