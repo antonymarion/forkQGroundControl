@@ -763,12 +763,9 @@ Rectangle {
                         }
 
                         RowLayout {
-                            FactComboBox {
-                                id: stringSelector
-                                Layout.preferredWidth: _comboFieldWidth
-                                fact: QGroundControl.settingsManager.appSettings.someStringList
-                                indexModel: false
-                                onActivated: {
+                            QGCButton {
+                                text: qsTr("Add new aircraft")
+                                onClicked: {
                                     dialogBox.visible = true
                                 }
                             }
@@ -779,40 +776,48 @@ Rectangle {
                                 title: qsTr("Custom Input")
                                 standardButtons: StandardButton.Ok | StandardButton.Cancel
                                 onAccepted: {
-                                    console.log("Text1:", textField1.text)
-                                    console.log("Text2:", textField2.text)
-                                    console.log("Text3:", textField3.text)
-                                    console.log("Checkbox:", checkbox.checked)
+                                    console.log("UAS:", dgUas.text)
+                                    console.log("Serial Number:", dgSn.text)
+                                    console.log("Model:", dgModel.text)
+                                    console.log("Checkbox:", dgIsIgnored.checked) // send this to appsetting cc and save in qgc app and param file
                                 }
 
                                 ColumnLayout {
                                     QGCLabel {
-                                        text: qsTr("Field 1:")
+                                        text: qsTr("UUID :")
                                     }
                                     QGCTextField {
-                                        id: textField1
-                                        placeholderText: qsTr("Enter value for Field 1")
+                                        id: dgUas
+                                        placeholderText: qsTr("Enter UUID")
                                     }
 
                                     QGCLabel {
-                                        text: qsTr("Field 2:")
+                                        text: qsTr("UAS :")
                                     }
                                     QGCTextField {
-                                        id: textField2
-                                        placeholderText: qsTr("Enter value for Field 2")
+                                        id: dgUas
+                                        placeholderText: qsTr("Enter UAS")
                                     }
 
                                     QGCLabel {
-                                        text: qsTr("Field 3:")
+                                        text: qsTr("Serial Number :")
                                     }
                                     QGCTextField {
-                                        id: textField3
-                                        placeholderText: qsTr("Enter value for Field 3")
+                                        id: dgSn
+                                        placeholderText: qsTr("Enter serial number")
+                                    }
+
+                                    QGCLabel {
+                                        text: qsTr("Model :")
+                                    }
+                                    QGCTextField {
+                                        id: dgModel
+                                        placeholderText: qsTr("Enter aircraft model")
                                     }
 
                                     QGCCheckBox {
-                                        id: checkbox
-                                        text: qsTr("Enable Option")
+                                        id: dgIsIgnored
+                                        text: qsTr("Ignore this UID")
                                     }
                                 }
                             }
