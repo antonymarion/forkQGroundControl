@@ -788,7 +788,7 @@ Rectangle {
                                         text: qsTr("UUID :")
                                     }
                                     QGCTextField {
-                                        id: dgUas
+                                        id: dgUuid
                                         placeholderText: qsTr("Enter UUID")
                                     }
 
