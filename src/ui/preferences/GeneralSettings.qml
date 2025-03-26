@@ -776,52 +776,12 @@ Rectangle {
                                 visible: false
                                 title: qsTr("Custom Input")
                                 standardButtons: StandardButton.Ok | StandardButton.Cancel
-                                onAccepted: {
+                                onAccepted: {/* 
                                     console.log("UUID:", dgUuid.text)
                                     console.log("UAS:", dgUas.text)
                                     console.log("Serial Number:", dgSn.text)
                                     console.log("Model:", dgModel.text)
-                                    console.log("Checkbox:", dgIsIgnored.checked) // send this to appsetting cc and save in qgc app and param file
-                                }
-
-                                GridLayout {
-                                    columns: 2/* 
-                                    QGCLabel {
-                                        text: qsTr("UUID :")
-                                    }
-                                    QGCTextField {
-                                        id: dgUuid
-                                        placeholderText: qsTr("Enter UUID")
-                                    }
-
-                                    QGCLabel {
-                                        text: qsTr("UAS :")
-                                    }
-                                    QGCTextField {
-                                        id: dgUas
-                                        placeholderText: qsTr("Enter UAS")
-                                    }
-
-                                    QGCLabel {
-                                        text: qsTr("Serial Number :")
-                                    }
-                                    QGCTextField {
-                                        id: dgSn
-                                        placeholderText: qsTr("Enter serial number")
-                                    }
-
-                                    QGCLabel {
-                                        text: qsTr("Model :")
-                                    }
-                                    QGCTextField {
-                                        id: dgModel
-                                        placeholderText: qsTr("Enter aircraft model")
-                                    }
-
-                                    QGCCheckBox {
-                                        id: dgIsIgnored
-                                        text: qsTr("Ignore this UID")
-                                    } */
+                                    console.log("Checkbox:", dgIsIgnored.checked) // send this to appsetting cc and save in qgc app and param file */
                                 }
                             }
                         }
