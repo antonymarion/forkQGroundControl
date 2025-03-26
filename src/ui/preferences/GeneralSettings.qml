@@ -778,12 +778,13 @@ Rectangle {
                                 standardButtons: StandardButton.Ok | StandardButton.Cancel
                                 onAccepted: {
                                     console.log("UAS:", dgUas.text)
+                                    console.log("UUID:", dgUuid.text)
                                     console.log("Serial Number:", dgSn.text)
                                     console.log("Model:", dgModel.text)
                                     console.log("Checkbox:", dgIsIgnored.checked) // send this to appsetting cc and save in qgc app and param file
                                 }
 
-                                ColumnLayout {
+                                GridLayout {
                                     QGCLabel {
                                         text: qsTr("UUID :")
                                     }
