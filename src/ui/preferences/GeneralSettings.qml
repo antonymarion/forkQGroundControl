@@ -517,7 +517,7 @@ Rectangle {
                     }
                     Rectangle {
                         Layout.preferredWidth:  Math.max(comboGrid.width, miscCol.width) + (_margins * 2)
-                        Layout.preferredHeight: (pathRow.visible ? pathRow.y + pathRow.height : miscColItem.y + miscColItem.height)  + (_margins * 2)
+                        Layout.preferredHeight: (addAircraftRow.y + addAircraftRow.height)  + (_margins * 2)
                         Layout.fillWidth:       true
                         color:                  qgcPal.windowShade
                         visible:                miscSectionLabel.visible
