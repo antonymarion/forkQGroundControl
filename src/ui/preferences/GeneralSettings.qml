@@ -777,20 +777,21 @@ Rectangle {
                                 title: qsTr("Custom Input")
                                 standardButtons: StandardButton.Ok | StandardButton.Cancel
                                 onAccepted: {
-                                    console.log("UAS:", dgUas.text)
                                     console.log("UUID:", dgUuid.text)
+                                    console.log("UAS:", dgUas.text)
                                     console.log("Serial Number:", dgSn.text)
                                     console.log("Model:", dgModel.text)
                                     console.log("Checkbox:", dgIsIgnored.checked) // send this to appsetting cc and save in qgc app and param file
                                 }
 
                                 GridLayout {
+                                    columns: 2
                                     QGCLabel {
                                         text: qsTr("UUID :")
                                     }
                                     QGCTextField {
                                         id: dgUuid
-                                        placeholderText: qsTr("Enter UUID")
+                                        // placeholderText: qsTr("Enter UUID")
                                     }
 
                                     QGCLabel {
@@ -798,7 +799,7 @@ Rectangle {
                                     }
                                     QGCTextField {
                                         id: dgUas
-                                        placeholderText: qsTr("Enter UAS")
+                                        // placeholderText: qsTr("Enter UAS")
                                     }
 
                                     QGCLabel {
@@ -806,7 +807,7 @@ Rectangle {
                                     }
                                     QGCTextField {
                                         id: dgSn
-                                        placeholderText: qsTr("Enter serial number")
+                                        // placeholderText: qsTr("Enter serial number")
                                     }
 
                                     QGCLabel {
@@ -814,7 +815,7 @@ Rectangle {
                                     }
                                     QGCTextField {
                                         id: dgModel
-                                        placeholderText: qsTr("Enter aircraft model")
+                                        // placeholderText: qsTr("Enter aircraft model")
                                     }
 
                                     QGCCheckBox {
