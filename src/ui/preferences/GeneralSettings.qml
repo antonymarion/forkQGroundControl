@@ -785,7 +785,7 @@ Rectangle {
                                 }
 
                                 GridLayout {
-                                    columns: 2
+                                    columns: 2/* 
                                     QGCLabel {
                                         text: qsTr("UUID :")
                                     }
@@ -821,7 +821,7 @@ Rectangle {
                                     QGCCheckBox {
                                         id: dgIsIgnored
                                         text: qsTr("Ignore this UID")
-                                    }
+                                    } */
                                 }
                             }
                         }
