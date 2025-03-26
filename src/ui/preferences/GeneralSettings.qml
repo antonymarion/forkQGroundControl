@@ -763,6 +763,13 @@ Rectangle {
                         }
 
                         RowLayout {
+                            id:                 addAircraftRow
+                            anchors.margins:    _margins
+                            anchors.left:       parent.left
+                            anchors.right:      parent.right
+                            anchors.top:        pathRow.bottom
+                            anchors.topMargin:  ScreenTools.defaultFontPixelHeight
+
                             QGCButton {
                                 id: newAircraft
                                 text: qsTr("Add new aircraft")
@@ -782,10 +789,6 @@ Rectangle {
                                     console.log("Serial Number:", dgSn.text)
                                     console.log("Model:", dgModel.text)
                                     console.log("Checkbox:", dgIsIgnored.checked) // send this to appsetting cc and save in qgc app and param file */
-                                }
-
-                                GridLayout {
-                                    columns: 2
                                 }
                             }
                         }
