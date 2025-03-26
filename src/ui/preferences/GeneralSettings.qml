@@ -783,6 +783,10 @@ Rectangle {
                                     console.log("Model:", dgModel.text)
                                     console.log("Checkbox:", dgIsIgnored.checked) // send this to appsetting cc and save in qgc app and param file */
                                 }
+
+                                GridLayout {
+                                    columns: 2
+                                }
                             }
                         }
                     }
