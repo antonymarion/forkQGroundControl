@@ -791,7 +791,7 @@ Rectangle {
                                     }
                                     QGCTextField {
                                         id: dgUuid
-                                        // placeholderText: qsTr("Enter UUID")
+                                        placeholderText: qsTr("Enter UUID")
                                     }
 
                                     QGCLabel {
@@ -799,7 +799,7 @@ Rectangle {
                                     }
                                     QGCTextField {
                                         id: dgUas
-                                        // placeholderText: qsTr("Enter UAS")
+                                        placeholderText: qsTr("Enter UAS")
                                     }
 
                                     QGCLabel {
@@ -807,7 +807,7 @@ Rectangle {
                                     }
                                     QGCTextField {
                                         id: dgSn
-                                        // placeholderText: qsTr("Enter serial number")
+                                        placeholderText: qsTr("Enter serial number")
                                     }
 
                                     QGCLabel {
@@ -815,7 +815,7 @@ Rectangle {
                                     }
                                     QGCTextField {
                                         id: dgModel
-                                        // placeholderText: qsTr("Enter aircraft model")
+                                        placeholderText: qsTr("Enter aircraft model")
                                     }
 
                                     QGCCheckBox {
