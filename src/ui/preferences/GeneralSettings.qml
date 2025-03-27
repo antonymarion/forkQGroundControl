@@ -784,44 +784,50 @@ Rectangle {
                                 title: qsTr("Add new aircraft")
                                 standardButtons: StandardButton.Ok | StandardButton.Cancel
 
-                                ColumnLayout {
-                                    spacing: ScreenTools.defaultFontPixelHeight
+                                Rectangle {
+                                    id:                     addAircraftRect
+                                    color:                  qgcPal.windowShade
+                                    Layout.fillWidth:       true
+                                    visible:                true
+                                    ColumnLayout {
+                                        spacing: ScreenTools.defaultFontPixelHeight
 
-                                    QGCLabel {
-                                        text: qsTr("UUID:")
-                                    }
-                                    QGCTextField {
-                                        id: dgUuid
-                                        placeholderText: qsTr("Enter UUID")
-                                    }
+                                        QGCLabel {
+                                            text: qsTr("UUID:")
+                                        }
+                                        QGCTextField {
+                                            id: dgUuid
+                                            placeholderText: qsTr("Enter UUID")
+                                        }
 
-                                    QGCLabel {
-                                        text: qsTr("UAS:")
-                                    }
-                                    QGCTextField {
-                                        id: dgUas
-                                        placeholderText: qsTr("Enter UAS")
-                                    }
+                                        QGCLabel {
+                                            text: qsTr("UAS:")
+                                        }
+                                        QGCTextField {
+                                            id: dgUas
+                                            placeholderText: qsTr("Enter UAS")
+                                        }
 
-                                    QGCLabel {
-                                        text: qsTr("Serial Number:")
-                                    }
-                                    QGCTextField {
-                                        id: dgSn
-                                        placeholderText: qsTr("Enter Serial Number")
-                                    }
+                                        QGCLabel {
+                                            text: qsTr("Serial Number:")
+                                        }
+                                        QGCTextField {
+                                            id: dgSn
+                                            placeholderText: qsTr("Enter Serial Number")
+                                        }
 
-                                    QGCLabel {
-                                        text: qsTr("Model:")
-                                    }
-                                    QGCTextField {
-                                        id: dgModel
-                                        placeholderText: qsTr("Enter Model")
-                                    }
+                                        QGCLabel {
+                                            text: qsTr("Model:")
+                                        }
+                                        QGCTextField {
+                                            id: dgModel
+                                            placeholderText: qsTr("Enter Model")
+                                        }
 
-                                    QGCCheckBox {
-                                        id: dgIsIgnored
-                                        text: qsTr("Ignore this aircraft")
+                                        QGCCheckBox {
+                                            id: dgIsIgnored
+                                            text: qsTr("Ignore this aircraft")
+                                        }
                                     }
                                 }
 
