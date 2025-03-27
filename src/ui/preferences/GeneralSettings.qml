@@ -781,14 +781,56 @@ Rectangle {
                             MessageDialog {
                                 id: dialogBox
                                 visible: false
-                                title: qsTr("Custom Input")
+                                title: qsTr("Add new aircraft")
                                 standardButtons: StandardButton.Ok | StandardButton.Cancel
-                                onAccepted: {/* 
+
+                                ColumnLayout {
+                                    spacing: ScreenTools.defaultFontPixelHeight
+
+                                    QGCLabel {
+                                        text: qsTr("UUID:")
+                                    }
+                                    QGCTextField {
+                                        id: dgUuid
+                                        placeholderText: qsTr("Enter UUID")
+                                    }
+
+                                    QGCLabel {
+                                        text: qsTr("UAS:")
+                                    }
+                                    QGCTextField {
+                                        id: dgUas
+                                        placeholderText: qsTr("Enter UAS")
+                                    }
+
+                                    QGCLabel {
+                                        text: qsTr("Serial Number:")
+                                    }
+                                    QGCTextField {
+                                        id: dgSn
+                                        placeholderText: qsTr("Enter Serial Number")
+                                    }
+
+                                    QGCLabel {
+                                        text: qsTr("Model:")
+                                    }
+                                    QGCTextField {
+                                        id: dgModel
+                                        placeholderText: qsTr("Enter Model")
+                                    }
+
+                                    QGCCheckBox {
+                                        id: dgIsIgnored
+                                        text: qsTr("Ignore this aircraft")
+                                    }
+                                }
+
+                                onAccepted: {
                                     console.log("UUID:", dgUuid.text)
                                     console.log("UAS:", dgUas.text)
                                     console.log("Serial Number:", dgSn.text)
                                     console.log("Model:", dgModel.text)
-                                    console.log("Checkbox:", dgIsIgnored.checked) // send this to appsetting cc and save in qgc app and param file */
+                                    console.log("Checkbox:", dgIsIgnored.checked)
                                 }
                             }
                         }
