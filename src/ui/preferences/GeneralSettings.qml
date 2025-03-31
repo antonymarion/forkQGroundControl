@@ -788,6 +788,7 @@ Rectangle {
                                     id:                     addAircraftRect
                                     Layout.fillWidth:       true
                                     visible:                true
+                                    color:                  qgcPal.windowShade
                                     width:  addAircraftColumn.width + (ScreenTools.defaultFontPixelWidth * 2)
                                     height: addAircraftColumn.height + (ScreenTools.defaultFontPixelWidth * 2)
 
@@ -798,9 +799,11 @@ Rectangle {
                                         RowLayout {
                                             QGCLabel {
                                                 text: qsTr("UUID:")
+                                                anchors.left:       parent.left
                                             }
                                             QGCTextField {
                                                 id: dgUuid
+                                                anchors.right:      parent.right
                                                 placeholderText: qsTr("Enter UUID")
                                             }
                                         }
@@ -808,9 +811,11 @@ Rectangle {
                                         RowLayout {
                                             QGCLabel {
                                                 text: qsTr("UAS:")
+                                                anchors.left:       parent.left
                                             }
                                             QGCTextField {
                                                 id: dgUas
+                                                anchors.right:      parent.right
                                                 placeholderText: qsTr("Enter UAS")
                                             }
                                         }
@@ -818,9 +823,11 @@ Rectangle {
                                         RowLayout {
                                             QGCLabel {
                                                 text: qsTr("Serial Number:")
+                                                anchors.left:       parent.left
                                             }
                                             QGCTextField {
                                                 id: dgSn
+                                                anchors.right:      parent.right
                                                 placeholderText: qsTr("Enter Serial Number")
                                             }
                                         }
@@ -828,9 +835,11 @@ Rectangle {
                                         RowLayout {
                                             QGCLabel {
                                                 text: qsTr("Model:")
+                                                anchors.left:       parent.left
                                             }
                                             QGCTextField {
                                                 id: dgModel
+                                                anchors.right:      parent.right
                                                 placeholderText: qsTr("Enter Model")
                                             }
                                         }
