@@ -1402,7 +1402,7 @@ void QGCApplication::sendAircraftPositionInfos() {
         newResponse.insert("isStreaming",        isStreaming);
         newResponse.insert("system",             vehicle->firmwareTypeString());
         newResponse.insert("systemVersion",      "MAVLINK"); // TODO ???
-        newResponse.insert("simulated",          simulatedMAC.contains(vehicle->vehicleUIDStr()));
+        newResponse.insert("simulated",          simulatedMAC.contains(vehicle->dgUID()));
         newResponse.insert("systemOS",           "Windows"); // TODO change to include Android
         newResponse.insert("productType",        vehicle->productName());
         newResponse.insert("rtmpUrl",            rtmpUrl + vehicle->sn());

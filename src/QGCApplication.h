@@ -321,6 +321,7 @@ private:
     QGCCameraControl*     _activeCamera{nullptr};
     QTimer*               timerVector = nullptr;                         // send vector command timer
     QStringList           simulatedMAC        = {                        // global axis list
+        "",
         "4F:4E:49:44:4C:41:54:49",
         "00:00:00:00:00:00:00:00" 
         };

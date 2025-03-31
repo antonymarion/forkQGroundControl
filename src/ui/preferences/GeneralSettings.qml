@@ -798,33 +798,31 @@ Rectangle {
                                         spacing: ScreenTools.defaultFontPixelHeight
 
                                         RowLayout {
+                                            anchors.horizontalCenter:   parent.horizontalCenter
                                             QGCLabel {
                                                 text: qsTr("UUID:")
-                                                anchors.horizontalCenter:   parent.horizontalCenter
                                             }
                                             QGCTextField {
                                                 id: dgUuid
-                                                anchors.right:      parent.right
                                                 placeholderText: qsTr("Enter UUID")
                                             }
                                         }
 
                                         RowLayout {
+                                            anchors.horizontalCenter:   parent.horizontalCenter
                                             QGCLabel {
                                                 text: qsTr("UAS:")
-                                                anchors.horizontalCenter:   parent.horizontalCenter
                                             }
                                             QGCTextField {
                                                 id: dgUas
-                                                anchors.right:      parent.right
                                                 placeholderText: qsTr("Enter UAS")
                                             }
                                         }
 
                                         RowLayout {
+                                            anchors.horizontalCenter:   parent.horizontalCenter
                                             QGCLabel {
                                                 text: qsTr("Serial Number:")
-                                                anchors.horizontalCenter:   parent.horizontalCenter
                                             }
                                             QGCTextField {
                                                 id: dgSn
@@ -834,9 +832,9 @@ Rectangle {
                                         }
 
                                         RowLayout {
+                                            anchors.horizontalCenter:   parent.horizontalCenter
                                             QGCLabel {
                                                 text: qsTr("Model:")
-                                                anchors.horizontalCenter:   parent.horizontalCenter
                                             }
                                             QGCTextField {
                                                 id: dgModel
@@ -854,7 +852,7 @@ Rectangle {
                                 }
                             }
                         }
-                    }
+                    } // add mqtt modal
 
                     Item { width: 1; height: _margins; visible: telemetryLogSectionLabel.visible }
                     QGCLabel {
