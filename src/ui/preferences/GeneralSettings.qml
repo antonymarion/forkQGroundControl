@@ -772,6 +772,7 @@ Rectangle {
 
                             QGCButton {
                                 id: newAircraft
+                                anchors.horizontalCenter:   parent.horizontalCenter
                                 text: qsTr("Add new aircraft")
                                 onClicked: {
                                     dialogBox.visible = true
@@ -799,7 +800,7 @@ Rectangle {
                                         RowLayout {
                                             QGCLabel {
                                                 text: qsTr("UUID:")
-                                                anchors.left:       parent.left
+                                                anchors.horizontalCenter:   parent.horizontalCenter
                                             }
                                             QGCTextField {
                                                 id: dgUuid
@@ -811,7 +812,7 @@ Rectangle {
                                         RowLayout {
                                             QGCLabel {
                                                 text: qsTr("UAS:")
-                                                anchors.left:       parent.left
+                                                anchors.horizontalCenter:   parent.horizontalCenter
                                             }
                                             QGCTextField {
                                                 id: dgUas
@@ -823,7 +824,7 @@ Rectangle {
                                         RowLayout {
                                             QGCLabel {
                                                 text: qsTr("Serial Number:")
-                                                anchors.left:       parent.left
+                                                anchors.horizontalCenter:   parent.horizontalCenter
                                             }
                                             QGCTextField {
                                                 id: dgSn
@@ -835,7 +836,7 @@ Rectangle {
                                         RowLayout {
                                             QGCLabel {
                                                 text: qsTr("Model:")
-                                                anchors.left:       parent.left
+                                                anchors.horizontalCenter:   parent.horizontalCenter
                                             }
                                             QGCTextField {
                                                 id: dgModel
@@ -846,6 +847,7 @@ Rectangle {
 
                                         QGCCheckBox {
                                             id: dgIsIgnored
+                                            anchors.horizontalCenter:   parent.horizontalCenter
                                             text: qsTr("Ignore this aircraft")
                                         }
                                     }
