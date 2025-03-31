@@ -793,10 +793,9 @@ Rectangle {
                                     width:  addAircraftColumn.width + (ScreenTools.defaultFontPixelWidth * 2)
                                     height: addAircraftColumn.height + (ScreenTools.defaultFontPixelWidth * 2)
 
-                                    GridLayout {
-                                        columns: 2
-                                        rows: 5
+                                    ColumnLayout {
                                         id: addAircraftColumn
+                                        spacing: ScreenTools.defaultFontPixelHeight
 
                                         RowLayout {
                                             anchors.horizontalCenter:   parent.horizontalCenter
@@ -853,7 +852,7 @@ Rectangle {
                                 }
                             }
                         }
-                    } // add mqtt modal
+                    } // add mqtt modale
 
                     Item { width: 1; height: _margins; visible: telemetryLogSectionLabel.visible }
                     QGCLabel {
