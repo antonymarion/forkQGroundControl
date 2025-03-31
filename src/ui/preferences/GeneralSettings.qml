@@ -789,7 +789,11 @@ Rectangle {
                                     color:                  qgcPal.windowShade
                                     Layout.fillWidth:       true
                                     visible:                true
+                                    width:  addAircraftColumn.width + (ScreenTools.defaultFontPixelWidth * 2)
+                                    height: addAircraftColumn.height + (ScreenTools.defaultFontPixelWidth * 2)
+
                                     ColumnLayout {
+                                        id: addAircraftColumn
                                         spacing: ScreenTools.defaultFontPixelHeight
 
                                         QGCLabel {
