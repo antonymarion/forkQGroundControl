@@ -786,7 +786,6 @@ Rectangle {
 
                                 Rectangle {
                                     id:                     addAircraftRect
-                                    color:                  qgcPal.windowShade
                                     Layout.fillWidth:       true
                                     visible:                true
                                     width:  addAircraftColumn.width + (ScreenTools.defaultFontPixelWidth * 2)
@@ -796,36 +795,44 @@ Rectangle {
                                         id: addAircraftColumn
                                         spacing: ScreenTools.defaultFontPixelHeight
 
-                                        QGCLabel {
-                                            text: qsTr("UUID:")
-                                        }
-                                        QGCTextField {
-                                            id: dgUuid
-                                            placeholderText: qsTr("Enter UUID")
-                                        }
-
-                                        QGCLabel {
-                                            text: qsTr("UAS:")
-                                        }
-                                        QGCTextField {
-                                            id: dgUas
-                                            placeholderText: qsTr("Enter UAS")
+                                        RowLayout {
+                                            QGCLabel {
+                                                text: qsTr("UUID:")
+                                            }
+                                            QGCTextField {
+                                                id: dgUuid
+                                                placeholderText: qsTr("Enter UUID")
+                                            }
                                         }
 
-                                        QGCLabel {
-                                            text: qsTr("Serial Number:")
-                                        }
-                                        QGCTextField {
-                                            id: dgSn
-                                            placeholderText: qsTr("Enter Serial Number")
+                                        RowLayout {
+                                            QGCLabel {
+                                                text: qsTr("UAS:")
+                                            }
+                                            QGCTextField {
+                                                id: dgUas
+                                                placeholderText: qsTr("Enter UAS")
+                                            }
                                         }
 
-                                        QGCLabel {
-                                            text: qsTr("Model:")
+                                        RowLayout {
+                                            QGCLabel {
+                                                text: qsTr("Serial Number:")
+                                            }
+                                            QGCTextField {
+                                                id: dgSn
+                                                placeholderText: qsTr("Enter Serial Number")
+                                            }
                                         }
-                                        QGCTextField {
-                                            id: dgModel
-                                            placeholderText: qsTr("Enter Model")
+
+                                        RowLayout {
+                                            QGCLabel {
+                                                text: qsTr("Model:")
+                                            }
+                                            QGCTextField {
+                                                id: dgModel
+                                                placeholderText: qsTr("Enter Model")
+                                            }
                                         }
 
                                         QGCCheckBox {
