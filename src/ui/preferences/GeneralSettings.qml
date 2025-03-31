@@ -793,7 +793,7 @@ Rectangle {
                                     width:  addAircraftColumn.width + (ScreenTools.defaultFontPixelWidth * 2)
                                     height: addAircraftColumn.height + (ScreenTools.defaultFontPixelWidth * 2)
 
-                                    GridLayoutLayout {
+                                    GridLayout {
                                         columns: 2
                                         id: addAircraftColumn
                                         spacing: ScreenTools.defaultFontPixelHeight
