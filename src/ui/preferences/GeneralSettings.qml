@@ -795,6 +795,7 @@ Rectangle {
 
                                     GridLayout {
                                         columns: 2
+                                        rows: 5
                                         id: addAircraftColumn
 
                                         RowLayout {
