@@ -782,6 +782,7 @@ Rectangle {
                                 id: dialogBox
                                 visible: false
                                 title: qsTr("Add new aircraft")
+                                buttons: StandardButton.Ok | StandardButton.Close
 
                                 Rectangle {
                                     id:                     addAircraftRect
