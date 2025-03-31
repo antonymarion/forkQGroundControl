@@ -778,11 +778,10 @@ Rectangle {
                                 }
                             }
 
-                            MessageDialog {
+                            QGCPopupDialog {
                                 id: dialogBox
                                 visible: false
                                 title: qsTr("Add new aircraft")
-                                standardButtons: StandardButton.Ok | StandardButton.Cancel
 
                                 Rectangle {
                                     id:                     addAircraftRect
@@ -829,14 +828,6 @@ Rectangle {
                                             text: qsTr("Ignore this aircraft")
                                         }
                                     }
-                                }
-
-                                onAccepted: {
-                                    console.log("UUID:", dgUuid.text)
-                                    console.log("UAS:", dgUas.text)
-                                    console.log("Serial Number:", dgSn.text)
-                                    console.log("Model:", dgModel.text)
-                                    console.log("Checkbox:", dgIsIgnored.checked)
                                 }
                             }
                         }
