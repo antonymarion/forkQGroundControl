@@ -796,7 +796,6 @@ Rectangle {
                                     GridLayout {
                                         columns: 2
                                         id: addAircraftColumn
-                                        spacing: ScreenTools.defaultFontPixelHeight
 
                                         RowLayout {
                                             anchors.horizontalCenter:   parent.horizontalCenter
