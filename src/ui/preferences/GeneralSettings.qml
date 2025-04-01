@@ -938,8 +938,8 @@ Rectangle {
 
                             QGCLabel { text: qsTr("MQTT Path") }
                             QGCTextField {
-                                Layout.fillWidth:   true
-                                readOnly:           true
+                                id: mqttIp
+                                placeholderText: qsTr("xxx.xxx.xxx.xxx")
                             }
                         }
                     } // add mqtt modal
