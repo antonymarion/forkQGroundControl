@@ -800,48 +800,76 @@ Rectangle {
                                         rowSpacing: ScreenTools.defaultFontPixelHeight
 
                                         RowLayout {
-                                            anchors.horizontalCenter:   parent.horizontalCenter
+                                            id: dgUuidRow
+                                            anchors.margins:    _margins
+                                            anchors.left:       parent.left
+                                            anchors.right:      parent.right
+                                            anchors.top:        parent.top
+                                            anchors.topMargin:  ScreenTools.defaultFontPixelHeight
                                             QGCLabel {
                                                 text: qsTr("UUID:")
+                                                Layout.alignment: Qt.AlignRight
                                             }
                                             QGCTextField {
                                                 id: dgUuid
                                                 placeholderText: qsTr("Enter UUID")
+                                                Layout.fillWidth: true
                                             }
                                         }
 
                                         RowLayout {
-                                            anchors.horizontalCenter:   parent.horizontalCenter
+                                            id: dgUasRow
+                                            anchors.margins:    _margins
+                                            anchors.left:       parent.left
+                                            anchors.right:      parent.right
+                                            anchors.top:        dgUuidRow.bottom
+                                            anchors.topMargin:  ScreenTools.defaultFontPixelHeight
                                             QGCLabel {
                                                 text: qsTr("UAS:")
+                                                Layout.alignment: Qt.AlignRight
                                             }
                                             QGCTextField {
                                                 id: dgUas
                                                 placeholderText: qsTr("Enter UAS")
+                                                Layout.fillWidth: true
                                             }
                                         }
 
                                         RowLayout {
-                                            anchors.horizontalCenter:   parent.horizontalCenter
+                                            id: dgNameRow
+                                            anchors.margins:    _margins
+                                            anchors.left:       parent.left
+                                            anchors.right:      parent.right
+                                            anchors.top:        dgUasRow.bottom
+                                            anchors.topMargin:  ScreenTools.defaultFontPixelHeight
                                             QGCLabel {
                                                 text: qsTr("Serial Number:")
+                                                Layout.alignment: Qt.AlignRight
                                             }
                                             QGCTextField {
                                                 id: dgSn
                                                 anchors.right:      parent.right
                                                 placeholderText: qsTr("Enter Serial Number")
+                                                Layout.fillWidth: true
                                             }
                                         }
 
                                         RowLayout {
-                                            anchors.horizontalCenter:   parent.horizontalCenter
+                                            id: dgNameRow
+                                            anchors.margins:    _margins
+                                            anchors.left:       parent.left
+                                            anchors.right:      parent.right
+                                            anchors.top:        dgNameRow.bottom
+                                            anchors.topMargin:  ScreenTools.defaultFontPixelHeight
                                             QGCLabel {
                                                 text: qsTr("Model:")
+                                                Layout.alignment: Qt.AlignRight
                                             }
                                             QGCTextField {
                                                 id: dgModel
                                                 anchors.right:      parent.right
                                                 placeholderText: qsTr("Enter Model")
+                                                Layout.fillWidth: true
                                             }
                                         }
 
