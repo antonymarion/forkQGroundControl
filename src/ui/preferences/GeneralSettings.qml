@@ -846,6 +846,18 @@ Rectangle {
                                             anchors.horizontalCenter:   parent.horizontalCenter
                                             text: qsTr("Ignore this aircraft")
                                         }
+                                        QGCButton {
+                                            id: saveButton
+                                            text: qsTr("Save")
+                                            anchors.horizontalCenter: parent.horizontalCenter
+                                            onClicked: {
+                                                console.log("UUID:", dgUuid.text)
+                                                console.log("UAS:", dgUas.text)
+                                                console.log("Serial Number:", dgSn.text)
+                                                console.log("Model:", dgModel.text)
+                                                console.log("Ignore this aircraft:", dgIsIgnored.checked)
+                                            }
+                                        }
                                     }
                                 }
                             }

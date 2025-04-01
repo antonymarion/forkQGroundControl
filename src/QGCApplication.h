@@ -125,7 +125,7 @@ public:
 
     void vectorControlOverride(); // Take over station control
     
-    QStringList           excludeList         = {"20:97:27:49:3B:2F", "EC:64:C9:EB:17:98" }; // exclude mac list
+    QStringList           excludeList         = {}; // exclude mac list
 
 public slots:
     /// You can connect to this slot to show an information message box from a different thread.
