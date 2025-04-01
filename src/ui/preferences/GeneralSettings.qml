@@ -836,7 +836,7 @@ Rectangle {
                                         }
 
                                         RowLayout {
-                                            id: dgNameRow
+                                            id: dgSnRow
                                             anchors.margins:    _margins
                                             anchors.left:       parent.left
                                             anchors.right:      parent.right
@@ -855,11 +855,11 @@ Rectangle {
                                         }
 
                                         RowLayout {
-                                            id: dgNameRow
+                                            id: dgModelRow
                                             anchors.margins:    _margins
                                             anchors.left:       parent.left
                                             anchors.right:      parent.right
-                                            anchors.top:        dgNameRow.bottom
+                                            anchors.top:        dgSnRow.bottom
                                             anchors.topMargin:  ScreenTools.defaultFontPixelHeight
                                             QGCLabel {
                                                 text: qsTr("Model:")
