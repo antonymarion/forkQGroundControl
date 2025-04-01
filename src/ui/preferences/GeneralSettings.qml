@@ -921,7 +921,7 @@ Rectangle {
                                         }
 
                                         QGCButton {
-                                            id: saveButton
+                                            id: dgAuthenticateButton
                                             text: qsTr("Login")
                                             anchors.horizontalCenter: parent.horizontalCenter
                                             onClicked: {
