@@ -862,6 +862,92 @@ Rectangle {
                                 }
                             }
                         }
+
+                        RowLayout {
+                            id:                 dgLoginRow
+                            anchors.margins:    _margins
+                            anchors.left:       parent.left
+                            anchors.right:      parent.right
+                            anchors.top:        addAircraftRow.bottom
+                            anchors.topMargin:  ScreenTools.defaultFontPixelHeight
+
+                            QGCButton {
+                                id: dgLoginButton
+                                anchors.horizontalCenter:   parent.horizontalCenter
+                                text: qsTr("Log in")
+                                onClicked: {
+                                    dgLoginDialogBox.visible = true
+                                }
+                            }
+
+                            QGCPopupDialog {
+                                id: dgLoginDialogBox
+                                visible: false
+                                title: qsTr("Log in")
+                                buttons: StandardButton.Close
+
+                                Rectangle {
+                                    id:                     dgLoginRect
+                                    Layout.fillWidth:       true
+                                    visible:                true
+                                    color:                  qgcPal.windowShade
+                                    width:  dgLoginColumn.width + (ScreenTools.defaultFontPixelWidth * 2)
+                                    height: dgLoginColumn.height + (ScreenTools.defaultFontPixelWidth * 2)
+
+                                    GridLayout {
+                                        id: dgLoginColumn
+                                        columns: 2
+                                        columnSpacing: ScreenTools.defaultFontPixelWidth
+                                        rowSpacing: ScreenTools.defaultFontPixelHeight
+
+                                        QGCLabel {
+                                            text: qsTr("Login:")
+                                            Layout.alignment: Qt.AlignRight
+                                        }
+                                        QGCTextField {
+                                            id: dgLogin
+                                            placeholderText: qsTr("Login")
+                                            Layout.fillWidth: true
+                                        }
+
+                                        QGCLabel {
+                                            text: qsTr("Password:")
+                                            Layout.alignment: Qt.AlignRight
+                                        }
+                                        QGCTextField {
+                                            id: dgPassword
+                                            placeholderText: qsTr("********")
+                                            Layout.fillWidth: true
+                                        }
+
+                                        QGCButton {
+                                            id: saveButton
+                                            text: qsTr("Login")
+                                            anchors.horizontalCenter: parent.horizontalCenter
+                                            onClicked: {
+                                                console.log("UUID:", dgLogin.text)
+                                                console.log("UAS:", dgPassword.text)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        RowLayout {
+                            id:                 mqttPathRow
+                            anchors.margins:    _margins
+                            anchors.left:       parent.left
+                            anchors.right:      parent.right
+                            anchors.top:        dgLoginRow.bottom
+                            visible:            true
+
+                            QGCLabel { text: qsTr("MQTT Path") }
+                            QGCTextField {
+                                Layout.fillWidth:   true
+                                readOnly:           true
+                            }
+                        }
                     } // add mqtt modal
 
                     Item { width: 1; height: _margins; visible: telemetryLogSectionLabel.visible }
