@@ -517,7 +517,7 @@ Rectangle {
                     }
                     Rectangle {
                         Layout.preferredWidth:  Math.max(comboGrid.width, miscCol.width) + (_margins * 2)
-                        Layout.preferredHeight: (addAircraftRow.y + addAircraftRow.height)  + (_margins * 2)
+                        Layout.preferredHeight: (mqttPathRow.y + mqttPathRow.height)  + (_margins * 2)
                         Layout.fillWidth:       true
                         color:                  qgcPal.windowShade
                         visible:                miscSectionLabel.visible
@@ -841,11 +841,6 @@ Rectangle {
                                             Layout.fillWidth: true
                                         }
 
-                                        QGCCheckBox {
-                                            id: dgIsIgnored
-                                            anchors.horizontalCenter:   parent.horizontalCenter
-                                            text: qsTr("Ignore this aircraft")
-                                        }
                                         QGCButton {
                                             id: saveButton
                                             text: qsTr("Save")
@@ -855,7 +850,6 @@ Rectangle {
                                                 console.log("UAS:", dgUas.text)
                                                 console.log("Serial Number:", dgSn.text)
                                                 console.log("Model:", dgModel.text)
-                                                console.log("Ignore this aircraft:", dgIsIgnored.checked)
                                             }
                                         }
                                     }
