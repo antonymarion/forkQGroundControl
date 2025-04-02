@@ -869,7 +869,7 @@ void QGCApplication::_initCommon()
     
     // Setup MqttClient
     m_client = new QMqttClient(this);
-    m_client->setHostname("152.228.246.204");
+    m_client->setHostname(mqttHost);
     m_client->setPort(1883);
     m_client->setUsername(QString(""));
     m_client->setCleanSession(false);
@@ -944,6 +944,34 @@ void QGCApplication::brokerDisconnected()
     delay(5);
     qWarning() << "Trying to reconnect";
     m_client->connectToHost();
+}
+
+void QGCApplication::disconnectFromMqtt()
+{
+    if (m_client->state() == QMqttClient::Connected) {
+        qWarning() << "Disconnecting from MQTT...";
+        m_client->disconnectFromHost();
+        clientState = false;
+        qWarning() << "MQTT Disconnected.";
+    } else {
+        qWarning() << "MQTT is not connected.";
+    }
+}
+
+void QGCApplication::setMqttHost(QString host)
+{
+    if (host == mqttHost) {
+        return;
+    }
+    if(host.isEmpty()) {
+        if(mqttHost == "152.228.246.204") {
+            return;
+        }
+        mqttHost = "152.228.246.204";
+    }
+    mqttHost = host;
+    disconnectFromMqtt();
+    m_client->setHostname(mqttHost);
 }
 
 void QGCApplication::updateMessage(const QMqttMessage &msg)

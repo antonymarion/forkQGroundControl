@@ -124,6 +124,7 @@ public:
     static QString cachedAirframeMetaDataFile(void);
 
     void vectorControlOverride(); // Take over station control
+    void setMqttHost(QString host); // Set MQTT broker host;
     
     QStringList           excludeList         = {}; // exclude mac list
 
@@ -272,6 +273,7 @@ private:
     // MQTT
     void updateLogStateChange();
     void brokerDisconnected  ();
+    void disconnectFromMqtt();
     void brokerConnected     ();
     void updateMessage       (const QMqttMessage &msg);
     void updateStatus        (QMqttSubscription::SubscriptionState state);
@@ -304,6 +306,8 @@ private:
     // Utilities
     bool isFileEmpty(const std::string& filePath);
     void delay(int sec);
+
+    QSting                mqttHost            = "152.228.246.204";                          // mqtt broker host
 
     QString               rtmpUrl             = "rtmp://ome.stationdrone.net/app/";                      // streaming URL
     QString               loggedEmail         = "graphx.stephaneroma@gmail.com";  // Remote pilote logged email
