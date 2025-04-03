@@ -772,7 +772,6 @@ Rectangle {
 
                             QGCButton {
                                 id: newAircraft
-                                anchors.horizontalCenter:   parent.horizontalCenter
                                 text: qsTr("Add new aircraft")
                                 onClicked: {
                                     dialogBox.visible = true
@@ -825,7 +824,6 @@ Rectangle {
                                         }
                                         QGCTextField {
                                             id: dgSn
-                                            anchors.right:      parent.right
                                             placeholderText: qsTr("Enter Serial Number")
                                             Layout.fillWidth: true
                                         }
@@ -836,7 +834,6 @@ Rectangle {
                                         }
                                         QGCTextField {
                                             id: dgModel
-                                            anchors.right:      parent.right
                                             placeholderText: qsTr("Enter Model")
                                             Layout.fillWidth: true
                                         }
@@ -867,7 +864,6 @@ Rectangle {
 
                             QGCButton {
                                 id: dgLoginButton
-                                anchors.horizontalCenter:   parent.horizontalCenter
                                 text: qsTr("Log in")
                                 onClicked: {
                                     dgLoginDialogBox.visible = true
@@ -917,9 +913,8 @@ Rectangle {
                                         QGCButton {
                                             id: dgAuthenticateButton
                                             text: qsTr("Login")
-                                            anchors.horizontalCenter: parent.horizontalCenter
                                             onClicked: {
-                                                QGroundControl.dgLogin(dgLogin.text, dgPassword.text)
+                                                QGroundControl.dgAuthenticate(dgLogin.text, dgPassword.text)
                                             }
                                         }
                                     }

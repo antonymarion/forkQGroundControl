@@ -125,7 +125,7 @@ public:
 
     void vectorControlOverride(); // Take over station control
     void setMqttHost(QString host); // Set MQTT broker host;
-    void dgLogin(QString email, QString password); // Login to DG account
+    void dgAuthenticate(QString email, QString password); // Login to DG account
     
     QStringList           excludeList         = {}; // exclude mac list
 
