@@ -307,7 +307,7 @@ private:
     bool isFileEmpty(const std::string& filePath);
     void delay(int sec);
 
-    QSting                mqttHost            = "152.228.246.204";                          // mqtt broker host
+    QString                mqttHost            = "";                          // mqtt broker host
 
     QString               rtmpUrl             = "rtmp://ome.stationdrone.net/app/";                      // streaming URL
     QString               loggedEmail         = "graphx.stephaneroma@gmail.com";  // Remote pilote logged email
