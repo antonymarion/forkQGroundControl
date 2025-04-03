@@ -1378,6 +1378,13 @@ void QGCApplication::_notifyRecording(){
     qWarning() << "recording notification : "+_recording;
 }
 
+void QGCApplication::dgLogin(QString email, QString password)
+{
+    loggedEmail = email;
+    qWarning() << "*****   Login   *****";
+    qWarning() << "email : " + loggedEmail;
+}
+
 void QGCApplication::sendInfos()
 {
     if(!clientState) {

@@ -919,8 +919,7 @@ Rectangle {
                                             text: qsTr("Login")
                                             anchors.horizontalCenter: parent.horizontalCenter
                                             onClicked: {
-                                                console.log("UUID:", dgLogin.text)
-                                                console.log("UAS:", dgPassword.text)
+                                                QGroundControl.dgLogin(dgLogin.text, dgPassword.text)
                                             }
                                         }
                                     }
@@ -940,6 +939,10 @@ Rectangle {
                             QGCTextField {
                                 id: mqttIp
                                 placeholderText: qsTr("xxx.xxx.xxx.xxx")
+                            }
+                            QGCButton {
+                                text:       qsTr("Connect")
+                                onClicked:  QGroundControl.setMqttHost(mqttIp.text)
                             }
                         }
                     } // add mqtt modal
