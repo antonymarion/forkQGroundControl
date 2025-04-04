@@ -124,6 +124,9 @@ public:
     Q_INVOKABLE void    deleteAllSettingsNextBoot       () { _app->deleteAllSettingsNextBoot(); }
     Q_INVOKABLE void    clearDeleteAllSettingsNextBoot  () { _app->clearDeleteAllSettingsNextBoot(); }
 
+    Q_INVOKABLE void    setMqttHost                     (QString host)                                  { _app->setMqttHost(host); }
+    Q_INVOKABLE void    dgAuthenticate                  (const QString& email, const QString& password) { _app->dgAuthenticate(email, password); }
+
     Q_INVOKABLE void    startPX4MockLink            (bool sendStatusText);
     Q_INVOKABLE void    startGenericMockLink        (bool sendStatusText);
     Q_INVOKABLE void    startAPMArduCopterMockLink  (bool sendStatusText);
