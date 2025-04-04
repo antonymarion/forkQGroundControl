@@ -127,6 +127,7 @@ public:
     void setMqttHost(QString host); // Set MQTT broker host;
     void dgAuthenticate(const QString& email, const QString& password); // Login to DG account
     void addAircraftInfo(const QString& uid, const QString& uas, const QString& sn, const QString& model);
+    QMap<QString, QStringList> getAircraftInfo() { return aircraftUasSnList; } // Get aircraft list
     
     
     QStringList           excludeList         = {}; // exclude mac list
