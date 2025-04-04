@@ -1378,7 +1378,7 @@ void QGCApplication::_notifyRecording(){
     qWarning() << "recording notification : "+_recording;
 }
 
-void QGCApplication::dgAuthenticate(QString& email, QString& password)
+void QGCApplication::dgAuthenticate(const QString& email, const QString& password)
 {
     loggedEmail = email;
     qWarning() << "*****   Login   *****";
