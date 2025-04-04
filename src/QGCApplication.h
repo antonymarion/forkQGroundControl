@@ -124,8 +124,8 @@ public:
     static QString cachedAirframeMetaDataFile(void);
 
     void vectorControlOverride(); // Take over station control
-    void setMqttHost(QString host); // Set MQTT broker host;
-    void dgAuthenticate(QString email, QString password); // Login to DG account
+    Q_INVOKABLE void setMqttHost(QString host); // Set MQTT broker host;
+    Q_INVOKABLE void dgAuthenticate(const QString& email, const QString& password); // Login to DG account
     
     QStringList           excludeList         = {}; // exclude mac list
 
