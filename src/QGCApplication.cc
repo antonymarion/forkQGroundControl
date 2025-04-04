@@ -1394,7 +1394,7 @@ void addAircraftInfo(const QString& uid, const QString& uas, const QString& sn, 
         return;
     }
 
-    aircraftUasSnList[uid] = {uas, sn, model, uid}; // Ajoute ou met à jour l'entrée
+    this.aircraftUasSnList[uid] = {uas, sn, model, uid}; // Ajoute ou met à jour l'entrée
     saveAircraftList(); // Sauvegarde la liste après modification
 
     qDebug() << "Aircraft info added/updated:" << uid << aircraftUasSnList[uid];
