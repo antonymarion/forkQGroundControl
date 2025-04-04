@@ -834,7 +834,7 @@ void Vehicle::_setNewVehicleData()
         QString ipAddressTundra = "192.168.144.43"; // Remplacez par la plage d'adresses IP réelle du réseau
         QProcess* process = new QProcess(this);
         QProcess* processTundra = new QProcess(this);
-        auto handleProcessFinished = [this](QProcess* process, int exitCode, QProcess::ExitStatus exitStatus, QString debug) {
+        auto handleProcessFinished = [this, uasSnMap](QProcess* process, int exitCode, QProcess::ExitStatus exitStatus, QString debug) {
             qCWarning(VehicleLog) << "*****  Scan On "<< debug <<"  *****";
             if (exitStatus == QProcess::NormalExit && exitCode == 0) {
             QString output = process->readAllStandardOutput();
