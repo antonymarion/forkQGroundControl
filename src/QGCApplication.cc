@@ -1388,19 +1388,19 @@ void QGCApplication::dgAuthenticate(const QString& email, const QString& passwor
     qWarning() << "email : " + loggedEmail;
 }
 
-void addAircraftInfo(const QString& uid, const QString& uas, const QString& sn, const QString& model){
+void QGCApplication::addAircraftInfo(const QString& uid, const QString& uas, const QString& sn, const QString& model){
     if (uid.isEmpty() || uas.isEmpty() || sn.isEmpty() || model.isEmpty()) {
         qWarning() << "All fields must be filled!";
         return;
     }
 
-    this.aircraftUasSnList[uid] = {uas, sn, model, uid}; // Ajoute ou met à jour l'entrée
+    aircraftUasSnList[uid] = {uas, sn, model, uid}; // Ajoute ou met à jour l'entrée
     saveAircraftList(); // Sauvegarde la liste après modification
 
     qDebug() << "Aircraft info added/updated:" << uid << aircraftUasSnList[uid];
 }
 
-void saveAircraftList(){
+void QGCApplication::saveAircraftList(){
     QString savePath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/aircraftList.json";
     QFile file(savePath);
 
@@ -1421,7 +1421,7 @@ void saveAircraftList(){
     qDebug() << "Aircraft list saved to:" << savePath;
 }
 
-void loadAircraftList(){
+void QGCApplication::loadAircraftList(){
     QString savePath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/aircraftList.json";
     QFile file(savePath);
 
