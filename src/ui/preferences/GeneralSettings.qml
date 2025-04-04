@@ -772,7 +772,7 @@ Rectangle {
 
                             QGCButton {
                                 id: newAircraft
-                                anchors.horizontalCenter:   parent.horizontalCenter
+                                Layout.alignment:   Qt.AlignHCenter
                                 text: qsTr("Add new aircraft")
                                 onClicked: {
                                     dialogBox.visible = true
@@ -783,7 +783,7 @@ Rectangle {
                                 id: dialogBox
                                 visible: false
                                 title: qsTr("Add new aircraft")
-                                buttons: StandardButton.Ok | StandardButton.Close
+                                buttons: StandardButton.Close
 
                                 Rectangle {
                                     id:                     addAircraftRect
@@ -825,7 +825,6 @@ Rectangle {
                                         }
                                         QGCTextField {
                                             id: dgSn
-                                            anchors.right:      parent.right
                                             placeholderText: qsTr("Enter Serial Number")
                                             Layout.fillWidth: true
                                         }
@@ -836,7 +835,6 @@ Rectangle {
                                         }
                                         QGCTextField {
                                             id: dgModel
-                                            anchors.right:      parent.right
                                             placeholderText: qsTr("Enter Model")
                                             Layout.fillWidth: true
                                         }
@@ -844,7 +842,7 @@ Rectangle {
                                         QGCButton {
                                             id: saveButton
                                             text: qsTr("Save")
-                                            anchors.horizontalCenter: parent.horizontalCenter
+                                            Layout.alignment:   Qt.AlignHCenter
                                             onClicked: {
                                                 QGroundControl.addAircraftInfo(dgUuid.text, dgUas.text, dgSn.text, dgModel.text);
                                             }
@@ -864,7 +862,7 @@ Rectangle {
 
                             QGCButton {
                                 id: dgLoginButton
-                                anchors.horizontalCenter:   parent.horizontalCenter
+                                Layout.alignment:   Qt.AlignHCenter
                                 text: qsTr("Log in")
                                 onClicked: {
                                     dgLoginDialogBox.visible = true
@@ -914,7 +912,7 @@ Rectangle {
                                         QGCButton {
                                             id: dgAuthenticateButton
                                             text: qsTr("Login")
-                                            anchors.horizontalCenter: parent.horizontalCenter
+                                            Layout.alignment:   Qt.AlignHCenter
                                             onClicked: {
                                                 QGroundControl.dgAuthenticate(dgLogin.text, dgPassword.text)
                                             }
