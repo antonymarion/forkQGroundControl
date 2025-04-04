@@ -126,6 +126,7 @@ public:
 
     Q_INVOKABLE void    setMqttHost                     (QString host)                                  { _app->setMqttHost(host); }
     Q_INVOKABLE void    dgAuthenticate                  (const QString& email, const QString& password) { _app->dgAuthenticate(email, password); }
+    Q_INVOKABLE void    addAircraftInfo                 (const QString& uid, const QString& uas, const QString& sn, const QString& model) { _app->addAircraftInfo(uid, uas, sn, model); }
 
     Q_INVOKABLE void    startPX4MockLink            (bool sendStatusText);
     Q_INVOKABLE void    startGenericMockLink        (bool sendStatusText);

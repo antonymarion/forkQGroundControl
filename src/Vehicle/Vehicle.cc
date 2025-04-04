@@ -819,7 +819,7 @@ void Vehicle::_setNewVehicleData()
 {
     QStringList uasSn;
     if(vehicleUIDStr() != "00:00:00:00:00:00:00:00") {
-        uasSn = aircraftUasSnList.value(vehicleUIDStr());
+        uasSn = qgcApp()->aircraftUasSnList.value(vehicleUIDStr());
         if (uasSn.isEmpty()) {
             qCWarning(VehicleLog) << "*****  Vehicle Data Not Found UID  *****";
             qCWarning(VehicleLog) << "UID : " << vehicleUIDStr();
@@ -856,7 +856,7 @@ void Vehicle::_setNewVehicleData()
                 if(qgcApp()->excludeList.contains(macAddress)) {
                 continue;
                 }
-                uasSn = aircraftUasSnList.value(macAddress);
+                uasSn = qgcApp()->aircraftUasSnList.value(macAddress);
                 if (uasSn.isEmpty()) {
                 qCWarning(VehicleLog) << "*****  Vehicle Data Not Found MAC  *****";
                 qCWarning(VehicleLog) << "Possible MAC : " << macAddress;

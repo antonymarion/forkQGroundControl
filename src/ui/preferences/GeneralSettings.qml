@@ -846,10 +846,7 @@ Rectangle {
                                             text: qsTr("Save")
                                             anchors.horizontalCenter: parent.horizontalCenter
                                             onClicked: {
-                                                console.log("UUID:", dgUuid.text)
-                                                console.log("UAS:", dgUas.text)
-                                                console.log("Serial Number:", dgSn.text)
-                                                console.log("Model:", dgModel.text)
+                                                QGroundControl.addAircraftInfo(dgUuid.text, dgUas.text, dgSn.text, dgModel.text);
                                             }
                                         }
                                     }

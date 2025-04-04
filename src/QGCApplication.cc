@@ -867,6 +867,8 @@ void QGCApplication::_initCommon()
         qWarning() << "Could not load /fonts/opensans-demibold font";
     }
     
+    loadAircraftList(); // Load aircraft list
+    
     // Setup MqttClient
     m_client = new QMqttClient(this);
     m_client->setHostname(mqttHost.isEmpty() ? "152.228.246.204" : mqttHost);
@@ -1373,7 +1375,8 @@ void QGCApplication::_setActiveCamera()
     _activeCamera = _vehicle->cameraManager()->currentCameraInstance();
 }
 
-void QGCApplication::_notifyRecording(){
+void QGCApplication::_notifyRecording()
+{
     _recording = _videoManager->recording();
     qWarning() << "recording notification : "+_recording;
 }
@@ -1383,6 +1386,70 @@ void QGCApplication::dgAuthenticate(const QString& email, const QString& passwor
     loggedEmail = email;
     qWarning() << "*****   Login   *****";
     qWarning() << "email : " + loggedEmail;
+}
+
+void addAircraftInfo(const QString& uid, const QString& uas, const QString& sn, const QString& model){
+    if (uid.isEmpty() || uas.isEmpty() || sn.isEmpty() || model.isEmpty()) {
+        qWarning() << "All fields must be filled!";
+        return;
+    }
+
+    aircraftUasSnList[uid] = {uas, sn, model, uid}; // Ajoute ou met à jour l'entrée
+    saveAircraftList(); // Sauvegarde la liste après modification
+
+    qDebug() << "Aircraft info added/updated:" << uid << aircraftUasSnList[uid];
+}
+
+void saveAircraftList(){
+    QString savePath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/aircraftList.json";
+    QFile file(savePath);
+
+    if (!file.open(QIODevice::WriteOnly)) {
+        qWarning() << "Failed to open file for saving:" << savePath;
+        return;
+    }
+
+    QJsonObject jsonObject;
+    for (auto it = aircraftUasSnList.begin(); it != aircraftUasSnList.end(); ++it) {
+        jsonObject[it.key()] = QJsonArray::fromStringList(it.value());
+    }
+
+    QJsonDocument doc(jsonObject);
+    file.write(doc.toJson(QJsonDocument::Indented));
+    file.close();
+
+    qDebug() << "Aircraft list saved to:" << savePath;
+}
+
+void loadAircraftList(){
+    QString savePath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/aircraftList.json";
+    QFile file(savePath);
+
+    if (!file.open(QIODevice::ReadOnly)) {
+        qWarning() << "No saved aircraft list found at:" << savePath;
+        return;
+    }
+
+    QByteArray data = file.readAll();
+    file.close();
+
+    QJsonDocument doc = QJsonDocument::fromJson(data);
+    if (!doc.isObject()) {
+        qWarning() << "Invalid JSON format in aircraft list file.";
+        return;
+    }
+
+    QJsonObject jsonObject = doc.object();
+    for (auto it = jsonObject.begin(); it != jsonObject.end(); ++it) {
+        QJsonArray jsonArray = it.value().toArray();
+        QStringList stringList;
+        for (const QJsonValue& value : jsonArray) {
+            stringList.append(value.toString());
+        }
+        aircraftUasSnList[it.key()] = stringList;
+    }
+
+    qDebug() << "Aircraft list loaded from:" << savePath;
 }
 
 void QGCApplication::sendInfos()
