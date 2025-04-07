@@ -1404,6 +1404,14 @@ void QGCApplication::saveAircraftList(){
     QString savePath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "_dg/aircraftList.json";
     QFile file(savePath);
 
+    QDir saveDir(QFileInfo(savePath).absolutePath());
+    if (!saveDir.exists()) {
+        if (!saveDir.mkpath(".")) {
+            qWarning() << "Failed to create directory for saving:" << saveDir.absolutePath();
+            return;
+        }
+    }
+
     if (!file.open(QIODevice::WriteOnly)) {
         qWarning() << "Failed to open file for saving:" << savePath;
         return;
