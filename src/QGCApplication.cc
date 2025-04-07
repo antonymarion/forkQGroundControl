@@ -1401,7 +1401,7 @@ void QGCApplication::addAircraftInfo(const QString& uid, const QString& uas, con
 }
 
 void QGCApplication::saveAircraftList(){
-    QString savePath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/aircraftList.json";
+    QString savePath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "_dg/aircraftList.json";
     QFile file(savePath);
 
     if (!file.open(QIODevice::WriteOnly)) {
@@ -1422,7 +1422,7 @@ void QGCApplication::saveAircraftList(){
 }
 
 void QGCApplication::loadAircraftList(){
-    QString savePath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/aircraftList.json";
+    QString savePath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "_dg/aircraftList.json";
     QFile file(savePath);
 
     if (!file.open(QIODevice::ReadOnly)) {
