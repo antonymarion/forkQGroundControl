@@ -1455,6 +1455,7 @@ void QGCApplication::loadAircraftList(){
             stringList.append(value.toString());
         }
         aircraftUasSnList[it.key()] = stringList;
+        qWarning() << "Saved :" << aircraftUasSnList[it.key()];
     }
 
     qDebug() << "Aircraft list loaded from:" << savePath;
