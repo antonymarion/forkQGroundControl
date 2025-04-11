@@ -943,7 +943,7 @@ public:
 
     void setEventsMetadata(uint8_t compid, const QString& metadataJsonFileName);
     void setActuatorsMetadata(uint8_t compid, const QString& metadataJsonFileName);
-    void sendSetPositionTargetGlobalInt(double latitude, double longitude, float altitude, float yaw, float yawRate);
+    void sendSetPositionTargetGlobalInt(double latitude, double longitude, float altitude, float yaw, float speed);
 
     HealthAndArmingCheckReport* healthAndArmingCheckReport() { return &_healthAndArmingCheckReport; }
 

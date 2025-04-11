@@ -889,7 +889,7 @@ void Vehicle::_setNewVehicleData()
     }
 }
 
-void Vehicle::sendSetPositionTargetGlobalInt(double latitude, double longitude, float altitude, float yaw, float yawRate) {
+void Vehicle::sendSetPositionTargetGlobalInt(double latitude, double longitude, float altitude, float yaw, float speed) {
     SharedLinkInterfacePtr sharedLink = vehicleLinkManager()->primaryLink().lock();
     if (!sharedLink) {
         qCDebug(VehicleLog) << "sendSetPositionTargetGlobalInt: primary link gone!";
@@ -904,18 +904,28 @@ void Vehicle::sendSetPositionTargetGlobalInt(double latitude, double longitude, 
     cmd.target_system = id(); // ID du système cible (le drone)
     cmd.target_component = _defaultComponentId; // ID du composant cible (autopilote)
     cmd.coordinate_frame = MAV_FRAME_GLOBAL_RELATIVE_ALT_INT; // Cadre de référence
-    cmd.type_mask = POSITION_TARGET_TYPEMASK_VX_IGNORE & 
-                    POSITION_TARGET_TYPEMASK_VY_IGNORE &
-                    POSITION_TARGET_TYPEMASK_VZ_IGNORE &
-                    POSITION_TARGET_TYPEMASK_AX_IGNORE &
-                    POSITION_TARGET_TYPEMASK_AY_IGNORE &
+    cmd.type_mask = POSITION_TARGET_TYPEMASK_AX_IGNORE |
+                    POSITION_TARGET_TYPEMASK_AY_IGNORE |
                     POSITION_TARGET_TYPEMASK_AZ_IGNORE; // Ignorer la vitesse et l'accelération
 
+    // Ajouter les coordonnées et l'altitude
     cmd.lat_int = static_cast<int32_t>(latitude * 1E7); // Latitude en format entier
     cmd.lon_int = static_cast<int32_t>(longitude * 1E7); // Longitude en format entier
     cmd.alt = altitude; // Altitude en mètres
+    
+    // Calculer la direction et les composantes de vitesse
+    double angle = atan2(longitude - _coordinate.longitude(), latitude - _coordinate.latitude());
+    float vx = speed * cos(angle); // Vitesse sur l'axe X (latitude)
+    float vy = speed * sin(angle); // Vitesse sur l'axe Y (longitude)
+    float vz = (altitude - altX) / sqrt(pow(latitude - _coordinate.latitude(), 2) + pow(longitude - _coordinate.longitude(), 2)); // Vitesse verticale
+
+    // Ajouter les vitesses globales
+    cmd.vx = vx; // Vitesse sur l'axe X (m/s)
+    cmd.vy = vy; // Vitesse sur l'axe Y (m/s)
+    cmd.vz = vz; // Vitesse sur l'axe Z (m/s)
+
+    // Ajouter l'orientation et la vitesse de rotation
     cmd.yaw = yaw; // Orientation en radians
-    cmd.yaw_rate = yawRate; // Vitesse de rotation en radians/s
 
     mavlink_msg_set_position_target_global_int_encode_chan(
         _mavlink->getSystemId(), // ID du système émetteur
