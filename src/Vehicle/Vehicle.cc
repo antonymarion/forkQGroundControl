@@ -917,7 +917,7 @@ void Vehicle::sendSetPositionTargetGlobalInt(double latitude, double longitude, 
     double angle = atan2(longitude - _coordinate.longitude(), latitude - _coordinate.latitude());
     float vx = speed * cos(angle); // Vitesse sur l'axe X (latitude)
     float vy = speed * sin(angle); // Vitesse sur l'axe Y (longitude)
-    float vz = (altitude - altX) / sqrt(pow(latitude - _coordinate.latitude(), 2) + pow(longitude - _coordinate.longitude(), 2)); // Vitesse verticale
+    float vz = (altitude - _coordinate.altitude()) / sqrt(pow(latitude - _coordinate.latitude(), 2) + pow(longitude - _coordinate.longitude(), 2)); // Vitesse verticale
 
     // Ajouter les vitesses globales
     cmd.vx = vx; // Vitesse sur l'axe X (m/s)
