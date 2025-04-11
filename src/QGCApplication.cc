@@ -976,8 +976,60 @@ void QGCApplication::setMqttHost(QString host)
     m_client->setHostname(mqttHost);
 }
 
+/**
+ * @brief Handles incoming MQTT messages and executes corresponding commands.
+ * 
+ * This function processes an incoming MQTT message, parses its topic and payload,
+ * and executes the appropriate command based on the instruction provided in the message.
+ * It also sends a response message back to the MQTT broker with the result of the operation.
+ * 
+ * @param msg The incoming MQTT message containing the topic, payload, and properties.
+ * 
+ * The function performs the following steps:
+ * - Extracts the topic and payload from the MQTT message.
+ * - Parses the topic to identify the serial number (sn) of the target vehicle.
+ * - Parses the payload as a JSON object to extract the instruction and other parameters.
+ * - Matches the instruction against a predefined list of commands and executes the corresponding action.
+ * - Sends a response message back to the MQTT broker with the status of the operation.
+ * 
+ * Supported instructions include:
+ * - OPEN_STREAM: Starts a video stream.
+ * - STOP_STREAM: Stops a video stream.
+ * - RESET_GIMBAL: Resets the gimbal of the target vehicle.
+ * - MOVE_GIMBAL: Moves the gimbal based on specified axis and value.
+ * - GET_CAMERAS: Retrieves the list of available cameras on the vehicle.
+ * - SET_CAMERA: Sets the active camera.
+ * - SET_CAMERA_INTRINSICS: Configures camera intrinsics.
+ * - GET_CAMERA: Retrieves camera capabilities and settings.
+ * - ZOOM_CAMERA: Adjusts the camera zoom level.
+ * - TAKE_PHOTO: Captures a photo.
+ * - START_RECORDING: Starts video recording.
+ * - STOP_RECORDING: Stops video recording.
+ * - MAV_CMD_DO_SET_SERVO: Sends a servo command to the vehicle.
+ * - MOVE_VECTOR: Moves the vehicle based on roll, pitch, yaw, and thrust values.
+ * - TAKE_OFF: Commands the vehicle to take off to a specified height.
+ * - RETURN_TO_HOME: Commands the vehicle to return to its home position.
+ * - VERTICAL_LANDING: Commands the vehicle to perform a vertical landing.
+ * - FLYING_TERMINATION_SYSTEM: Executes an emergency stop.
+ * - TELEMETRY: Retrieves telemetry data from the vehicle.
+ * - GO_TO_WAYPOINT: Commands the vehicle to navigate to a specified waypoint.
+ * - PAUSE_ALL: Pauses all ongoing operations.
+ * - SET_DATA: Sets vehicle-specific data such as UAS and serial number.
+ * - SET_GEOFENCING: Configures and sends geofencing data to the vehicle.
+ * - TESTING_1: Executes a test command and logs vehicle information.
+ * - TESTING_2: Executes another test command.
+ * 
+ * If the instruction is not recognized, an error response is sent back.
+ * 
+ * @note The function assumes that the serial number is the third part of the topic.
+ * @note The function requires a valid vehicle manager and MQTT client to operate.
+ */
 void QGCApplication::updateMessage(const QMqttMessage &msg)
 {
+    QString topic = msg.topic().name();
+    QStringList topicParts = topic.split('/');
+    QString sn = topicParts.value(2); // Assuming the serial number (sn) is the third part of the topic
+    qWarning() << "received on " << sn;
     QString payload = QString(msg.payload());
     QJsonDocument d = QJsonDocument::fromJson(payload.toUtf8());
     QJsonObject message = d.object();
@@ -1388,6 +1440,24 @@ void QGCApplication::dgAuthenticate(const QString& email, const QString& passwor
     qWarning() << "email : " + loggedEmail;
 }
 
+/**
+ * @brief Adds or updates aircraft information in the application.
+ *
+ * This method stores the provided aircraft information, identified by a unique ID (uid),
+ * into the internal data structure. If an entry with the same uid already exists, it will
+ * be updated with the new information. After adding or updating the entry, the aircraft
+ * list is saved to ensure persistence.
+ *
+ * @param uid The unique identifier for the aircraft. Must not be empty.
+ * @param uas The UAS identifier. Must not be empty.
+ * @param sn The serial number of the aircraft. Must not be empty.
+ * @param model The model of the aircraft. Must not be empty.
+ *
+ * @note If any of the parameters are empty, the method will log a warning and return
+ *       without making any changes.
+ *
+ * @warning Ensure all fields are properly filled before calling this method.
+ */
 void QGCApplication::addAircraftInfo(const QString& uid, const QString& uas, const QString& sn, const QString& model){
     if (uid.isEmpty() || uas.isEmpty() || sn.isEmpty() || model.isEmpty()) {
         qWarning() << "All fields must be filled!";
@@ -1400,6 +1470,28 @@ void QGCApplication::addAircraftInfo(const QString& uid, const QString& uas, con
     qDebug() << "Aircraft info added/updated:" << uid << aircraftUasSnList[uid];
 }
 
+/**
+ * @brief Saves the list of aircraft and their associated UAS serial numbers to a JSON file.
+ *
+ * This function serializes the aircraft data stored in the `aircraftUasSnList` map
+ * and writes it to a JSON file located in the application's writable data directory.
+ * If the directory does not exist, it attempts to create it. If the file cannot be
+ * opened for writing, a warning is logged.
+ *
+ * The saved JSON file will have the following structure:
+ * {
+ *     "aircraft1": ["uas1", "sn1", "model1", "uid1"],
+ *     "aircraft2": ["uas2", "sn2", "model2", "uid2"],
+ *     ...
+ * }
+ *
+ * @note The file is saved with an indented JSON format for readability.
+ *
+ * @warning If the directory cannot be created or the file cannot be opened,
+ *          the function will log a warning and return without saving.
+ *
+ * @file QGCApplication.cc
+ */
 void QGCApplication::saveAircraftList(){
     QString savePath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "_dg/aircraftList.json";
     QFile file(savePath);
@@ -1429,6 +1521,29 @@ void QGCApplication::saveAircraftList(){
     qDebug() << "Aircraft list saved to:" << savePath;
 }
 
+/**
+ * @brief Loads the aircraft list from a JSON file.
+ *
+ * This function reads a JSON file containing a list of aircraft and their associated
+ * data. The file is expected to be located in the application's writable
+ * data location with the name "aircraftList.json". If the file does not exist or
+ * contains invalid JSON, appropriate warnings are logged.
+ *
+ * The JSON file should have the following structure:
+ * {
+ *     "aircraft1": ["uas1", "sn1", "model1", "uid1"],
+ *     "aircraft2": ["uas2", "sn2", "model2", "uid2"],
+ *     ...
+ * }
+ *
+ * Each key represents an aircraft, and the associated value is an array. 
+ * The function populates the `aircraftUasSnList` map with this data.
+ *
+ * @note If the file cannot be opened or the JSON format is invalid, the function
+ *       logs warnings and exits without modifying the `aircraftUasSnList`.
+ *
+ * @warning Ensure the JSON file is properly formatted to avoid errors.
+ */
 void QGCApplication::loadAircraftList(){
     QString savePath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "_dg/aircraftList.json";
     QFile file(savePath);
@@ -1467,13 +1582,13 @@ void QGCApplication::sendInfos()
         qWarning() << "*****   Mqtt not available   *****";
         return;
     }
-    QGCApplication::sendRemotePilote();
-    QGCApplication::sendAircraftPositionInfos();
+    QGCApplication::sendRemotePilot();
+    QGCApplication::sendAircraftPositionInfo();
 
     qWarning() << "==============  Infos sent  ==============";
 }
 
-void QGCApplication::sendRemotePilote()
+void QGCApplication::sendRemotePilot()
 {
     QJsonObject newResponse;
     newResponse.insert("email", loggedEmail);
@@ -1492,7 +1607,7 @@ void QGCApplication::sendRemotePilote()
     }
 }
 
-void QGCApplication::sendAircraftPositionInfos() {
+void QGCApplication::sendAircraftPositionInfo() {
 
     QmlObjectListModel* vehicles = _vehicleManager->vehicles();
     for(int i=0; i<vehicles->count(); i++){
@@ -1869,41 +1984,14 @@ void QGCApplication::delay(int sec) {
 
 void QGCApplication::testing1()
 {
-    QGeoCoordinate actualCoordinate = _vehicle->coordinate(); // 47.397770,   8.545410,  200
-    QGeoCoordinate newCoordinate = QGeoCoordinate(actualCoordinate.latitude() + 0.001, actualCoordinate.longitude() + 0.0020, 100);//       +-0.0005     +-0.0010
-
-    _vehicle->guidedModeGotoLocation(actualCoordinate);
-    _vehicle->guidedModeChangeAltitude(20, false);
-    // _vehicle->guidedModeChangeHeading(QGeoCoordinate(actualCoordinate.latitude() - 0.001, actualCoordinate.longitude(), 100));
 }
 
 void QGCApplication::testing2(double speed)
 {
-    QGeoCoordinate actualCoordinate = _vehicle->coordinate(); // 47.397770,   8.545410
-    QGeoCoordinate newCoordinate = QGeoCoordinate(actualCoordinate.latitude() + 0.001, actualCoordinate.longitude() + 0.0020, 100);//       +-0.0005     +-0.0010
-
-    _vehicle->guidedModeGotoLocation(actualCoordinate);
-    _vehicle->guidedModeChangeAltitude(20, false);
-    _vehicle->guidedModeChangeGroundSpeedMetersSecond(speed);
 }
 
 void QGCApplication::testing3()
 {
-    QGeoCoordinate actualCoordinate = _vehicle->coordinate(); // 47.397770,   8.545410
-    QGeoCoordinate newCoordinate = QGeoCoordinate(actualCoordinate.latitude() + 0.001, actualCoordinate.longitude() + 0.0020, actualCoordinate.altitude() + 20);//       +-0.0005     +-0.0010
-
-    _vehicle->sendMavCommand(
-        _vehicle->defaultComponentId(),  // compId: Default vehicle component ID
-        MAV_CMD_DO_REPOSITION,           // command: MAV_CMD to set servo
-        true,                            // showError: Display error if command fails
-        5,                               // param1: (Speed)	    Ground speed, less than 0 (-1) for default	min: -1	m/s
-        MAV_DO_REPOSITION_FLAGS_CHANGE_MODE,    // param2: (Bitmask)	Bitmask of option flags.	MAV_DO_REPOSITION_FLAGS	
-        0,                               // param3: (Radius)	Loiter radius for planes. Positive values only, direction is controlled by Yaw value. A value of zero or NaN is ignored. m
-        qQNaN(),                             // param4: (Yaw)	    Yaw heading. NaN to use the current system yaw heading mode (e.g. yaw towards next waypoint, yaw to home, etc.). For planes indicates loiter direction (0: clockwise, 1: counter clockwise)		deg
-        newCoordinate.latitude(),        // param5: (Latitude)	Latitude
-        newCoordinate.longitude(),       // param6: (Longitude)	Longitude	
-        newCoordinate.altitude()         // param7: (Altitude)	Altitude
-    );
 }
 
 void QGCApplication::pauseAll()

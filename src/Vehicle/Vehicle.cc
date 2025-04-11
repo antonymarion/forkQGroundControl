@@ -889,6 +889,41 @@ void Vehicle::_setNewVehicleData()
     }
 }
 
+void Vehicle::sendSetPositionTargetGlobalInt(double latitude, double longitude, float altitude, float yaw, float yawRate) {
+    SharedLinkInterfacePtr sharedLink = vehicleLinkManager()->primaryLink().lock();
+    if (!sharedLink) {
+        qCDebug(VehicleLog) << "sendSetPositionTargetGlobalInt: primary link gone!";
+        return;
+    }
+
+    mavlink_message_t msg;
+    mavlink_set_position_target_global_int_t cmd;
+
+    memset(&cmd, 0, sizeof(cmd)); // Initialiser la structure à zéro
+
+    cmd.target_system = id(); // ID du système cible (le drone)
+    cmd.target_component = _defaultComponentId; // ID du composant cible (autopilote)
+    cmd.coordinate_frame = MAV_FRAME_GLOBAL_RELATIVE_ALT_INT; // Cadre de référence
+    cmd.type_mask = MAVLINK_MSG_SET_POSITION_TARGET_GLOBAL_INT_POSITION & 
+                    MAVLINK_MSG_SET_POSITION_TARGET_GLOBAL_INT_IGNORE_VELOCITY; // Ignorer la vitesse
+
+    cmd.lat_int = static_cast<int32_t>(latitude * 1E7); // Latitude en format entier
+    cmd.lon_int = static_cast<int32_t>(longitude * 1E7); // Longitude en format entier
+    cmd.alt = altitude; // Altitude en mètres
+    cmd.yaw = yaw; // Orientation en radians
+    cmd.yaw_rate = yawRate; // Vitesse de rotation en radians/s
+
+    mavlink_msg_set_position_target_global_int_encode_chan(
+        _mavlink->getSystemId(), // ID du système émetteur
+        _mavlink->getComponentId(), // ID du composant émetteur
+        sharedLink->mavlinkChannel(), // Canal MAVLink utilisé
+        &msg, // Message MAVLink à remplir
+        &cmd // Structure de commande
+    );
+
+    sendMessageOnLinkThreadSafe(sharedLink.get(), msg); // Envoyer le message
+}
+
 void Vehicle::_offlineFirmwareTypeSettingChanged(QVariant varFirmwareType)
 {
     _firmwareType = static_cast<MAV_AUTOPILOT>(varFirmwareType.toInt());

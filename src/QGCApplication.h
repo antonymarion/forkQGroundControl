@@ -274,7 +274,8 @@ private:
     /// Unit Test have access to creating and destroying singletons
     friend class UnitTest;
 
-    // MQTT
+    // MQTT: Handles MQTT client setup, connection, disconnection, message updates, 
+    // and broker interactions for communication with remote systems.
     void updateLogStateChange();
     void brokerDisconnected  ();
     void disconnectFromMqtt();
@@ -283,10 +284,10 @@ private:
     void updateStatus        (QMqttSubscription::SubscriptionState state);
     void sendEventMessage    (QString command, int value, QString sn);
 
-    // Send info timer
+    // Periodically sends information such as telemetry data or status updates to connected systems or components.
     void sendInfos();
-    void sendRemotePilote();
-    void sendAircraftPositionInfos();
+    void sendRemotePilot();
+    void sendAircraftPositionInfo();
 
     // Vehicles signal receivers
     void _setActiveVehicle        (Vehicle* vehicle); 
