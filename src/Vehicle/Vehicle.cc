@@ -904,8 +904,12 @@ void Vehicle::sendSetPositionTargetGlobalInt(double latitude, double longitude, 
     cmd.target_system = id(); // ID du système cible (le drone)
     cmd.target_component = _defaultComponentId; // ID du composant cible (autopilote)
     cmd.coordinate_frame = MAV_FRAME_GLOBAL_RELATIVE_ALT_INT; // Cadre de référence
-    cmd.type_mask = MAVLINK_MSG_SET_POSITION_TARGET_GLOBAL_INT_POSITION & 
-                    MAVLINK_MSG_SET_POSITION_TARGET_GLOBAL_INT_IGNORE_VELOCITY; // Ignorer la vitesse
+    cmd.type_mask = POSITION_TARGET_TYPEMASK_VX_IGNORE & 
+                    POSITION_TARGET_TYPEMASK_VY_IGNORE &
+                    POSITION_TARGET_TYPEMASK_VZ_IGNORE &
+                    POSITION_TARGET_TYPEMASK_AX_IGNORE &
+                    POSITION_TARGET_TYPEMASK_AY_IGNORE &
+                    POSITION_TARGET_TYPEMASK_AZ_IGNORE; // Ignorer la vitesse et l'accelération
 
     cmd.lat_int = static_cast<int32_t>(latitude * 1E7); // Latitude en format entier
     cmd.lon_int = static_cast<int32_t>(longitude * 1E7); // Longitude en format entier
