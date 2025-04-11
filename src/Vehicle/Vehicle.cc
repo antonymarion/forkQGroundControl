@@ -730,6 +730,12 @@ QJsonArray Vehicle::getCameras()
         thisCamera.insert("name","Caméra intégrée SL-450-NG");
         cameraList.append(thisCamera);
     }
+    if(_dgProductName == "Gazebo"){
+        QJsonObject thisCamera;
+        thisCamera.insert("index",0);
+        thisCamera.insert("name","Caméra simulée Gazebo");
+        cameraList.append(thisCamera);
+    }
     return cameraList;
 }
 
