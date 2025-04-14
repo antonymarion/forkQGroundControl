@@ -823,11 +823,22 @@ void Vehicle::_setUAVSn(QStringList uasSn){
 
 void Vehicle::_setNewVehicleData()
 {
-    qCWarning(VehicleLog) << "=======================================";
-    qCWarning(VehicleLog) << "This uav id : " << _id;
-    qCWarning(VehicleLog) << "=======================================";
     QMap<QString, QStringList> uasSnMap = qgcApp()->getAircraftInfo();
     QStringList uasSn;
+    if(true){
+        qCWarning(VehicleLog) << "=======================================";
+        qCWarning(VehicleLog) << "This uav id : " << _id;
+        qCWarning(VehicleLog) << "=======================================";
+        uasSn = uasSnMap.value(_id);
+        if (uasSn.isEmpty()) {
+            qCWarning(VehicleLog) << "*****  Vehicle Data Not Found UID  *****";
+            qCWarning(VehicleLog) << "UID : " << vehicleUIDStr();
+            return;
+        }
+        _setUAVSn(uasSn);
+        return;
+
+    }
     if(vehicleUIDStr() != "00:00:00:00:00:00:00:00") {
         uasSn = uasSnMap.value(vehicleUIDStr());
         if (uasSn.isEmpty()) {
