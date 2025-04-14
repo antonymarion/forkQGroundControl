@@ -823,6 +823,9 @@ void Vehicle::_setUAVSn(QStringList uasSn){
 
 void Vehicle::_setNewVehicleData()
 {
+    qCWarning(VehicleLog) << "=======================================";
+    qCWarning(VehicleLog) << "This uav id : " << _id;
+    qCWarning(VehicleLog) << "=======================================";
     QMap<QString, QStringList> uasSnMap = qgcApp()->getAircraftInfo();
     QStringList uasSn;
     if(vehicleUIDStr() != "00:00:00:00:00:00:00:00") {
