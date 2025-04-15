@@ -825,7 +825,7 @@ void Vehicle::_setNewVehicleData()
 {
     QMap<QString, QStringList> uasSnMap = qgcApp()->getAircraftInfo();
     QStringList uasSn;
-    if(true){
+    if(false){ // change if simulated or not
         qCWarning(VehicleLog) << "=======================================";
         qCWarning(VehicleLog) << "This uav id : " << _id;
         qCWarning(VehicleLog) << "=======================================";
@@ -937,11 +937,12 @@ void Vehicle::sendSetPositionTargetGlobalInt(double latitude, double longitude, 
     cmd.alt = altitude; // Altitude en mètres
     
     // Calculer la direction et les composantes de vitesse
+    /* 
     double angle = atan2(longitude - _coordinate.longitude(), latitude - _coordinate.latitude());
     float vx = speed * cos(angle); // Vitesse sur l'axe X (latitude)
     float vy = speed * sin(angle); // Vitesse sur l'axe Y (longitude)
     float vz = (altitude - _coordinate.altitude()) / sqrt(pow(latitude - _coordinate.latitude(), 2) + pow(longitude - _coordinate.longitude(), 2)); // Vitesse verticale
-
+ */
     // Ajouter les vitesses globales
     /* 
     cmd.vx = vx; // Vitesse sur l'axe X (m/s)
