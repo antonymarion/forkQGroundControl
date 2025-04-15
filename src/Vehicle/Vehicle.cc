@@ -926,7 +926,10 @@ void Vehicle::sendSetPositionTargetGlobalInt(double latitude, double longitude, 
     cmd.coordinate_frame = MAV_FRAME_GLOBAL_RELATIVE_ALT_INT; // Cadre de référence
     cmd.type_mask = POSITION_TARGET_TYPEMASK_AX_IGNORE |
                     POSITION_TARGET_TYPEMASK_AY_IGNORE |
-                    POSITION_TARGET_TYPEMASK_AZ_IGNORE; // Ignorer la vitesse et l'accelération
+                    POSITION_TARGET_TYPEMASK_AZ_IGNORE |
+                    POSITION_TARGET_TYPEMASK_VX_IGNORE |
+                    POSITION_TARGET_TYPEMASK_VY_IGNORE |
+                    POSITION_TARGET_TYPEMASK_VZ_IGNORE; // Ignorer la vitesse et l'accelération
 
     // Ajouter les coordonnées et l'altitude
     cmd.lat_int = static_cast<int32_t>(latitude * 1E7); // Latitude en format entier
@@ -940,10 +943,11 @@ void Vehicle::sendSetPositionTargetGlobalInt(double latitude, double longitude, 
     float vz = (altitude - _coordinate.altitude()) / sqrt(pow(latitude - _coordinate.latitude(), 2) + pow(longitude - _coordinate.longitude(), 2)); // Vitesse verticale
 
     // Ajouter les vitesses globales
+    /* 
     cmd.vx = vx; // Vitesse sur l'axe X (m/s)
     cmd.vy = vy; // Vitesse sur l'axe Y (m/s)
     cmd.vz = vz; // Vitesse sur l'axe Z (m/s)
-
+ */
     // Ajouter l'orientation et la vitesse de rotation
     cmd.yaw = yaw; // Orientation en radians
 
