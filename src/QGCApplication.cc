@@ -1036,7 +1036,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
     Vehicle* requestVehicle{nullptr};
     for(int i = 0; i < _vehicleManager->vehicles()->count(); i++){
         Vehicle* vehicle = qobject_cast<Vehicle*>(_vehicleManager->vehicles()->get(i));
-        if(vehicle->sn() == message["serialNumber"].toString()){
+        if(vehicle->sn() == sn){
             requestVehicle = vehicle;
             break;
         }
@@ -1250,8 +1250,8 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             w_lat = message["lat"].toDouble();
             w_lon = message["lon"].toDouble();
             w_alt = message["alt"].toDouble();
-            requestVehicle->sendSetPositionTargetGlobalInt(w_lat, w_lon, w_alt, w_speed, w_yaw);
-            //requestVehicle->goToWaypoint(w_speed, w_yaw, w_lat, w_lon, w_alt);
+            // requestVehicle->sendSetPositionTargetGlobalInt(w_lat, w_lon, w_alt, w_speed, w_yaw);
+            requestVehicle->goToWaypoint(w_speed, w_yaw, w_lat, w_lon, w_alt);
             state_value = 0;
             break;
         case 20:
