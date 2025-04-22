@@ -3747,6 +3747,56 @@ void Vehicle::_handleCommandAck(mavlink_message_t& message)
         }
     }
 
+    if (ack.command == MAV_CMD_NAV_TAKEOFF) {
+        if (ack.result == MAV_RESULT_ACCEPTED) {
+            emit takeOffResult(true);
+            qDebug() << "Décollage accepté !";
+        } else {
+            emit takeOffResult(false);
+            qDebug() << "Décollage refusé ou échoué, code:" << ack.result;
+        }
+    }
+
+    if (ack.command == MAV_CMD_NAV_LAND) {
+        if (ack.result == MAV_RESULT_ACCEPTED) {
+            emit landResult(true);
+            qDebug() << "Atterrissage accepté !";
+        } else {
+            emit landResult(false);
+            qDebug() << "Atterrissage refusé ou échoué, code:" << ack.result;
+        }
+    }
+
+    if (ack.command == MAV_CMD_NAV_RETURN_TO_LAUNCH) {
+        if (ack.result == MAV_RESULT_ACCEPTED) {
+            emit rthResult(true);
+            qDebug() << "RTH accepté !";
+        } else {
+            emit rthResult(false);
+            qDebug() << "RTH refusé ou échoué, code:" << ack.result;
+        }
+    }
+
+    if (ack.command == MAV_CMD_DO_FLIGHTTERMINATION) {
+        if (ack.result == MAV_RESULT_ACCEPTED) {
+            emit ftsResult(true);
+            qDebug() << "FTS accepté !";
+        } else {
+            emit ftsResult(false);
+            qDebug() << "FTS refusé ou échoué, code:" << ack.result;
+        }
+    }
+
+    if (ack.command == MAV_CMD_DO_REPOSITION) {
+        if (ack.result == MAV_RESULT_ACCEPTED) {
+            emit repositionResult(true);
+            qDebug() << "Reposition accepté !";
+        } else {
+            emit repositionResult(false);
+            qDebug() << "Reposition refusée ou échouée, code:" << ack.result;
+        }
+    }
+
     if (ack.command == MAV_CMD_DO_SET_ROI_NONE) {
         if (ack.result == MAV_RESULT_ACCEPTED) {
             _isROIEnabled = false;

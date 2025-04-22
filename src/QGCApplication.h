@@ -276,13 +276,14 @@ private:
 
     // MQTT: Handles MQTT client setup, connection, disconnection, message updates, 
     // and broker interactions for communication with remote systems.
-    void updateLogStateChange();
-    void brokerDisconnected  ();
-    void disconnectFromMqtt();
-    void brokerConnected     ();
-    void updateMessage       (const QMqttMessage &msg);
-    void updateStatus        (QMqttSubscription::SubscriptionState state);
-    void sendEventMessage    (QString command, int value, QString sn);
+    void updateLogStateChange   ();
+    void brokerDisconnected     ();
+    void disconnectFromMqtt     ();
+    void brokerConnected        ();
+    void updateMessage          (const QMqttMessage &msg);
+    void updateStatus           (QMqttSubscription::SubscriptionState state);
+    void sendEventMessage       (QString command, int value, QString sn);
+    void sendResponseMessage    (const QMqttMessage &inputMessage, QJsonObject &outputMessage, bool success);
 
     // Periodically sends information such as telemetry data or status updates to connected systems or components.
     void sendInfos();

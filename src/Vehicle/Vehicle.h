@@ -1054,6 +1054,11 @@ signals:
     void isROIEnabledChanged            ();
     void roiCoordChanged                (const QGeoCoordinate& centerCoord);
     void initialConnectComplete         ();
+    void takeOffResult                  (bool success);
+    void landResult                     (bool success);
+    void rthResult                      (bool success);
+    void ftsResult                      (bool success);
+    void repositionResult               (bool success);
 
     void sensorsParametersResetAck      (bool success);
 

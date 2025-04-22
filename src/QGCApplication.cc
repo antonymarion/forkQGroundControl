@@ -1183,12 +1183,15 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             _yaw = message["yaw"].toDouble();
             _thrust = message["thrust"].toDouble();
             state_value = 0;
-            break;
+            break; // add to vector control
         case 14:
             qWarning() << "=================================================";
             qWarning() << "recieved TAKE_OFF";
             qWarning() << "=================================================";
             {
+                QObject::connect(requestVehicle, &Vehicle::takeOffResult, this, [this, msg, message](bool success) {
+                    sendResponseMessage(msg, message, success);
+                });
                 double takeOfHeight = message["takeOffHeight"].toDouble();
                 requestVehicle->guidedModeTakeoff(takeOfHeight ? takeOfHeight : 1);
                 state_value = 0;
@@ -1198,6 +1201,9 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qWarning() << "=================================================";
             qWarning() << "recieved RETURN_TO_HOME";
             qWarning() << "=================================================";
+            QObject::connect(requestVehicle, &Vehicle::rthResult, this, [this, msg, message](bool success) {
+                sendResponseMessage(msg, message, success);
+            });
             requestVehicle->guidedModeRTL(false);
             state_value = 0;
             break;
@@ -1205,6 +1211,9 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qWarning() << "=================================================";
             qWarning() << "recieved VERTICAL_LANDING";
             qWarning() << "=================================================";
+            QObject::connect(requestVehicle, &Vehicle::landResult, this, [this, msg, message](bool success) {
+                sendResponseMessage(msg, message, success);
+            });
             requestVehicle->guidedModeLand();
             state_value = 0;
             break;
@@ -1212,6 +1221,9 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qWarning() << "=================================================";
             qWarning() << "recieved FLYING_TERMINATION_SYSTEM";
             qWarning() << "=================================================";
+            QObject::connect(requestVehicle, &Vehicle::ftsResult, this, [this, msg, message](bool success) {
+                sendResponseMessage(msg, message, success);
+            });
             requestVehicle->emergencyStop();
             state_value = 0;
             break;
@@ -1244,6 +1256,9 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
                 qWarning() << "*****   No vehicle available   *****";
                 break;
             };
+            QObject::connect(requestVehicle, &Vehicle::repositionResult, this, [this, msg, message](bool success) {
+                sendResponseMessage(msg, message, success);
+            });
             double w_speed, w_yaw, w_lat, w_lon, w_alt;
             w_speed = message["speed"].toDouble();
             w_yaw = message["yaw"].toDouble();
@@ -1313,13 +1328,26 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
         QGCApplication::sendEventMessage(message["instruction"].toString(), state_value, message["serialNumber"].toString());
     }
 
-    QJsonDocument doc(message);
+    if(state_value == -2) return; // Asynchronous command
+
+    sendResponseMessage(msg, message, true);
+}
+
+void QGCApplication::sendResponseMessage(const QMqttMessage &inputMessage, QJsonObject &outputMessage, bool success)
+{
+    if(success) {
+        outputMessage.insert("status", "OK");
+    } else {
+        outputMessage.insert("status", "KO");
+    }
+
+    QJsonDocument doc(outputMessage);
     QString responseMessage(doc.toJson(QJsonDocument::Compact));
 
-    QString responseTopic = msg.publishProperties().responseTopic();
+    QString responseTopic = inputMessage.publishProperties().responseTopic();
 
     QMqttPublishProperties properties;
-    properties.setCorrelationData(msg.publishProperties().correlationData());
+    properties.setCorrelationData(inputMessage.publishProperties().correlationData());
 
     // Set the qos to 1 (important!)
     m_client->publish(responseTopic, properties, responseMessage.toUtf8(), 1, false);
