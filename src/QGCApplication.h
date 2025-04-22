@@ -283,7 +283,7 @@ private:
     void updateMessage          (const QMqttMessage &msg);
     void updateStatus           (QMqttSubscription::SubscriptionState state);
     void sendEventMessage       (QString command, int value, QString sn);
-    void sendResponseMessage    (const QMqttMessage &inputMessage, QJsonObject &outputMessage, bool success);
+    void sendResponseMessage    (const QMqttMessage &inputMessage, QJsonObject outputMessage, bool success);
 
     // Periodically sends information such as telemetry data or status updates to connected systems or components.
     void sendInfos();
