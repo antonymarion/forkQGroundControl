@@ -1333,7 +1333,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
     sendResponseMessage(msg, message, true);
 }
 
-void QGCApplication::sendResponseMessage(const QMqttMessage &inputMessage, QJsonObject &outputMessage, bool success)
+void QGCApplication::sendResponseMessage(const QMqttMessage &inputMessage, QJsonObject outputMessage, bool success)
 {
     if(success) {
         outputMessage.insert("status", "OK");
