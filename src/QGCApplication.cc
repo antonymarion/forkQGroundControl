@@ -1348,13 +1348,19 @@ void QGCApplication::sendResponseMessage(const QMqttMessage &inputMessage, QJson
     QString responseMessage(doc.toJson(QJsonDocument::Compact));
 
     QString responseTopic = inputMessage.publishProperties().responseTopic();
+    if (responseTopic.isEmpty()) {
+        qWarning() << "Invalid response topic. Cannot publish response.";
+        return;
+    }
     qWarning() << responseTopic;
 
     QMqttPublishProperties properties;
     properties.setCorrelationData(inputMessage.publishProperties().correlationData());
 
     // Set the qos to 1 (important!)
-    m_client->publish(responseTopic, properties, responseMessage.toUtf8(), 1, false);
+    if (m_client->publish(responseTopic, properties, responseMessage.toUtf8(), 1, false) == -1) {
+        qWarning() << "Failed to publish response to topic:" << responseTopic;
+    }
 }
 
 void QGCApplication::updateStatus(QMqttSubscription::SubscriptionState state)
