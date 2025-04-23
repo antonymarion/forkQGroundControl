@@ -1341,10 +1341,14 @@ void QGCApplication::sendResponseMessage(const QMqttMessage &inputMessage, QJson
         outputMessage.insert("status", "KO");
     }
 
+    qWarning() << "=================================================";
+    qWarning() << "sending response on";
+
     QJsonDocument doc(outputMessage);
     QString responseMessage(doc.toJson(QJsonDocument::Compact));
 
     QString responseTopic = inputMessage.publishProperties().responseTopic();
+    qWarning() << responseTopic;
 
     QMqttPublishProperties properties;
     properties.setCorrelationData(inputMessage.publishProperties().correlationData());
