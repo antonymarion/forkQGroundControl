@@ -1191,6 +1191,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             {
                 QObject::connect(requestVehicle, &Vehicle::takeOffResult, this, [this, msg, message](bool success) {
                     sendResponseMessage(msg, message, success);
+                    QObject::disconnect(requestVehicle, &Vehicle::takeOffResult, this, nullptr);
                 });
                 double takeOfHeight = message["takeOffHeight"].toDouble();
                 requestVehicle->guidedModeTakeoff(takeOfHeight ? takeOfHeight : 1);
@@ -1203,6 +1204,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qWarning() << "=================================================";
             QObject::connect(requestVehicle, &Vehicle::rthResult, this, [this, msg, message](bool success) {
                 sendResponseMessage(msg, message, success);
+                QObject::disconnect(requestVehicle, &Vehicle::rthResult, this, nullptr);
             });
             requestVehicle->guidedModeRTL(false);
             state_value = -2;
@@ -1213,6 +1215,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qWarning() << "=================================================";
             QObject::connect(requestVehicle, &Vehicle::landResult, this, [this, msg, message](bool success) {
                 sendResponseMessage(msg, message, success);
+                QObject::disconnect(requestVehicle, &Vehicle::landResult, this, nullptr);
             });
             requestVehicle->guidedModeLand();
             state_value = -2;
@@ -1223,6 +1226,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qWarning() << "=================================================";
             QObject::connect(requestVehicle, &Vehicle::ftsResult, this, [this, msg, message](bool success) {
                 sendResponseMessage(msg, message, success);
+                QObject::disconnect(requestVehicle, &Vehicle::ftsResult, this, nullptr);
             });
             requestVehicle->emergencyStop();
             state_value = -2;
@@ -1258,6 +1262,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             };
             QObject::connect(requestVehicle, &Vehicle::repositionResult, this, [this, msg, message](bool success) {
                 sendResponseMessage(msg, message, success);
+                QObject::disconnect(requestVehicle, &Vehicle::repositionResult, this, nullptr);
             });
             double w_speed, w_yaw, w_lat, w_lon, w_alt;
             w_speed = message["speed"].toDouble();
