@@ -1189,7 +1189,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qWarning() << "recieved TAKE_OFF";
             qWarning() << "=================================================";
             {
-                QObject::connect(requestVehicle, &Vehicle::takeOffResult, this, [this, msg, message](bool success) {
+                QObject::connect(requestVehicle, &Vehicle::takeOffResult, this, [this, msg, message, requestVehicle](bool success) {
                     sendResponseMessage(msg, message, success);
                     QObject::disconnect(requestVehicle, &Vehicle::takeOffResult, this, nullptr);
                 });
@@ -1202,7 +1202,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qWarning() << "=================================================";
             qWarning() << "recieved RETURN_TO_HOME";
             qWarning() << "=================================================";
-            QObject::connect(requestVehicle, &Vehicle::rthResult, this, [this, msg, message](bool success) {
+            QObject::connect(requestVehicle, &Vehicle::rthResult, this, [this, msg, message, requestVehicle](bool success) {
                 sendResponseMessage(msg, message, success);
                 QObject::disconnect(requestVehicle, &Vehicle::rthResult, this, nullptr);
             });
@@ -1213,7 +1213,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qWarning() << "=================================================";
             qWarning() << "recieved VERTICAL_LANDING";
             qWarning() << "=================================================";
-            QObject::connect(requestVehicle, &Vehicle::landResult, this, [this, msg, message](bool success) {
+            QObject::connect(requestVehicle, &Vehicle::landResult, this, [this, msg, message, requestVehicle](bool success) {
                 sendResponseMessage(msg, message, success);
                 QObject::disconnect(requestVehicle, &Vehicle::landResult, this, nullptr);
             });
@@ -1224,7 +1224,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qWarning() << "=================================================";
             qWarning() << "recieved FLYING_TERMINATION_SYSTEM";
             qWarning() << "=================================================";
-            QObject::connect(requestVehicle, &Vehicle::ftsResult, this, [this, msg, message](bool success) {
+            QObject::connect(requestVehicle, &Vehicle::ftsResult, this, [this, msg, message, requestVehicle](bool success) {
                 sendResponseMessage(msg, message, success);
                 QObject::disconnect(requestVehicle, &Vehicle::ftsResult, this, nullptr);
             });
@@ -1260,7 +1260,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
                 qWarning() << "*****   No vehicle available   *****";
                 break;
             };
-            QObject::connect(requestVehicle, &Vehicle::repositionResult, this, [this, msg, message](bool success) {
+            QObject::connect(requestVehicle, &Vehicle::repositionResult, this, [this, msg, message, requestVehicle](bool success) {
                 sendResponseMessage(msg, message, success);
                 QObject::disconnect(requestVehicle, &Vehicle::repositionResult, this, nullptr);
             });
