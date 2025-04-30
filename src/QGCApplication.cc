@@ -1194,7 +1194,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
                 });
                 double takeOfHeight = message["takeOffHeight"].toDouble();
                 requestVehicle->guidedModeTakeoff(takeOfHeight ? takeOfHeight : 1);
-                state_value = 0;
+                state_value = -2;
             }
             break;
         case 15:
@@ -1205,7 +1205,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
                 sendResponseMessage(msg, message, success);
             });
             requestVehicle->guidedModeRTL(false);
-            state_value = 0;
+            state_value = -2;
             break;
         case 16:
             qWarning() << "=================================================";
@@ -1215,7 +1215,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
                 sendResponseMessage(msg, message, success);
             });
             requestVehicle->guidedModeLand();
-            state_value = 0;
+            state_value = -2;
             break;
         case 17:
             qWarning() << "=================================================";
@@ -1225,7 +1225,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
                 sendResponseMessage(msg, message, success);
             });
             requestVehicle->emergencyStop();
-            state_value = 0;
+            state_value = -2;
             break;
         case 18:
             qWarning() << "=================================================";
@@ -1267,7 +1267,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             w_alt = message["alt"].toDouble();
             // requestVehicle->sendSetPositionTargetGlobalInt(w_lat, w_lon, w_alt, w_speed, w_yaw);
             requestVehicle->goToWaypoint(w_speed, w_yaw, w_lat, w_lon, w_alt);
-            state_value = 0;
+            state_value = -2;
             break;
         case 20:
             qWarning() << "=================================================";
@@ -1324,7 +1324,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             state_value = 0;
     }
 
-    if(state_value != 0){
+    if(state_value != 0 && state_value != -2) {
         QGCApplication::sendEventMessage(message["instruction"].toString(), state_value, message["serialNumber"].toString());
     }
 
