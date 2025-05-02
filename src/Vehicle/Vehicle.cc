@@ -3777,7 +3777,7 @@ void Vehicle::_handleCommandAck(mavlink_message_t& message)
         }
     }
 
-    if (ack.command == MAV_CMD_DO_FLIGHTTERMINATION) {
+    if (ack.command == MAV_CMD_COMPONENT_ARM_DISARM) {
         if (ack.result == MAV_RESULT_ACCEPTED) {
             emit ftsResult(true);
             qDebug() << "FTS accepté !";
