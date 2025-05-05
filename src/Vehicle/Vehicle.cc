@@ -2726,18 +2726,18 @@ void Vehicle::setFlightMode(const QString& flightMode)
         qCWarning(VehicleLog) << "================================";
         qCWarning(VehicleLog) << flightMode;
         qCWarning(VehicleLog) << "================================";
-        if (flightMode == "rth") {
+        if (flightMode == "Return") {
             emit rthResult(true);
         }
-        if (flightMode == "land") {
+        if (flightMode == "Land") {
             emit landResult(true);
         }
     } else {
         qCWarning(VehicleLog) << "FirmwarePlugin::setFlightMode failed, flightMode:" << flightMode;
-        if (flightMode == "rth") {
+        if (flightMode == "Return") {
             emit rthResult(false);
         }
-        if (flightMode == "land") {
+        if (flightMode == "Land") { // "Precision Landing"
             emit landResult(false);
         }
     }
@@ -3384,6 +3384,9 @@ void Vehicle::pauseVehicle()
 
 void Vehicle::abortLanding(double climbOutAltitude)
 {
+    qDebug(VehicleLog) << "***********************************************************";
+    qDebug(VehicleLog) << "Abort landing, climb out altitude:" << climbOutAltitude;
+    qDebug(VehicleLog) << "***********************************************************";
     sendMavCommand(
                 defaultComponentId(),
                 MAV_CMD_DO_GO_AROUND,
