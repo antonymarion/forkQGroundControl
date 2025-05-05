@@ -2737,16 +2737,10 @@ void Vehicle::setFlightMode(const QString& flightMode)
         if (flightMode == "Return") {
             emit rthResult(true);
         }
-        if (flightMode == "Land") {
-            emit landResult(true);
-        }
     } else {
         qCWarning(VehicleLog) << "FirmwarePlugin::setFlightMode failed, flightMode:" << flightMode;
         if (flightMode == "Return") {
             emit rthResult(false);
-        }
-        if (flightMode == "Land") { // "Precision Landing"
-            emit landResult(false);
         }
     }
 }

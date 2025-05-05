@@ -1197,7 +1197,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
                 requestVehicle->guidedModeTakeoff(takeOfHeight ? takeOfHeight : 1);
                 state_value = -2;
             }
-            break; // check if isFlying == true for SMA (a take off can return true if send just at landing)
+            break; // check if isFlying == true for SMA (take off can return true if sent just at landing)
         case 15:
             qWarning() << "=================================================";
             qWarning() << "recieved RETURN_TO_HOME";
@@ -1219,7 +1219,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             });
             requestVehicle->land();
             state_value = -2;
-            break;
+            break; // check if isFlying == false for SMA (land can return true if on ground)
         case 17:
             qWarning() << "=================================================";
             qWarning() << "recieved FLYING_TERMINATION_SYSTEM";
