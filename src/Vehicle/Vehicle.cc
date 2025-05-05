@@ -2723,8 +2723,23 @@ void Vehicle::setFlightMode(const QString& flightMode)
                                            custom_mode);
             sendMessageOnLinkThreadSafe(sharedLink.get(), msg);
         }
+        qCWarning(VehicleLog) << "================================";
+        qCWarning(VehicleLog) << flightMode;
+        qCWarning(VehicleLog) << "================================";
+        if (flightMode == "rth") {
+            emit rthResult(true);
+        }
+        if (flightMode == "land") {
+            emit landResult(true);
+        }
     } else {
         qCWarning(VehicleLog) << "FirmwarePlugin::setFlightMode failed, flightMode:" << flightMode;
+        if (flightMode == "rth") {
+            emit rthResult(false);
+        }
+        if (flightMode == "land") {
+            emit landResult(false);
+        }
     }
 }
 
