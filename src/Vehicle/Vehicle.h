@@ -922,6 +922,7 @@ public:
 
     GimbalController* gimbalController    () { return _gimbalController; }
 
+    void         land                   ();
     void         goToWaypoint           (double speed, double yaw, double lat, double lon, double alt);
     void         servoCmd               (float servoId, float pwmValue);
     void         getTelemetry           (double &lat, double &lon, double &alt, double &hSpeed, double &vSpeed, double &yaw, double &pitch, double &roll);

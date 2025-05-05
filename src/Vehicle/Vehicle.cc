@@ -821,6 +821,14 @@ void Vehicle::_setUAVSn(QStringList uasSn){
     return;
 }
 
+void Vehicle::land(){
+    sendMavCommand(
+        _defaultComponentId,            // compId: Default vehicle component ID
+        MAV_CMD_NAV_LAND,               // command: MAV_CMD to set servo
+        true                            // showError: Display error if command fails
+    );
+}
+
 void Vehicle::_setNewVehicleData()
 {
     QMap<QString, QStringList> uasSnMap = qgcApp()->getAircraftInfo();
