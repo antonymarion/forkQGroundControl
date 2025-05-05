@@ -1217,7 +1217,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
                 sendResponseMessage(msg, message, success);
                 QObject::disconnect(requestVehicle, &Vehicle::landResult, this, nullptr);
             });
-            requestVehicle->guidedModeLand();
+            requestVehicle->land();
             state_value = -2;
             break;
         case 17:
