@@ -333,7 +333,10 @@ private:
     QStringList           simulatedMAC        = {                        // global axis list
         "",
         "4F:4E:49:44:4C:41:54:49",
-        "00:00:00:00:00:00:00:00" 
+        "00:00:00:00:00:00:00:00",
+        "51:4E:49:44:4C:41:54:49",
+        "50:4E:49:44:4C:41:54:49",
+        "52:4E:49:44:4C:41:54:49",
         };
     QStringList           commandsList        = {                        // front-end commmand list
         "OPEN_STREAM",
