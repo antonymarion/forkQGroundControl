@@ -927,48 +927,37 @@ void Vehicle::sendSetPositionTargetGlobalInt(double latitude, double longitude, 
     mavlink_message_t msg;
     mavlink_set_position_target_global_int_t cmd;
 
-    memset(&cmd, 0, sizeof(cmd)); // Initialiser la structure à zéro
+    memset(&cmd, 0, sizeof(cmd)); // Initialize the structure to zero
 
-    cmd.target_system = id(); // ID du système cible (le drone)
-    cmd.target_component = _defaultComponentId; // ID du composant cible (autopilote)
-    cmd.coordinate_frame = MAV_FRAME_GLOBAL_RELATIVE_ALT_INT; // Cadre de référence
+    cmd.target_system = id(); // Target system ID (the drone)
+    cmd.target_component = _defaultComponentId; // Target component ID (autopilot)
+    cmd.coordinate_frame = MAV_FRAME_GLOBAL_RELATIVE_ALT_INT; // Reference frame
     cmd.type_mask = POSITION_TARGET_TYPEMASK_AX_IGNORE |
                     POSITION_TARGET_TYPEMASK_AY_IGNORE |
                     POSITION_TARGET_TYPEMASK_AZ_IGNORE |
                     POSITION_TARGET_TYPEMASK_VX_IGNORE |
                     POSITION_TARGET_TYPEMASK_VY_IGNORE |
-                    POSITION_TARGET_TYPEMASK_VZ_IGNORE; // Ignorer la vitesse et l'accelération
+                    POSITION_TARGET_TYPEMASK_VZ_IGNORE |
+                    POSITION_TARGET_TYPEMASK_YAW_IGNORE |
+                    POSITION_TARGET_TYPEMASK_YAW_RATE_IGNORE; // Ignore velocity, acceleration, yaw, and yaw rate
 
-    // Ajouter les coordonnées et l'altitude
-    cmd.lat_int = static_cast<int32_t>(latitude * 1E7); // Latitude en format entier
-    cmd.lon_int = static_cast<int32_t>(longitude * 1E7); // Longitude en format entier
-    cmd.alt = altitude; // Altitude en mètres
-    
-    // Calculer la direction et les composantes de vitesse
-    /* 
-    double angle = atan2(longitude - _coordinate.longitude(), latitude - _coordinate.latitude());
-    float vx = speed * cos(angle); // Vitesse sur l'axe X (latitude)
-    float vy = speed * sin(angle); // Vitesse sur l'axe Y (longitude)
-    float vz = (altitude - _coordinate.altitude()) / sqrt(pow(latitude - _coordinate.latitude(), 2) + pow(longitude - _coordinate.longitude(), 2)); // Vitesse verticale
- */
-    // Ajouter les vitesses globales
-    /* 
-    cmd.vx = vx; // Vitesse sur l'axe X (m/s)
-    cmd.vy = vy; // Vitesse sur l'axe Y (m/s)
-    cmd.vz = vz; // Vitesse sur l'axe Z (m/s)
- */
-    // Ajouter l'orientation et la vitesse de rotation
-    cmd.yaw = yaw; // Orientation en radians
+    // Add coordinates and altitude
+    cmd.lat_int = static_cast<int32_t>(latitude * 1E7); // Latitude in integer format
+    cmd.lon_int = static_cast<int32_t>(longitude * 1E7); // Longitude in integer format
+    cmd.alt = altitude; // Altitude in meters
+
+    // Add orientation and rotation speed
+    cmd.yaw = yaw; // Orientation in radians
 
     mavlink_msg_set_position_target_global_int_encode_chan(
-        _mavlink->getSystemId(), // ID du système émetteur
-        _mavlink->getComponentId(), // ID du composant émetteur
-        sharedLink->mavlinkChannel(), // Canal MAVLink utilisé
-        &msg, // Message MAVLink à remplir
-        &cmd // Structure de commande
+        _mavlink->getSystemId(), // Sender system ID
+        _mavlink->getComponentId(), // Sender component ID
+        sharedLink->mavlinkChannel(), // MAVLink channel used
+        &msg, // MAVLink message to fill
+        &cmd // Command structure
     );
 
-    sendMessageOnLinkThreadSafe(sharedLink.get(), msg); // Envoyer le message
+    sendMessageOnLinkThreadSafe(sharedLink.get(), msg); // Send the message
 }
 
 void Vehicle::_offlineFirmwareTypeSettingChanged(QVariant varFirmwareType)
