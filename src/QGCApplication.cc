@@ -1270,8 +1270,8 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             w_lat = message["latitude"].toDouble();
             w_lon = message["longitude"].toDouble();
             w_alt = message["altitude"].toDouble();
-            // requestVehicle->sendSetPositionTargetGlobalInt(w_lat, w_lon, w_alt, w_speed, w_yaw);
-            requestVehicle->goToWaypoint(w_speed, w_yaw, w_lat, w_lon, w_alt);
+            requestVehicle->sendSetPositionTargetGlobalInt(w_lat, w_lon, w_alt, w_speed, w_yaw);
+            // requestVehicle->goToWaypoint(w_speed, w_yaw, w_lat, w_lon, w_alt);
             state_value = -2;
             break;
         case 20:
