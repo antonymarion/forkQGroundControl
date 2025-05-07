@@ -3806,6 +3806,16 @@ void Vehicle::_handleCommandAck(mavlink_message_t& message)
         }
     }
 
+    if (ack.command == MAV_CMD_DO_SET_POSITION_TARGET_GLOBAL_INT) {
+        if (ack.result == MAV_RESULT_ACCEPTED) {
+            emit repositionResult(true);
+            qDebug() << "SetPositionTargetGlobalInt accepté !";
+        } else {
+            emit repositionResult(false);
+            qDebug() << "SetPositionTargetGlobalInt refusée ou échouée, code:" << ack.result;
+        }
+    }
+
     if (ack.command == MAV_CMD_DO_SET_ROI_NONE) {
         if (ack.result == MAV_RESULT_ACCEPTED) {
             _isROIEnabled = false;
