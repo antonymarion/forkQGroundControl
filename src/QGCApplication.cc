@@ -1270,12 +1270,19 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             w_lat = message["latitude"].toDouble();
             w_lon = message["longitude"].toDouble();
             w_alt = message["altitude"].toDouble();
-            if(requestVehicle->flightMode() != "OFFBOARD") {
-                qWarning() << "*****   Flight mode changed to OFFBOARD   *****";
-                requestVehicle->setFlightMode("OFFBOARD");
+            if(requestVehicle->px4Firmware()) {
+                qWarning() << "*****   PX4 firmware detected   *****";
+                requestVehicle->goToWaypoint(w_speed, w_yaw, w_lat, w_lon, w_alt); // check if do_reposition supports this (see guidedmodereposition)
             }
-            requestVehicle->sendSetPositionTargetGlobalInt(w_lat, w_lon, w_alt, w_speed, w_yaw); // no response for this one
-            // requestVehicle->goToWaypoint(w_speed, w_yaw, w_lat, w_lon, w_alt);
+            if(requestVehicle->apmFirmware()) {
+                qWarning() << "*****   ArduPilot firmware detected   *****";
+                if(requestVehicle->guidedModeSupported()){
+                    requestVehicle->setFlightMode("Guided");
+                    requestVehicle->sendSetPositionTargetGlobalInt(w_lat, w_lon, w_alt, w_speed, w_yaw); // no response for this one
+                }
+            }
+            // requestVehicle->sendSetPositionTargetGlobalInt(w_lat, w_lon, w_alt, w_speed, w_yaw); // no response for this one
+            // requestVehicle->goToWaypoint(w_speed, w_yaw, w_lat, w_lon, w_alt); // check if do_reposition supports this (see guidedmodereposition)
             state_value = -2;
             break;
         case 20:

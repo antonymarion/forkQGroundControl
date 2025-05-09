@@ -926,6 +926,24 @@ void Vehicle::sendSetPositionTargetGlobalInt(double latitude, double longitude, 
 
     mavlink_message_t msg;
     mavlink_set_position_target_global_int_t cmd;
+    /*
+    uint32_t time_boot_ms;      // Timestamp (time since system boot) [ms]
+    int32_t  lat_int;           // Latitude (WGS84, degrees * 1E7)
+    int32_t  lon_int;           // Longitude (WGS84, degrees * 1E7)
+    float    alt;               // Altitude (meters, AMSL or above ground, depending on frame)
+    float    vx;                // X velocity in NED frame (m/s)
+    float    vy;                // Y velocity in NED frame (m/s)
+    float    vz;                // Z velocity in NED frame (m/s)
+    float    afx;               // X acceleration or force (N or m/s^2, depending on bitmask)
+    float    afy;               // Y acceleration or force (N or m/s^2, depending on bitmask)
+    float    afz;               // Z acceleration or force (N or m/s^2, depending on bitmask)
+    float    yaw;               // Yaw angle (rad, 0 is North)
+    float    yaw_rate;          // Yaw rate (rad/s)
+    uint16_t type_mask;         // Bitmask to indicate which dimensions should be ignored by the vehicle
+    uint8_t  target_system;     // System ID
+    uint8_t  target_component;  // Component ID
+    uint8_t  coordinate_frame;  // MAV_FRAME (reference frame)
+    */
 
     memset(&cmd, 0, sizeof(cmd)); // Initialize the structure to zero
 
