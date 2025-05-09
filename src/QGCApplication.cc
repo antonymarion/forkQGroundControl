@@ -1270,7 +1270,11 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             w_lat = message["latitude"].toDouble();
             w_lon = message["longitude"].toDouble();
             w_alt = message["altitude"].toDouble();
-            requestVehicle->sendSetPositionTargetGlobalInt(w_lat, w_lon, w_alt, w_speed, w_yaw);
+            if(requestVehicle->flightMode() != "OFFBOARD") {
+                qWarning() << "*****   Flight mode changed to OFFBOARD   *****";
+                requestVehicle->setFlightMode("OFFBOARD");
+            }
+            requestVehicle->sendSetPositionTargetGlobalInt(w_lat, w_lon, w_alt, w_speed, w_yaw); // no response for this one
             // requestVehicle->goToWaypoint(w_speed, w_yaw, w_lat, w_lon, w_alt);
             state_value = -2;
             break;

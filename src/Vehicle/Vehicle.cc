@@ -1104,10 +1104,6 @@ void Vehicle::_mavlinkMessageReceived(LinkInterface* link, mavlink_message_t mes
     }
 
     switch (message.msgid) {
-    case MAVLINK_MSG_ID_SET_POSITION_TARGET_GLOBAL_INT:
-        qDebug() << "Received SET_POSITION_TARGET_GLOBAL_INT message";
-        emit repositionResult(false);
-        break;
     case MAVLINK_MSG_ID_HOME_POSITION:
         _handleHomePosition(message);
         break;
