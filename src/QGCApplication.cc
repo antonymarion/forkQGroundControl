@@ -1029,6 +1029,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
     QString topic = msg.topic().name();
     QStringList topicParts = topic.split('/');
     QString sn = topicParts.value(2); // Assuming the serial number (sn) is the third part of the topic
+    QString clientId = topicParts.value(3); // Assuming the client ID is the second part of the topic
     qWarning() << "received on " << sn;
     QString payload = QString(msg.payload());
     QJsonDocument d = QJsonDocument::fromJson(payload.toUtf8());
@@ -1040,6 +1041,14 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             requestVehicle = vehicle;
             break;
         }
+    }
+
+    // TEMPORARY
+    if(!smaControl && clientId == "oseSMA"){ // change this to real clientId
+        qWarning() << "=================================================";
+        qWarning() << "rejected OSE command";
+        qWarning() << "=================================================";
+        return;
     }
 
     QJsonObject tAttitude, iso, aperture;
@@ -1260,10 +1269,17 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
                 qWarning() << "*****   No vehicle available   *****";
                 break;
             };
-            QObject::connect(requestVehicle, &Vehicle::repositionResult, this, [this, msg, message, requestVehicle](bool success) {
-                sendResponseMessage(msg, message, success);
-                QObject::disconnect(requestVehicle, &Vehicle::repositionResult, this, nullptr);
-            });
+            if(!smaControl && smaClients.contains(clientId)) {
+                qWarning() << "*****   SMA client detected   *****";
+                message.insert("error","SMA client blocked");
+                state_value = -2;
+                sendResponseMessage(msg, message, false);
+                break;
+            }
+            if(!smaClients.contains(clientId)) {
+                smaClients.append(clientId);
+            }
+
             double w_speed, w_yaw, w_lat, w_lon, w_alt;
             w_speed = message["speed"].toDouble();
             w_yaw = message["yaw"].toDouble();
@@ -1272,18 +1288,24 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             w_alt = message["altitude"].toDouble();
             if(requestVehicle->px4Firmware()) {
                 qWarning() << "*****   PX4 firmware detected   *****";
+                QObject::connect(requestVehicle, &Vehicle::repositionResult, this, [this, msg, message, requestVehicle](bool success) {
+                    sendResponseMessage(msg, message, success);
+                    QObject::disconnect(requestVehicle, &Vehicle::repositionResult, this, nullptr);
+                });
                 requestVehicle->goToWaypoint(w_speed, w_yaw, w_lat, w_lon, w_alt); // check if do_reposition supports this (see guidedmodereposition)
+                state_value = -2;
             }
             if(requestVehicle->apmFirmware()) {
                 qWarning() << "*****   ArduPilot firmware detected   *****";
                 if(requestVehicle->guidedModeSupported()){
                     requestVehicle->setFlightMode("Guided");
                     requestVehicle->sendSetPositionTargetGlobalInt(w_lat, w_lon, w_alt, w_speed, w_yaw); // no response for this one
+                    
                 }
+                state_value = 0;
             }
             // requestVehicle->sendSetPositionTargetGlobalInt(w_lat, w_lon, w_alt, w_speed, w_yaw); // no response for this one
             // requestVehicle->goToWaypoint(w_speed, w_yaw, w_lat, w_lon, w_alt); // check if do_reposition supports this (see guidedmodereposition)
-            state_value = -2;
             break;
         case 20:
             qWarning() << "=================================================";
@@ -1293,6 +1315,14 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             state_value = 0;
             break;
         case 21:
+            qWarning() << "=================================================";
+            qWarning() << "recieved PAUSE_DRONE";
+            qWarning() << "=================================================";
+            smaControl = false;
+            requestVehicle->pauseVehicle();
+            state_value = 0;
+            break;
+        case 22:
             qWarning() << "=================================================";
             qWarning() << "recieved SET_DATA";
             qWarning() << "=================================================";
@@ -1304,7 +1334,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             _vehicle->setSn(message["sn"].toString());
             state_value = 0;
             break;
-        case 22:
+        case 23:
             qWarning() << "=================================================";
             qWarning() << "recieved SET_GEOFENCING";
             qWarning() << "=================================================";
@@ -1312,10 +1342,10 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
                 qWarning() << "*****   No vehicle available   *****";
                 break;
             };
-            _vehicle->loadAndSendGeofence(message);
+            requestVehicle->loadAndSendGeofence(message);
             state_value = 0;
             break;
-        case 23:
+        case 24:
             qWarning() << "=================================================";
             qWarning() << "recieved TESTING_1";
             qWarning() << "=================================================";
@@ -1327,7 +1357,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qWarning() << _vehicle->sn();
             state_value = 0;
             break;
-        case 24:
+        case 25:
             qWarning() << "=================================================";
             qWarning() << "recieved TESTING_2";
             qWarning() << "=================================================";
@@ -1340,11 +1370,11 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             state_value = 0;
     }
 
-    if(state_value != 0 && state_value != -2) {
+    if(state_value == -2) return; // Asynchronous command
+
+    if(state_value != 0) {
         QGCApplication::sendEventMessage(message["instruction"].toString(), state_value, message["serialNumber"].toString());
     }
-
-    if(state_value == -2) return; // Asynchronous command
 
     sendResponseMessage(msg, message, true);
 }
@@ -2051,6 +2081,7 @@ void QGCApplication::testing3()
 
 void QGCApplication::pauseAll()
 {
+    smaControl = false;
     QmlObjectListModel* vehicles = _vehicleManager->vehicles();
     for(int i = 0; i<vehicles->count(); i++){
         qobject_cast<Vehicle*>(vehicles->get(i))->pauseVehicle();

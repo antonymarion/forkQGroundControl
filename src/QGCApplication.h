@@ -325,6 +325,7 @@ private:
     bool                  _isFlying;                                     // is aircraft currently flying
     bool                  _recording;
     bool                  canControl          = true;                    // false if remote pilote override commands
+    bool                  smaControl          = true;                    // true if SMA control is enabled
     Vehicle*              _vehicle{nullptr};                             // current vehicle
     VideoManager*         _videoManager{nullptr};
     MultiVehicleManager*  _vehicleManager{nullptr};
@@ -360,11 +361,13 @@ private:
         "TELEMETRY",
         "GO_TO_WAYPOINT",
         "PAUSE_ALL",
+        "PAUSE_DRONE",
         "SET_DATA",
         "SET_GEOFENCING",
         "TESTING_1",
         "TESTING_2"
     };
+    QStringList smaClients = {}; // list of SMA clients ids
 
     QMap<QString, QStringList> aircraftUasSnList = {
         /* {"4F:4E:49:44:4C:41:54:49", {"UAS-FR-651384", "1H82582569285", "Gazebo", "4F:4E:49:44:4C:41:54:49"}}, 
