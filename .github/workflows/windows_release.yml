@@ -96,10 +96,8 @@ jobs:
           git clone git://code.qt.io/qt/qtmqtt.git --branch 5.15.2
           cd qtmqtt
           mkdir build
-          dir
-          dir build
-          cd build
           %QMAKE_BIN_DIR%/qmake ../qtmqtt.pro
+          dir
           nmake
           nmake install
 
