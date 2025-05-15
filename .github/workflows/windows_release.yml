@@ -97,7 +97,7 @@ jobs:
           cd qtmqtt
           mkdir build
           cd build
-          eccho %QMAKE_BIN_DIR%
+          echo %QMAKE_BIN_DIR%
           %QMAKE_BIN_DIR%/qmake ../qtmqtt.pro
           nmake
           nmake install
