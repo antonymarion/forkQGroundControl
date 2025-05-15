@@ -1786,12 +1786,15 @@ void QGCApplication::sendAircraftPositionInfo() {
             }
         }
         QmlObjectListModel* batteries = vehicle->batteries();
+        int batCount = batteries->count();
         int res = 0;
-        for (int i=0; i<batteries->count(); i++) {
+        for (int i=0; i<batCount; i++) {
             VehicleBatteryFactGroup* battery = qobject_cast<VehicleBatteryFactGroup*>(batteries->get(i));
             res += battery->percentRemaining()->rawValue().toInt();
         }
-        newResponse.insert("batteryPowerPercentUav", res/batteries->count());
+        if(batCount /= 0) {
+            newResponse.insert("batteryPowerPercentUav", res/batCount);
+        }
 
         // battery &&& add add aircraft menu
 
