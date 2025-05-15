@@ -97,7 +97,7 @@ jobs:
           cd qtmqtt
           mkdir build
           cd build
-          echo .
+          dir .
           cd D:/
           dir qmake* /s
           %QMAKE_BIN_DIR%/qmake ../qtmqtt.pro
