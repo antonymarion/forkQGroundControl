@@ -98,9 +98,9 @@ jobs:
           mkdir build
           cd build
           dir
-          dir C:\a\_temp\Qt
-          cd C:\a\_temp
-          dir /s /b qmake
+          dir C:\a\_temp\Qt\5.15.2
+          dir C:\a\_temp\Qt\5.15.2\msvc2019_64
+          dir C:\a\_temp\Qt\5.15.2\msvc2019_64\bin
           %QMAKE_BIN_DIR%/qmake ../qtmqtt.pro
           nmake
           nmake install
