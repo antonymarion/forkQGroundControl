@@ -98,7 +98,7 @@ jobs:
           mkdir build
           cd build
           dir
-          dir C:\a\_temp
+          dir C:\a\_temp\Qt
           cd C:\a\_temp
           dir /s /b qmake
           %QMAKE_BIN_DIR%/qmake ../qtmqtt.pro
