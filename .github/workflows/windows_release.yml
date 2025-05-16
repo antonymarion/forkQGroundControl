@@ -99,7 +99,6 @@ jobs:
           cd build
           dir
           dir C:/
-          cd D:/
           dir qmake* /s
           %QMAKE_BIN_DIR%/qmake ../qtmqtt.pro
           nmake
