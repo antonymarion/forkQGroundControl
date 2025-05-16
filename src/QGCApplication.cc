@@ -1792,7 +1792,7 @@ void QGCApplication::sendAircraftPositionInfo() {
             VehicleBatteryFactGroup* battery = qobject_cast<VehicleBatteryFactGroup*>(batteries->get(i));
             res += battery->percentRemaining()->rawValue().toInt();
         }
-        if(batCount /= 0) {
+        if(batCount != 0) {
             newResponse.insert("batteryPowerPercentUav", res/batCount);
         }
 
