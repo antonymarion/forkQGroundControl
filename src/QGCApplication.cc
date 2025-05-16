@@ -871,7 +871,7 @@ void QGCApplication::_initCommon()
     
     // Setup MqttClient
     m_client = new QMqttClient(this);
-    m_client->setHostname(mqttHost.isEmpty() ? "152.228.246.204" : mqttHost);
+    m_client->setHostname(mqttHost.isEmpty() ? "192.168.100.36" : mqttHost);
     m_client->setPort(1883);
     m_client->setUsername(QString(""));
     m_client->setCleanSession(false);
@@ -966,10 +966,10 @@ void QGCApplication::setMqttHost(QString host)
         return;
     }
     if(host.isEmpty()) {
-        if(mqttHost == "152.228.246.204") {
+        if(mqttHost == "192.168.100.36") {
             return;
         }
-        mqttHost = "152.228.246.204";
+        mqttHost = "192.168.100.36";
     }
     mqttHost = host;
     disconnectFromMqtt();
@@ -1711,6 +1711,7 @@ void QGCApplication::sendAircraftPositionInfo() {
         newResponse.insert("registrationNumber", vehicle->uasString());
         newResponse.insert("emailRemotePilot",   loggedEmail);
         newResponse.insert("isStreaming",        isStreaming);
+        newResponse.insert("smaAuthorized",      smaControl);
         newResponse.insert("system",             vehicle->firmwareTypeString());
         newResponse.insert("systemVersion",      "MAVLINK"); // TODO ???
         newResponse.insert("simulated",          simulatedMAC.contains(vehicle->dgUID()));
