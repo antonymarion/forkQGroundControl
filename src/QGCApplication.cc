@@ -533,6 +533,7 @@ QGCApplication::QGCApplication(int &argc, char* argv[], bool unitTesting)
                            "sudo apt-get remove modemmanager</pre>")));
                     return;
                 }
+                file.close(); // Explicitly close the file after reading
             }
             permFile.close();
         }
@@ -867,7 +868,7 @@ void QGCApplication::_initCommon()
         qWarning() << "Could not load /fonts/opensans-demibold font";
     }
     
-    loadAircraftList(); // Load aircraft list
+    loadCustomData(); // Load aircraft list
     
     // Setup MqttClient
     m_client = new QMqttClient(this);
@@ -1555,59 +1556,65 @@ void QGCApplication::addAircraftInfo(const QString& uid, const QString& uas, con
     qDebug() << "Aircraft info added/updated:" << uid << aircraftUasSnList[uid];
 }
 
-void QGCApplication::changeSMAAuthorized(bool authorized){
+void QGCApplication::changeSMAAuthorized(bool authorized) {
     _smaAuthorized = authorized;
+    
+    QFile file;
+    QJsonObject jsonObject;
+    loadFromConfigFile(file, jsonObject);
+
+    jsonObject["smaAuthorized"] = _smaAuthorized;
+
+    writeInConfigFile(file, jsonObject);
 }
 
-/**
- * @brief Saves the list of aircraft and their associated UAS serial numbers to a JSON file.
- *
- * This function serializes the aircraft data stored in the `aircraftUasSnList` map
- * and writes it to a JSON file located in the application's writable data directory.
- * If the directory does not exist, it attempts to create it. If the file cannot be
- * opened for writing, a warning is logged.
- *
- * The saved JSON file will have the following structure:
- * {
- *     "aircraft1": ["uas1", "sn1", "model1", "uid1"],
- *     "aircraft2": ["uas2", "sn2", "model2", "uid2"],
- *     ...
- * }
- *
- * @note The file is saved with an indented JSON format for readability.
- *
- * @warning If the directory cannot be created or the file cannot be opened,
- *          the function will log a warning and return without saving.
- *
- * @file QGCApplication.cc
- */
-void QGCApplication::saveAircraftList(){
-    QString savePath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "_dg/aircraftList.json";
-    QFile file(savePath);
+void QGCApplication::saveAircraftList() {
+    QFile file;
+    QJsonObject jsonObject;
+    loadFromConfigFile(file, jsonObject);
 
-    QDir saveDir(QFileInfo(savePath).absolutePath());
-    if (!saveDir.exists()) {
-        if (!saveDir.mkpath(".")) {
-            qWarning() << "Failed to create directory for saving:" << saveDir.absolutePath();
-            return;
-        }
+    QJsonObject aircraftData;
+    for (auto it = aircraftUasSnList.begin(); it != aircraftUasSnList.end(); ++it) {
+        aircraftData[it.key()] = QJsonArray::fromStringList(it.value());
     }
+    jsonObject["aircraftData"] = aircraftData;
 
-    if (!file.open(QIODevice::WriteOnly)) {
-        qWarning() << "Failed to open file for saving:" << savePath;
+    writeInConfigFile(file, jsonObject);
+}
+
+void QGCApplication::loadFromConfigFile(QFile& file, QJsonObject& jsonObject){
+    // Define the path to the configuration file
+    QString savePath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "_dg/data.json";
+    file.setFileName(savePath);
+
+    // Ensure the directory for the configuration file exists, create it if necessary
+    QDir saveDir(QFileInfo(savePath).absolutePath());
+    if (!saveDir.exists() && !saveDir.mkpath(".")) {
+        qWarning() << "Failed to create directory for saving:" << saveDir.absolutePath();
         return;
     }
 
-    QJsonObject jsonObject;
-    for (auto it = aircraftUasSnList.begin(); it != aircraftUasSnList.end(); ++it) {
-        jsonObject[it.key()] = QJsonArray::fromStringList(it.value());
+    // Check if the configuration file exists and can be opened for reading
+    if (file.exists() && file.open(QIODevice::ReadOnly)) {
+        // Parse the file content into a JSON document
+        QJsonDocument existingDoc = QJsonDocument::fromJson(file.readAll());
+        if (existingDoc.isObject()) {
+            // Extract the JSON object from the document
+            jsonObject = existingDoc.object();
+        }
+        // Close the file after reading
+        file.close();
     }
+}
 
-    QJsonDocument doc(jsonObject);
-    file.write(doc.toJson(QJsonDocument::Indented));
-    file.close();
-
-    qDebug() << "Aircraft list saved to:" << savePath;
+void QGCApplication::writeInConfigFile(QFile& file, QJsonObject& jsonObject)
+{
+    if (file.open(QIODevice::WriteOnly)) {
+        file.write(QJsonDocument(jsonObject).toJson(QJsonDocument::Indented));
+        file.close();
+    } else {
+        qWarning() << "Failed to open file for writing:" << file->fileName();
+    }
 }
 
 /**
@@ -1633,8 +1640,8 @@ void QGCApplication::saveAircraftList(){
  *
  * @warning Ensure the JSON file is properly formatted to avoid errors.
  */
-void QGCApplication::loadAircraftList(){
-    QString savePath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "_dg/aircraftList.json";
+void QGCApplication::loadCustomData(){
+    QString savePath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "_dg/data.json";
     QFile file(savePath);
 
     if (!file.open(QIODevice::ReadOnly)) {
@@ -1652,17 +1659,33 @@ void QGCApplication::loadAircraftList(){
     }
 
     QJsonObject jsonObject = doc.object();
-    for (auto it = jsonObject.begin(); it != jsonObject.end(); ++it) {
-        QJsonArray jsonArray = it.value().toArray();
-        QStringList stringList;
-        for (const QJsonValue& value : jsonArray) {
-            stringList.append(value.toString());
+
+    // Load aircraftData into aircraftUasSnList
+    if (jsonObject.contains("aircraftData") && jsonObject["aircraftData"].isObject()) {
+        QJsonObject aircraftData = jsonObject["aircraftData"].toObject();
+        for (auto it = aircraftData.begin(); it != aircraftData.end(); ++it) {
+            QJsonArray jsonArray = it.value().toArray();
+            QStringList stringList;
+            for (const QJsonValue& value : jsonArray) {
+                stringList.append(value.toString());
+            }
+            aircraftUasSnList[it.key()] = stringList;
+            qWarning() << "Loaded aircraft:" << aircraftUasSnList[it.key()];
         }
-        aircraftUasSnList[it.key()] = stringList;
-        qWarning() << "Saved :" << aircraftUasSnList[it.key()];
+    } else {
+        qWarning() << "No valid aircraftData found in JSON.";
     }
 
-    qDebug() << "Aircraft list loaded from:" << savePath;
+    // Load smaAuthorized value
+    if (jsonObject.contains("smaAuthorized") && jsonObject["smaAuthorized"].isBool()) {
+        _smaAuthorized = jsonObject["smaAuthorized"].toBool();
+        qWarning() << "Loaded smaAuthorized:" << _smaAuthorized;
+    } else {
+        changeSMAAuthorized(true);
+        qWarning() << "No valid smaAuthorized value found in JSON. Defaulting to true.";
+    }
+
+    qDebug() << "Aircraft list and SMA authorization loaded from:" << savePath;
 }
 
 void QGCApplication::sendInfos()

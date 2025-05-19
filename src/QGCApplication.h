@@ -379,7 +379,7 @@ private:
         {"2C:CF:67:07:93:0B", {"UAS-FR-458156", "1600FTR2STD24289930B", "TUNDRA 2", "2C:CF:67:07:93:0B"}} */
     };
     void saveAircraftList();
-    void loadAircraftList();
+    void loadCustomData();
 
     // Gstreamer
     //======================================================================================================================
