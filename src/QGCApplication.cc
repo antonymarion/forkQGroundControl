@@ -1641,24 +1641,9 @@ void QGCApplication::writeInConfigFile(QFile& file, QJsonObject& jsonObject)
  * @warning Ensure the JSON file is properly formatted to avoid errors.
  */
 void QGCApplication::loadCustomData(){
-    QString savePath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "_dg/data.json";
-    QFile file(savePath);
-
-    if (!file.open(QIODevice::ReadOnly)) {
-        qWarning() << "No saved aircraft list found at:" << savePath;
-        return;
-    }
-
-    QByteArray data = file.readAll();
-    file.close();
-
-    QJsonDocument doc = QJsonDocument::fromJson(data);
-    if (!doc.isObject()) {
-        qWarning() << "Invalid JSON format in aircraft list file.";
-        return;
-    }
-
-    QJsonObject jsonObject = doc.object();
+    QFile file;
+    QJsonObject jsonObject;
+    loadFromConfigFile(file, jsonObject);
 
     // Load aircraftData into aircraftUasSnList
     if (jsonObject.contains("aircraftData") && jsonObject["aircraftData"].isObject()) {
