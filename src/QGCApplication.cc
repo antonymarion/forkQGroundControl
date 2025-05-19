@@ -871,7 +871,7 @@ void QGCApplication::_initCommon()
     
     // Setup MqttClient
     m_client = new QMqttClient(this);
-    m_client->setHostname(mqttHost.isEmpty() ? "192.168.100.36" : mqttHost);
+    m_client->setHostname(mqttHost.isEmpty() ? "152.228.246.204" : mqttHost);
     m_client->setPort(1883);
     m_client->setUsername(QString(""));
     m_client->setCleanSession(false);
@@ -966,10 +966,10 @@ void QGCApplication::setMqttHost(QString host)
         return;
     }
     if(host.isEmpty()) {
-        if(mqttHost == "192.168.100.36") {
+        if(mqttHost == "152.228.246.204") {
             return;
         }
-        mqttHost = "192.168.100.36";
+        mqttHost = "152.228.246.204";
     }
     mqttHost = host;
     disconnectFromMqtt();
@@ -1044,7 +1044,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
     }
 
     // TEMPORARY
-    if(!smaControl && clientId == "oseSMA"){ // change this to real clientId
+    if(!_smaAuthorized && clientId == "oseSMA"){ // change this to real clientId
         qWarning() << "=================================================";
         qWarning() << "rejected OSE command";
         qWarning() << "=================================================";
@@ -1269,7 +1269,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
                 qWarning() << "*****   No vehicle available   *****";
                 break;
             };
-            if(!smaControl && smaClients.contains(clientId)) {
+            if(!_smaAuthorized && smaClients.contains(clientId)) {
                 qWarning() << "*****   SMA client detected   *****";
                 message.insert("error","SMA client blocked");
                 state_value = -2;
@@ -1318,7 +1318,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qWarning() << "=================================================";
             qWarning() << "recieved PAUSE_DRONE";
             qWarning() << "=================================================";
-            smaControl = false;
+            _smaAuthorized = false;
             requestVehicle->pauseVehicle();
             state_value = 0;
             break;
@@ -1555,6 +1555,10 @@ void QGCApplication::addAircraftInfo(const QString& uid, const QString& uas, con
     qDebug() << "Aircraft info added/updated:" << uid << aircraftUasSnList[uid];
 }
 
+void QGCApplication::changeSMAAuthorized(bool authorized){
+    _smaAuthorized = authorized;
+}
+
 /**
  * @brief Saves the list of aircraft and their associated UAS serial numbers to a JSON file.
  *
@@ -1711,7 +1715,7 @@ void QGCApplication::sendAircraftPositionInfo() {
         newResponse.insert("registrationNumber", vehicle->uasString());
         newResponse.insert("emailRemotePilot",   loggedEmail);
         newResponse.insert("isStreaming",        isStreaming);
-        newResponse.insert("smaAuthorized",      smaControl);
+        newResponse.insert("smaAuthorized",      _smaAuthorized);
         newResponse.insert("system",             vehicle->firmwareTypeString());
         newResponse.insert("systemVersion",      "MAVLINK"); // TODO ???
         newResponse.insert("simulated",          simulatedMAC.contains(vehicle->dgUID()));
@@ -2085,7 +2089,7 @@ void QGCApplication::testing3()
 
 void QGCApplication::pauseAll()
 {
-    smaControl = false;
+    _smaAuthorized = false;
     QmlObjectListModel* vehicles = _vehicleManager->vehicles();
     for(int i = 0; i<vehicles->count(); i++){
         qobject_cast<Vehicle*>(vehicles->get(i))->pauseVehicle();

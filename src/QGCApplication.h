@@ -127,10 +127,12 @@ public:
     void setMqttHost(QString host); // Set MQTT broker host;
     void dgAuthenticate(const QString& email, const QString& password); // Login to DG account
     void addAircraftInfo(const QString& uid, const QString& uas, const QString& sn, const QString& model);
+    void changeSMAAuthorized(bool authorized); // Change SMA control
     QMap<QString, QStringList> getAircraftInfo() { return aircraftUasSnList; } // Get aircraft list
     
     
-    QStringList           excludeList         = {}; // exclude mac list
+    QStringList         excludeList         =   {};                         // exclude mac list
+    bool                smaAuthorized()         { return _smaAuthorized; }  // SMA control enabled
 
 public slots:
     /// You can connect to this slot to show an information message box from a different thread.
@@ -325,7 +327,7 @@ private:
     bool                  _isFlying;                                     // is aircraft currently flying
     bool                  _recording;
     bool                  canControl          = true;                    // false if remote pilote override commands
-    bool                  smaControl          = true;                    // true if SMA control is enabled
+    bool                  _smaAuthorized       = true;                    // true if SMA control is enabled
     Vehicle*              _vehicle{nullptr};                             // current vehicle
     VideoManager*         _videoManager{nullptr};
     MultiVehicleManager*  _vehicleManager{nullptr};

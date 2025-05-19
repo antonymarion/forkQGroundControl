@@ -731,6 +731,15 @@ Rectangle {
                                     visible:    _remoteIDEnable.visible
                                     property Fact _remoteIDEnable: QGroundControl.settingsManager.remoteIDSettings.enable
                                 }
+
+                                QGCCheckBox {
+                                    id:         smaAuthorizedCheck
+                                    text:       qsTr("Authorize SMA control")
+                                    checked:    QGroundControl.smaAuthorized()
+                                    onClicked: {
+                                        QGroundControl.changeSMAAuthorized(smaAuthorizedCheck.checked)
+                                    }
+                                }
                             }
                         }
 
