@@ -1613,7 +1613,7 @@ void QGCApplication::writeInConfigFile(QFile& file, QJsonObject& jsonObject)
         file.write(QJsonDocument(jsonObject).toJson(QJsonDocument::Indented));
         file.close();
     } else {
-        qWarning() << "Failed to open file for writing:" << file->fileName();
+        qWarning() << "Failed to open file for writing:" << file.fileName();
     }
 }
 
@@ -1670,7 +1670,7 @@ void QGCApplication::loadCustomData(){
         qWarning() << "No valid smaAuthorized value found in JSON. Defaulting to true.";
     }
 
-    qDebug() << "Aircraft list and SMA authorization loaded from:" << savePath;
+    qDebug() << "Aircraft list and SMA authorization loaded from:" << file.fileName();
 }
 
 void QGCApplication::sendInfos()
