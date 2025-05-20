@@ -1325,7 +1325,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             break;
         case 22:
             qWarning() << "=================================================";
-            qWarning() << "recieved RESUME_DRONE";
+            qWarning() << "recieved RESUME_SMA";
             qWarning() << "=================================================";
             _smaAuthorized = true;
             state_value = 0;

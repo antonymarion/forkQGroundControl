@@ -366,7 +366,7 @@ private:
         "GO_TO_WAYPOINT",
         "PAUSE_ALL",
         "PAUSE_DRONE",
-        "RESUME_DRONE",
+        "RESUME_SMA",
         "SET_DATA",
         "SET_GEOFENCING",
         "TESTING_1",
