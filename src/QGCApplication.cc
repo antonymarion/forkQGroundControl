@@ -1320,10 +1320,17 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qWarning() << "recieved PAUSE_DRONE";
             qWarning() << "=================================================";
             _smaAuthorized = false;
-            requestVehicle->pauseVehicle();
+            requestVehicle->pauseVehicle(); // rework cause if pause then other drone will not listen to sma and pause too
             state_value = 0;
             break;
         case 22:
+            qWarning() << "=================================================";
+            qWarning() << "recieved RESUME_DRONE";
+            qWarning() << "=================================================";
+            _smaAuthorized = true;
+            state_value = 0;
+            break;
+        case 23:
             qWarning() << "=================================================";
             qWarning() << "recieved SET_DATA";
             qWarning() << "=================================================";
@@ -1335,7 +1342,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             _vehicle->setSn(message["sn"].toString());
             state_value = 0;
             break;
-        case 23:
+        case 24:
             qWarning() << "=================================================";
             qWarning() << "recieved SET_GEOFENCING";
             qWarning() << "=================================================";
@@ -1346,7 +1353,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             requestVehicle->loadAndSendGeofence(message);
             state_value = 0;
             break;
-        case 24:
+        case 25:
             qWarning() << "=================================================";
             qWarning() << "recieved TESTING_1";
             qWarning() << "=================================================";
@@ -1358,7 +1365,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qWarning() << _vehicle->sn();
             state_value = 0;
             break;
-        case 25:
+        case 26:
             qWarning() << "=================================================";
             qWarning() << "recieved TESTING_2";
             qWarning() << "=================================================";
