@@ -329,7 +329,7 @@ private:
     bool                  _isFlying;                                     // is aircraft currently flying
     bool                  _recording;
     bool                  canControl          = true;                    // false if remote pilote override commands
-    bool                  _smaAuthorized       = true;                    // true if SMA control is enabled
+    bool                  _smaAuthorized      = true;                    // true if SMA control is enabled
     Vehicle*              _vehicle{nullptr};                             // current vehicle
     VideoManager*         _videoManager{nullptr};
     MultiVehicleManager*  _vehicleManager{nullptr};
@@ -366,7 +366,7 @@ private:
         "GO_TO_WAYPOINT",
         "PAUSE_ALL",
         "PAUSE_DRONE",
-        RESUME_DRONE,
+        "RESUME_DRONE",
         "SET_DATA",
         "SET_GEOFENCING",
         "TESTING_1",
