@@ -1310,14 +1310,14 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             break;
         case 20:
             qWarning() << "=================================================";
-            qWarning() << "recieved PAUSE_ALL";
+            qWarning() << "recieved PAUSE_ALL_AND_DISABLE_SMA";
             qWarning() << "=================================================";
             QGCApplication::pauseAll();
             state_value = 0;
             break;
         case 21:
             qWarning() << "=================================================";
-            qWarning() << "recieved PAUSE_DRONE";
+            qWarning() << "recieved PAUSE_DRONE_AND_DISABLE_SMA";
             qWarning() << "=================================================";
             _smaAuthorized = false;
             requestVehicle->pauseVehicle(); // rework cause if pause then other drone will not listen to sma and pause too
