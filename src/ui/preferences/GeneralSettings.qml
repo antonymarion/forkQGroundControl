@@ -965,7 +965,7 @@ Rectangle {
                                 Layout.alignment:   Qt.AlignHCenter
                                 text: qsTr("Edit SMA ClientIds")
                                 onClicked: {
-                                    SMAEditDialogBox.visible = true
+                                    sMAEditDialogBox.visible = true
                                 }
                             }
 
