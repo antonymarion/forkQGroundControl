@@ -517,7 +517,7 @@ Rectangle {
                     }
                     Rectangle {
                         Layout.preferredWidth:  Math.max(comboGrid.width, miscCol.width) + (_margins * 2)
-                        Layout.preferredHeight: (mqttPathRow.y + mqttPathRow.height)  + (_margins * 2)
+                        Layout.preferredHeight: (dgParameterSMARow.y + dgParameterSMARow.height)  + (_margins * 2)
                         Layout.fillWidth:       true
                         color:                  qgcPal.windowShade
                         visible:                miscSectionLabel.visible
@@ -949,7 +949,49 @@ Rectangle {
                                 onClicked:  QGroundControl.setMqttHost(mqttIp.text)
                             }
                         }
-                    } // add mqtt modal
+
+                        RowLayout {
+                            id:                 dgParameterSMARow
+                            anchors.margins:    _margins
+                            anchors.left:       parent.left
+                            anchors.right:      parent.right
+                            anchors.top:        mqttPathRow.bottom
+                            anchors.topMargin:  ScreenTools.defaultFontPixelHeight
+
+                            QGCLabel { text: qsTr("SMA ClientIds") }
+                            QGCButton {
+                                id: dgSMAEditButton
+                                Layout.alignment:   Qt.AlignHCenter
+                                text: qsTr("Edit")
+                                onClicked: {
+                                    SMAEditDialogBox.visible = true
+                                }
+                            }
+
+                            QGCPopupDialog {
+                                id: SMAEditDialogBox
+                                visible: false
+                                title: qsTr("SMA ClientIds")
+                                buttons: StandardButton.Close
+
+                                Rectangle {
+                                    id:                     dgSMAEditRect
+                                    Layout.fillWidth:       true
+                                    visible:                true
+                                    color:                  qgcPal.windowShade
+                                    width:  dgSMAEditColumn.width + (ScreenTools.defaultFontPixelWidth * 2)
+                                    height: dgSMAEditColumn.height + (ScreenTools.defaultFontPixelWidth * 2)
+
+                                    GridLayout {
+                                        id: dgSMAEditColumn
+                                        columns: 2
+                                        columnSpacing: ScreenTools.defaultFontPixelWidth
+                                        rowSpacing: ScreenTools.defaultFontPixelHeight
+                                    }
+                                }
+                            }
+                        }
+                    }
 
                     Item { width: 1; height: _margins; visible: telemetryLogSectionLabel.visible }
                     QGCLabel {
