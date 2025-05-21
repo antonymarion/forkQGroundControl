@@ -131,7 +131,7 @@ public:
     Q_INVOKABLE void    removeSMAClientId               (int index)                                     { _app->removeSMAClientId(index); }
     Q_INVOKABLE bool    smaAuthorized                   ()                                              { return _app->smaAuthorized(); }
     Q_INVOKABLE void    addAircraftInfo                 (const QString& uid, const QString& uas, const QString& sn, const QString& model) { _app->addAircraftInfo(uid, uas, sn, model); }
-    Q_INVOKABLE QStringList getSMAClientIds             ()                                              { return app->getSMAClientIds(); }
+    Q_INVOKABLE QStringList getSMAClientIds             ()                                              { return _app->getSMAClientIds(); }
 
     Q_INVOKABLE void    startPX4MockLink            (bool sendStatusText);
     Q_INVOKABLE void    startGenericMockLink        (bool sendStatusText);
