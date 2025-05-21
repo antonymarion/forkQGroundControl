@@ -969,7 +969,7 @@ Rectangle {
                             }
 
                             QGCPopupDialog {
-                                id: SMAEditDialogBox
+                                id: sMAEditDialogBox
                                 visible: false
                                 title: qsTr("SMA ClientIds")
                                 buttons: StandardButton.Close
