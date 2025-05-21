@@ -1589,6 +1589,36 @@ void QGCApplication::saveAircraftList() {
     writeInConfigFile(file, jsonObject);
 }
 
+void QGCApplication::addSMAClientId(QString clientId){
+    if(smaClients.contains(clientId)) {
+        qWarning() << "Client ID already exists:" << clientId;
+        return;
+    }
+    smaClients.append(clientId);
+    qWarning() << "SMA client ID added:" << clientId;
+    saveSMAClientIds();
+}
+
+void QGCApplication::removeSMAClientId(int index){
+    if(index < 0 || index >= smaClients.size()) {
+        qWarning() << "Invalid index for SMA client ID removal.";
+        return;
+    }
+    smaClients.removeAt(index);
+    qWarning() << "SMA client ID removed:" << smaClients;
+    saveSMAClientIds();
+}
+
+void QGCApplication::saveSMAClientIds() {
+    QFile file;
+    QJsonObject jsonObject;
+    loadFromConfigFile(file, jsonObject);
+
+    jsonObject["smaClientIds"] = QJsonArray::fromStringList(smaClients);
+
+    writeInConfigFile(file, jsonObject);
+}
+
 void QGCApplication::loadFromConfigFile(QFile& file, QJsonObject& jsonObject){
     // Define the path to the configuration file
     QString savePath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "_dg/data.json";
@@ -1675,6 +1705,17 @@ void QGCApplication::loadCustomData(){
     } else {
         changeSMAAuthorized(true);
         qWarning() << "No valid smaAuthorized value found in JSON. Defaulting to true.";
+    }
+
+    // Load smaClientIds into smaClients
+    if (jsonObject.contains("smaClientIds") && jsonObject["smaClientIds"].isArray()) {
+        QJsonArray smaClientIdsArray = jsonObject["smaClientIds"].toArray();
+        for (const QJsonValue& value : smaClientIdsArray) {
+            smaClients.append(value.toString());
+        }
+        qWarning() << "Loaded SMA Client IDs:" << smaClients;
+    } else {
+        qWarning() << "No valid SMA Client IDs found in JSON.";
     }
 
     qDebug() << "Aircraft list and SMA authorization loaded from:" << file.fileName();

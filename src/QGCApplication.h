@@ -123,11 +123,14 @@ public:
     static QString cachedParameterMetaDataFile(void);
     static QString cachedAirframeMetaDataFile(void);
 
-    void vectorControlOverride(); // Take over station control
-    void setMqttHost(QString host); // Set MQTT broker host;
-    void dgAuthenticate(const QString& email, const QString& password); // Login to DG account
-    void addAircraftInfo(const QString& uid, const QString& uas, const QString& sn, const QString& model);
-    void changeSMAAuthorized(bool authorized); // Change SMA control
+    void        vectorControlOverride   (); // Take over station control
+    void        setMqttHost             (QString host); // Set MQTT broker host;
+    void        dgAuthenticate          (const QString& email, const QString& password); // Login to DG account
+    void        addAircraftInfo         (const QString& uid, const QString& uas, const QString& sn, const QString& model);
+    void        changeSMAAuthorized     (bool authorized); // Change SMA control
+    QStringList getSMAClientIds         () { return smaClients; }  // get SMA client ids
+    void        addSMAClientId          (QString clientId); // add SMA client id from list
+    void        removeSMAClientId       (int index); // remove SMA client id by index
     QMap<QString, QStringList> getAircraftInfo() { return aircraftUasSnList; } // Get aircraft list
     
     
@@ -288,6 +291,7 @@ private:
     void sendResponseMessage    (const QMqttMessage &inputMessage, QJsonObject outputMessage, bool success);
     void loadFromConfigFile     (QFile& file, QJsonObject& jsonObject);
     void writeInConfigFile      (QFile& file, QJsonObject& jsonObject);
+    void saveSMAClientIds       (); // save SMA client ids
 
     // Periodically sends information such as telemetry data or status updates to connected systems or components.
     void sendInfos();

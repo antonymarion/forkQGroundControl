@@ -45,6 +45,8 @@ Rectangle {
     property Fact   _followTarget:              QGroundControl.settingsManager.appSettings.followTarget
     property real   _panelWidth:                _root.width * _internalWidthRatio
     property real   _margins:                   ScreenTools.defaultFontPixelWidth
+    property int    _colSpacing:                ScreenTools.defaultFontPixelWidth / 2
+    property int    _secondColumnWidth:         ScreenTools.defaultFontPixelWidth * 30
     property var    _planViewSettings:          QGroundControl.settingsManager.planViewSettings
     property var    _flyViewSettings:           QGroundControl.settingsManager.flyViewSettings
     property var    _videoSettings:             QGroundControl.settingsManager.videoSettings
@@ -988,8 +990,8 @@ Rectangle {
                                         rowSpacing: ScreenTools.defaultFontPixelHeight
 
                                         
-                                        /* Repeater {
-                                            model: subEditConfig.hostList
+                                        Repeater {
+                                            model: QGroundControl.getSMAClientIds()
 
                                             delegate: RowLayout {
                                                 spacing: _colSpacing
@@ -1001,10 +1003,13 @@ Rectangle {
 
                                                 QGCButton {
                                                     text:       qsTr("Remove")
-                                                    // onClicked:  subEditConfig.removeHost(modelData)
+                                                    onClicked:  {
+                                                        // xStringList.remove(index)
+                                                        QGroundControl.removeSMAClientId(index)
+                                                    }
                                                 }
                                             }
-                                        } */
+                                        }
 
                                         RowLayout {
                                             spacing: _colSpacing
@@ -1017,10 +1022,10 @@ Rectangle {
                                             QGCButton {
                                                 text:       qsTr("Add Client Id")
                                                 enabled:    clientIdField.text !== ""
-                                                /* onClicked: {
-                                                    subEditConfig.addHost(hostField.text)
-                                                    hostField.text = ""
-                                                } */
+                                                onClicked: {
+                                                    QGroundControl.addSMAClientId(clientIdField.text)
+                                                    clientIdField.text = ""
+                                                }
                                             }
                                         }
                                     }
