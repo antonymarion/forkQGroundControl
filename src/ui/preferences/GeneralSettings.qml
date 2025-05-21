@@ -958,11 +958,10 @@ Rectangle {
                             anchors.top:        mqttPathRow.bottom
                             anchors.topMargin:  ScreenTools.defaultFontPixelHeight
 
-                            QGCLabel { text: qsTr("SMA ClientIds") }
                             QGCButton {
                                 id: dgSMAEditButton
                                 Layout.alignment:   Qt.AlignHCenter
-                                text: qsTr("Edit")
+                                text: qsTr("Edit SMA ClientIds")
                                 onClicked: {
                                     SMAEditDialogBox.visible = true
                                 }
@@ -987,6 +986,43 @@ Rectangle {
                                         columns: 2
                                         columnSpacing: ScreenTools.defaultFontPixelWidth
                                         rowSpacing: ScreenTools.defaultFontPixelHeight
+
+                                        
+                                        /* Repeater {
+                                            model: subEditConfig.hostList
+
+                                            delegate: RowLayout {
+                                                spacing: _colSpacing
+
+                                                QGCLabel {
+                                                    Layout.preferredWidth:  _secondColumnWidth
+                                                    text:                   modelData
+                                                }
+
+                                                QGCButton {
+                                                    text:       qsTr("Remove")
+                                                    // onClicked:  subEditConfig.removeHost(modelData)
+                                                }
+                                            }
+                                        } */
+
+                                        RowLayout {
+                                            spacing: _colSpacing
+
+                                            QGCTextField {
+                                                id:                     clientIdField
+                                                Layout.preferredWidth:  _secondColumnWidth
+                                                placeholderText:        qsTr("SMA-DGeo")
+                                            }
+                                            QGCButton {
+                                                text:       qsTr("Add Client Id")
+                                                enabled:    clientIdField.text !== ""
+                                                /* onClicked: {
+                                                    subEditConfig.addHost(hostField.text)
+                                                    hostField.text = ""
+                                                } */
+                                            }
+                                        }
                                     }
                                 }
                             }
