@@ -177,6 +177,8 @@ signals:
 
     void languageChanged        (const QLocale locale);
 
+    void smaClientIdsChanged    ();
+
 public:
     // Although public, these methods are internal and should only be called by UnitTest code
 
