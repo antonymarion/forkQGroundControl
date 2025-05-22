@@ -58,7 +58,7 @@ public:
     Q_ENUM(AltMode)
 
     Q_PROPERTY(QString              appName                 READ    appName                 CONSTANT)
-    Q_PROPERTY(QStringList          smaClientIds            READ    smaClientIds            NOTIFY qgcApp()->smaClientIdsChanged())
+    Q_PROPERTY(QStringList          smaClientIds            READ    smaClientIds            NOTIFY smaClientIdsChanged)
     Q_PROPERTY(LinkManager*         linkManager             READ    linkManager             CONSTANT)
     Q_PROPERTY(MultiVehicleManager* multiVehicleManager     READ    multiVehicleManager     CONSTANT)
     Q_PROPERTY(QGCMapEngineManager* mapEngineManager        READ    mapEngineManager        CONSTANT)
@@ -245,6 +245,7 @@ public:
     virtual void setToolbox(QGCToolbox* toolbox);
 
 signals:
+    void smaClientIdsChanged            ();  // Signal to notify changes in smaClientIds
     void isMultiplexingEnabledChanged   (bool enabled);
     void isVersionCheckEnabledChanged   (bool enabled);
     void mavlinkSystemIDChanged         (int id);

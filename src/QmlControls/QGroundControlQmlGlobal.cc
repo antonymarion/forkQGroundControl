@@ -51,6 +51,9 @@ QGroundControlQmlGlobal::QGroundControlQmlGlobal(QGCApplication* app, QGCToolbox
             _flightMapPositionSettledTimer.start();
         }
     });
+    connect(qgcApp(), &QGCApplication::smaClientIdsChanged, this, [this]() {
+        emit smaClientIdsChanged();
+    });
     connect(this, &QGroundControlQmlGlobal::flightMapZoomChanged, this, [this](double){
         if (!_flightMapPositionSettledTimer.isActive()) {
             _flightMapPositionSettledTimer.start();
