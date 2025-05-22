@@ -1004,8 +1004,8 @@ Rectangle {
                                                 QGCButton {
                                                     text:       qsTr("Remove")
                                                     onClicked:  {
-                                                        xStringList.remove(index)
-                                                        QGroundControl.removeSMAClientId(index)
+                                                        xStringList.remove(modelData)
+                                                        QGroundControl.removeSMAClientId(modelData)
                                                     }
                                                 }
                                             }

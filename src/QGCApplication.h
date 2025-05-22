@@ -130,7 +130,7 @@ public:
     void        changeSMAAuthorized     (bool authorized); // Change SMA control
     QStringList getSMAClientIds         () { return smaClients; }  // get SMA client ids
     void        addSMAClientId          (QString clientId); // add SMA client id from list
-    void        removeSMAClientId       (int index); // remove SMA client id by index
+    void        removeSMAClientId       (QString clientId); // remove SMA client id by index
     QMap<QString, QStringList> getAircraftInfo() { return aircraftUasSnList; } // Get aircraft list
     
     

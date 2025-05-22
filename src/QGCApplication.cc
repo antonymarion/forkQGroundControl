@@ -1599,12 +1599,12 @@ void QGCApplication::addSMAClientId(QString clientId){
     saveSMAClientIds();
 }
 
-void QGCApplication::removeSMAClientId(int index){
-    if(index < 0 || index >= smaClients.size()) {
-        qWarning() << "Invalid index for SMA client ID removal.";
+void QGCApplication::removeSMAClientId(QString clientId){
+    if(!smaClients.contains(clientId)) {
+        qWarning() << "Client ID not found:" << clientId;
         return;
     }
-    smaClients.removeAt(index);
+    smaClients.removeOne(clientId);
     qWarning() << "SMA client ID removed:" << smaClients;
     saveSMAClientIds();
 }
