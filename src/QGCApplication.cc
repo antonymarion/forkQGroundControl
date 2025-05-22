@@ -1610,6 +1610,7 @@ void QGCApplication::removeSMAClientId(QString clientId){
 }
 
 void QGCApplication::saveSMAClientIds() {
+    emit smaClientIdsChanged();
     QFile file;
     QJsonObject jsonObject;
     loadFromConfigFile(file, jsonObject);

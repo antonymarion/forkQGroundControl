@@ -58,6 +58,7 @@ public:
     Q_ENUM(AltMode)
 
     Q_PROPERTY(QString              appName                 READ    appName                 CONSTANT)
+    Q_PROPERTY(QStringList          smaClientIds            READ    smaClientIds            NOTIFY qgcApp()->smaClientIdsChanged)
     Q_PROPERTY(LinkManager*         linkManager             READ    linkManager             CONSTANT)
     Q_PROPERTY(MultiVehicleManager* multiVehicleManager     READ    multiVehicleManager     CONSTANT)
     Q_PROPERTY(QGCMapEngineManager* mapEngineManager        READ    mapEngineManager        CONSTANT)
@@ -161,6 +162,7 @@ public:
     // Property accesors
 
     QString                 appName             ()  { return qgcApp()->applicationName(); }
+    QStringList             smaClientIds        ()  { return qgcApp()->getSMAClientIds(); }
     LinkManager*            linkManager         ()  { return _linkManager; }
     MultiVehicleManager*    multiVehicleManager ()  { return _multiVehicleManager; }
     QGCMapEngineManager*    mapEngineManager    ()  { return _mapEngineManager; }

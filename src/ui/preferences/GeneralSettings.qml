@@ -991,7 +991,7 @@ Rectangle {
 
                                         
                                         Repeater {
-                                            model: QGroundControl.getSMAClientIds()
+                                            model: QGroundControl.smaClientIds
 
                                             delegate: RowLayout {
                                                 spacing: _colSpacing
@@ -1004,7 +1004,6 @@ Rectangle {
                                                 QGCButton {
                                                     text:       qsTr("Remove")
                                                     onClicked:  {
-                                                        xStringList.remove(modelData)
                                                         QGroundControl.removeSMAClientId(modelData)
                                                     }
                                                 }
