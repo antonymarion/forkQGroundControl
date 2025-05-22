@@ -985,7 +985,7 @@ Rectangle {
 
                                     GridLayout {
                                         id: dgSMAEditColumn
-                                        columns: 2
+                                        columns: 1
                                         columnSpacing: ScreenTools.defaultFontPixelWidth
                                         rowSpacing: ScreenTools.defaultFontPixelHeight
 
@@ -1004,7 +1004,7 @@ Rectangle {
                                                 QGCButton {
                                                     text:       qsTr("Remove")
                                                     onClicked:  {
-                                                        // xStringList.remove(index)
+                                                        xStringList.remove(index)
                                                         QGroundControl.removeSMAClientId(index)
                                                     }
                                                 }
