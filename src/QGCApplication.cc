@@ -871,7 +871,7 @@ void QGCApplication::_initCommon()
         qWarning() << "Could not load /fonts/opensans-demibold font";
     }
 
-    QNetworkAccessManager* _networkManager = new QNetworkAccessManager(this);
+    _networkManager = new QNetworkAccessManager(this);
     
     loadCustomData(); // Load aircraft list
     
