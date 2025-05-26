@@ -350,7 +350,7 @@ private:
     QGCCameraControl*       _activeCamera{nullptr};
     QNetworkAccessManager*  _networkManager = nullptr;                  // network manager for http requests
     QTimer*                 timerVector = nullptr;                         // send vector command timer
-    QStringList             imulatedMAC         = {                        // global axis list
+    QStringList             simulatedMAC         = {                        // global axis list
         "",
         "4F:4E:49:44:4C:41:54:49",
         "00:00:00:00:00:00:00:00",
