@@ -20,6 +20,7 @@
 #include <QtMqtt/QMqttClient>
 #include <QtMqtt/QMqttMessage>
 #include <QtMqtt/QMqttSubscription>
+#include <QNetworkAccessManager>
 #include <QJsonObject>
 #include <QProcess>
 #include <QFuture>
@@ -128,6 +129,8 @@ public:
     void        dgAuthenticate          (const QString& email, const QString& password); // Login to DG account
     void        addAircraftInfo         (const QString& uid, const QString& uas, const QString& sn, const QString& model);
     void        changeSMAAuthorized     (bool authorized); // Change SMA control
+    void        changeEnv               (bool prod); // Change environment to production or development
+    bool        getEnvironment          () { return _production; } // Get current environment
     QStringList getSMAClientIds         () { return smaClients; }  // get SMA client ids
     void        addSMAClientId          (QString clientId); // add SMA client id from list
     void        removeSMAClientId       (QString clientId); // remove SMA client id by index
@@ -178,6 +181,8 @@ signals:
     void languageChanged        (const QLocale locale);
 
     void smaClientIdsChanged    ();
+
+    void environmentChanged    ();
 
 public:
     // Although public, these methods are internal and should only be called by UnitTest code
@@ -323,25 +328,29 @@ private:
     bool isFileEmpty(const std::string& filePath);
     void delay(int sec);
 
-    QString                mqttHost            = "";                          // mqtt broker host
+    QString                 mqttHost            = "";                          // mqtt broker host
 
-    QString               rtmpUrl             = "rtmp://ome.stationdrone.net/app/";                      // streaming URL
-    QString               loggedEmail         = "graphx.stephaneroma@gmail.com";  // Remote pilote logged email
+    QString                 rtmpUrl             = "rtmp://ome.stationdrone.net/app/";  // streaming URL
+    QString                 loggedEmail         = "graphx.stephaneroma@gmail.com";  // Remote pilote logged email
+    QString                 apiUrl              = "https://stationdrone.drone-geofencing.net/api/"; // API URL for remote pilote
+    QString                 authToken           = "";                          // Remote pilote authentication token
     // QString               registrationNumber  = "UAS-FR-458156";         // Aircraft registration number
     // QString               uavSn               = "1600FTR2STD24289930B";  // Aircraft serial number
-    bool                  isStreaming         = false;                   // is currently streaming on rtmp URL
-    QMqttClient*          m_client            = nullptr;                 // mqtt client
-    bool                  clientState         = false;
-    bool                  _isFlying;                                     // is aircraft currently flying
-    bool                  _recording;
-    bool                  canControl          = true;                    // false if remote pilote override commands
-    bool                  _smaAuthorized      = true;                    // true if SMA control is enabled
-    Vehicle*              _vehicle{nullptr};                             // current vehicle
-    VideoManager*         _videoManager{nullptr};
-    MultiVehicleManager*  _vehicleManager{nullptr};
-    QGCCameraControl*     _activeCamera{nullptr};
-    QTimer*               timerVector = nullptr;                         // send vector command timer
-    QStringList           simulatedMAC        = {                        // global axis list
+    bool                    isStreaming         = false;                   // is currently streaming on rtmp URL
+    QMqttClient*            m_client            = nullptr;                 // mqtt client
+    bool                    clientState         = false;
+    bool                    _isFlying;                                     // is aircraft currently flying
+    bool                    _recording;
+    bool                    canControl          = true;                    // false if remote pilote override commands
+    bool                    _smaAuthorized      = true;                    // true if SMA control is enabled
+    bool                    _production          = false; // true if production build, false if debug build
+    Vehicle*                _vehicle{nullptr};                             // current vehicle
+    VideoManager*           _videoManager{nullptr};
+    MultiVehicleManager*    _vehicleManager{nullptr};
+    QGCCameraControl*       _activeCamera{nullptr};
+    QNetworkAccessManager*  _networkManager = nullptr;                  // network manager for http requests
+    QTimer*                 timerVector = nullptr;                         // send vector command timer
+    QStringList             imulatedMAC         = {                        // global axis list
         "",
         "4F:4E:49:44:4C:41:54:49",
         "00:00:00:00:00:00:00:00",

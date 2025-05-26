@@ -130,6 +130,8 @@ public:
     Q_INVOKABLE void    changeSMAAuthorized             (bool authorized)                               { _app->changeSMAAuthorized(authorized); }
     Q_INVOKABLE void    addSMAClientId                  (QString clientId)                              { _app->addSMAClientId(clientId); }
     Q_INVOKABLE void    removeSMAClientId               (QString clientId)                              { _app->removeSMAClientId(clientId); }
+    Q_INVOKABLE void    getEnvironment                  ()                                              { return _app->getEnvironment(); }
+    Q_INVOKABLE void    changeEnv                       (bool prod)                                     { _app->changeEnv(prod); }
     Q_INVOKABLE bool    smaAuthorized                   ()                                              { return _app->smaAuthorized(); }
     Q_INVOKABLE void    addAircraftInfo                 (const QString& uid, const QString& uas, const QString& sn, const QString& model) { _app->addAircraftInfo(uid, uas, sn, model); }
     Q_INVOKABLE QStringList getSMAClientIds             ()                                              { return _app->getSMAClientIds(); }

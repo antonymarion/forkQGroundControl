@@ -742,6 +742,15 @@ Rectangle {
                                         QGroundControl.changeSMAAuthorized(smaAuthorizedCheck.checked)
                                     }
                                 }
+
+                                QGCCheckBox {
+                                    id:         isProd
+                                    text:       qsTr("Environement de production")
+                                    checked:    QGroundControl.getEnvironment()
+                                    onClicked: {
+                                        QGroundControl.changeEnv(isProd.checked)
+                                    }
+                                }
                             }
                         }
 

@@ -28,6 +28,9 @@
 #include <QtMqtt/QMqttClient>
 #include <QtMqtt/QMqttMessage>
 #include <QtMqtt/QMqttSubscription>
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QNetworkReply>
 #include <QJsonObject>
 #include <QUuid>
 #include <QProcess>
@@ -867,6 +870,8 @@ void QGCApplication::_initCommon()
     if(QFontDatabase::addApplicationFont(":/fonts/opensans-demibold") < 0) {
         qWarning() << "Could not load /fonts/opensans-demibold font";
     }
+
+    QNetworkAccessManager* _networkManager = new QNetworkAccessManager(this);
     
     loadCustomData(); // Load aircraft list
     
@@ -1531,6 +1536,53 @@ void QGCApplication::dgAuthenticate(const QString& email, const QString& passwor
     loggedEmail = email;
     qWarning() << "*****   Login   *****";
     qWarning() << "email : " + loggedEmail;
+
+    QUrl url(apiUrl+"authenticate-mobile"); // Remplace par l’URL de ton API
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+    QJsonObject json;
+    json["email"] = email;
+    json["password"] = password;
+
+    QNetworkReply* reply = _networkManager->post(request, QJsonDocument(json).toJson());
+    connect(reply, &QNetworkReply::finished, this, [this, reply]() {
+        if (reply->error() == QNetworkReply::NoError) {
+            QByteArray response = reply->readAll();
+            qDebug() << "Auth success:" << response;
+            QJsonDocument doc = QJsonDocument::fromJson(response);
+            if (doc.isObject()) {
+                QJsonObject obj = doc.object();
+                if (obj.contains("token")) {
+                    authToken = obj["token"].toString();
+                    qDebug() << "Token stored:" << authToken;
+                }
+            }
+        } else {
+            qWarning() << "Auth failed:" << reply->errorString();
+        }
+        reply->deleteLater();
+    });
+}
+
+void QGCApplication::changeEnv(bool prod){
+    _production = prod;
+    if(prod) {
+        qWarning() << "Changing environment to production";
+        apiUrl = "https://stationdrone.net/api/";
+    }
+    else {
+        qWarning() << "Changing environment to development";
+        apiUrl = "https://stationdrone.drone-geofencing.net/api/";
+    }
+    
+    QFile file;
+    QJsonObject jsonObject;
+    loadFromConfigFile(file, jsonObject);
+
+    jsonObject["production"] = prod;
+
+    writeInConfigFile(file, jsonObject);
 }
 
 /**
@@ -1717,6 +1769,15 @@ void QGCApplication::loadCustomData(){
         qWarning() << "Loaded SMA Client IDs:" << smaClients;
     } else {
         qWarning() << "No valid SMA Client IDs found in JSON.";
+    }
+
+    // Load production value
+    if (jsonObject.contains("production") && jsonObject["production"].isBool()) {
+        _production = jsonObject["production"].toBool();
+        qWarning() << "Loaded production:" << _production;
+    } else {
+        changeEnv(false);
+        qWarning() << "No valid production value found in JSON. Defaulting to false.";
     }
 
     qDebug() << "Aircraft list and SMA authorization loaded from:" << file.fileName();
