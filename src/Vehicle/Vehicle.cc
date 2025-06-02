@@ -736,6 +736,12 @@ QJsonArray Vehicle::getCameras()
         thisCamera.insert("name","Caméra simulée Gazebo");
         cameraList.append(thisCamera);
     }
+    if(_dgProductName == "S500"){
+        QJsonObject thisCamera;
+        thisCamera.insert("index",0);
+        thisCamera.insert("name","Caméra intégrée S500");
+        cameraList.append(thisCamera);
+    }
     return cameraList;
 }
 
