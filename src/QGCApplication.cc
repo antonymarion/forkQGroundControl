@@ -1209,7 +1209,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
                     QObject::disconnect(requestVehicle, &Vehicle::takeOffResult, this, nullptr);
                 });
                 double takeOfHeight = message["takeOffHeight"].toDouble();
-                requestVehicle->guidedModeTakeoff(takeOfHeight ? takeOfHeight : 10); // default takeoff height is 10m
+                requestVehicle->guidedModeTakeoff(takeOfHeight ? takeOfHeight : 3); // default takeoff height is 10m
                 state_value = -2;
             }
             break; // check if isFlying == true for SMA (take off can return true if sent just at landing)
