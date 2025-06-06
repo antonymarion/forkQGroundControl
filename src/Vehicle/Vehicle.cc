@@ -3181,11 +3181,6 @@ void Vehicle::guidedModeRTL(bool smartRTL)
     _firmwarePlugin->guidedModeRTL(this, smartRTL);
 }
 
-void Vehicle::offboardMode()
-{
-    _firmwarePlugin->offboardMode(this);
-}
-
 void Vehicle::guidedModeLand()
 {
     if (!guidedModeSupported()) {
