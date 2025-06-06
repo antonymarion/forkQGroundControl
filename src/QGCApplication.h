@@ -382,6 +382,7 @@ private:
         "PAUSE_ALL_AND_DISABLE_SMA",
         "PAUSE_DRONE_AND_DISABLE_SMA",
         "RESUME_SMA",
+        "CHANGE_FLIGHT_MODE",
         "SET_DATA",
         "SET_GEOFENCING",
         "TESTING_1",

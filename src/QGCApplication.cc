@@ -1337,6 +1337,13 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             break;
         case 23:
             qWarning() << "=================================================";
+            qWarning() << "recieved CHANGE_FLIGHT_MODE";
+            qWarning() << "=================================================";
+            requestVehicle->setFlightMode(message["mode"].toString());
+            state_value = 0;
+            break;
+        case 24:
+            qWarning() << "=================================================";
             qWarning() << "recieved SET_DATA";
             qWarning() << "=================================================";
             if(!_vehicle) {
@@ -1347,7 +1354,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             _vehicle->setSn(message["sn"].toString());
             state_value = 0;
             break;
-        case 24:
+        case 25:
             qWarning() << "=================================================";
             qWarning() << "recieved SET_GEOFENCING";
             qWarning() << "=================================================";
@@ -1358,7 +1365,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             requestVehicle->loadAndSendGeofence(message);
             state_value = 0;
             break;
-        case 25:
+        case 26:
             qWarning() << "=================================================";
             qWarning() << "recieved TESTING_1";
             qWarning() << "=================================================";
@@ -1370,7 +1377,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qWarning() << _vehicle->sn();
             state_value = 0;
             break;
-        case 26:
+        case 27:
             qWarning() << "=================================================";
             qWarning() << "recieved TESTING_2";
             qWarning() << "=================================================";
@@ -1830,28 +1837,29 @@ void QGCApplication::sendAircraftPositionInfo() {
         }
 
         QJsonObject newResponse;
-        newResponse.insert("registrationNumber", vehicle->uasString());
-        newResponse.insert("emailRemotePilot",   loggedEmail);
-        newResponse.insert("isStreaming",        isStreaming);
-        newResponse.insert("smaAuthorized",      _smaAuthorized);
-        newResponse.insert("system",             vehicle->firmwareTypeString());
-        newResponse.insert("systemVersion",      "MAVLINK"); // TODO ???
-        newResponse.insert("simulated",          simulatedMAC.contains(vehicle->dgUID()));
-        newResponse.insert("systemOS",           "Windows"); // TODO change to include Android
-        newResponse.insert("productType",        vehicle->productName());
-        newResponse.insert("rtmpUrl",            rtmpUrl + vehicle->sn());
+        newResponse.insert("registrationNumber",    vehicle->uasString());
+        newResponse.insert("emailRemotePilot",      loggedEmail);
+        newResponse.insert("isStreaming",           isStreaming);
+        newResponse.insert("flightMode",            vehicle->flightMode());
+        newResponse.insert("smaAuthorized",         _smaAuthorized);
+        newResponse.insert("system",                vehicle->firmwareTypeString());
+        newResponse.insert("systemVersion",         "MAVLINK"); // TODO ???
+        newResponse.insert("simulated",             simulatedMAC.contains(vehicle->dgUID()));
+        newResponse.insert("systemOS",              "Windows"); // TODO change to include Android
+        newResponse.insert("productType",           vehicle->productName());
+        newResponse.insert("rtmpUrl",               rtmpUrl + vehicle->sn());
         qWarning() << "UID : " << vehicle->dgUID() << " | SN : "  << vehicle->sn() << " | UAS : " << vehicle->uasString();
-        newResponse.insert("latitude",           vehicle->coordinate().latitude());
-        newResponse.insert("longitude",          vehicle->coordinate().longitude());
-        newResponse.insert("altitude",           vehicle->coordinate().altitude());
-        newResponse.insert("altitudeRelative",   qobject_cast<Fact*>(vehicle->altitudeRelative())->rawValueString());
-        newResponse.insert("isFlying",           vehicle->flying());
-        newResponse.insert("flightDistance",     qobject_cast<Fact*>(vehicle->flightDistance())->rawValueString());
-        newResponse.insert("verticalSpeed",      qobject_cast<Fact*>(vehicle->climbRate())->rawValueString());
-        newResponse.insert("horizontalSpeed",    qobject_cast<Fact*>(vehicle->groundSpeed())->rawValueString());
-        newResponse.insert("gpsSatelliteCount",  qobject_cast<VehicleGPSFactGroup*>(vehicle->gpsFactGroup())->count()->rawValueString());
-        newResponse.insert("firmwareVersionUav", vehicle->firmwarePatchVersion());
-        newResponse.insert("firmwareVersion",    _buildVersion);
+        newResponse.insert("latitude",              vehicle->coordinate().latitude());
+        newResponse.insert("longitude",             vehicle->coordinate().longitude());
+        newResponse.insert("altitude",              vehicle->coordinate().altitude());
+        newResponse.insert("altitudeRelative",      qobject_cast<Fact*>(vehicle->altitudeRelative())->rawValueString());
+        newResponse.insert("isFlying",              vehicle->flying());
+        newResponse.insert("flightDistance",        qobject_cast<Fact*>(vehicle->flightDistance())->rawValueString());
+        newResponse.insert("verticalSpeed",         qobject_cast<Fact*>(vehicle->climbRate())->rawValueString());
+        newResponse.insert("horizontalSpeed",       qobject_cast<Fact*>(vehicle->groundSpeed())->rawValueString());
+        newResponse.insert("gpsSatelliteCount",     qobject_cast<VehicleGPSFactGroup*>(vehicle->gpsFactGroup())->count()->rawValueString());
+        newResponse.insert("firmwareVersionUav",    vehicle->firmwarePatchVersion());
+        newResponse.insert("firmwareVersion",       _buildVersion);
         int totalFlightTime = qobject_cast<Fact*>(vehicle->flightTime())->rawValue().toInt();
         int hours           = totalFlightTime / 3600;
         int minutes         = (totalFlightTime % 3600) / 60;
