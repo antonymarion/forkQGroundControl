@@ -310,7 +310,6 @@ private:
     void _setupNewVehicle         (Vehicle* vehicle); 
     void _removeVehicle           (Vehicle* vehicle); 
     void _setupNewMqttSubscription(QString newSn);
-    void _setIsFlying             (bool flying);
     void _setActiveCamera         ();
     void _notifyRecording         ();
 
@@ -339,7 +338,6 @@ private:
     bool                    isStreaming         = false;                   // is currently streaming on rtmp URL
     QMqttClient*            m_client            = nullptr;                 // mqtt client
     bool                    clientState         = false;
-    bool                    _isFlying;                                     // is aircraft currently flying
     bool                    _recording;
     bool                    canControl          = true;                    // false if remote pilote override commands
     bool                    _smaAuthorized      = true;                    // true if SMA control is enabled
@@ -349,7 +347,6 @@ private:
     MultiVehicleManager*    _vehicleManager{nullptr};
     QGCCameraControl*       _activeCamera{nullptr};
     QNetworkAccessManager*  _networkManager = nullptr;                  // network manager for http requests
-    QTimer*                 timerVector = nullptr;                         // send vector command timer
     QStringList             simulatedMAC         = {                        // global axis list
         "",
         "4F:4E:49:44:4C:41:54:49",

@@ -907,12 +907,6 @@ void QGCApplication::_initCommon()
     QObject::connect(timer, &QTimer::timeout, this, &QGCApplication::sendInfos);
 
     timer->start(500); // Set back to 500
-
-    // Setup Vector control TIMER
-    timerVector = new QTimer(this);
-
-    QObject::connect(timerVector, &QTimer::timeout, this, &QGCApplication::vectorControl);
-
 }
 
 void QGCApplication::updateLogStateChange()
@@ -1189,14 +1183,12 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
                 qWarning() << "*****   No vehicle available   *****";
                 break;
             };
-            if(!timerVector) {
-                qWarning() << "*****   Timer not available   *****";
-                break;
-            };
-            _roll = message["roll"].toDouble();
-            _pitch = message["pitch"].toDouble();
-            _yaw = message["yaw"].toDouble();
-            _thrust = message["thrust"].toDouble();
+            requestVehicle->setJoysticksValues(
+                message["roll"].toDouble(), 
+                message["pitch"].toDouble(), 
+                message["yaw"].toDouble(), 
+                message["thrust"].toDouble()
+            );
             state_value = 0;
             break; // add to vector control
         case 14:
@@ -1477,9 +1469,6 @@ void QGCApplication::_setActiveVehicle(Vehicle* vehicle)
     qWarning() << "*****   Vehicle changed   *****";
     qWarning() << _vehicle->id();
 
-    QObject::connect(_vehicle, &Vehicle::flyingChanged, this, &QGCApplication::_setIsFlying);
-    _setIsFlying(_vehicle->flying());
-
     if(_vehicle->cameraManager()->cameras()->count() > 0) {
         QGCCameraManager* cameraManager = _vehicle->cameraManager();
         QObject::connect(cameraManager, &QGCCameraManager::currentCameraChanged, this, &QGCApplication::_setActiveCamera);
@@ -1511,20 +1500,6 @@ void QGCApplication::_setupNewMqttSubscription(QString newSn)
         return;
     }
     QObject::connect(subscription, &QMqttSubscription::messageReceived, this, &QGCApplication::updateMessage);
-}
-
-void QGCApplication::_setIsFlying(bool flying)
-{
-    _isFlying = flying;
-    canControl = flying;
-
-    if(_isFlying && !timerVector->isActive() && canControl){
-        timerVector->start(40);
-    }
-
-    if(!_isFlying && timerVector->isActive()){
-        timerVector->stop();
-    }
 }
 
 void QGCApplication::_setActiveCamera()
@@ -2164,7 +2139,7 @@ int QGCApplication::stopRecording()
     qWarning() << "==============   STOP_RECORDING   =============="; // NEED TO UPDATE FOR OTHER CAMS
 }
 
-void QGCApplication::vectorControl()
+/* void QGCApplication::vectorControl()
 {
     _vehicle->sendJoystickDataThreadSafe(
                     static_cast<float>(_roll),
@@ -2181,7 +2156,7 @@ void QGCApplication::vectorControlOverride(){
     if(timerVector->isActive()){
         timerVector->stop();
     }
-}
+} */
 
 bool QGCApplication::isFileEmpty(const std::string& filePath)
 {

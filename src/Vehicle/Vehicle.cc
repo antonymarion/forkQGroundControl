@@ -273,6 +273,11 @@ Vehicle::Vehicle(LinkInterface*             link,
 
     // Start timer to limit altitude above terrain queries
     _altitudeAboveTerrQueryTimer.restart();
+    
+    // Setup Vector control TIMER
+    timerVector = new QTimer(this);
+
+    QObject::connect(timerVector, &QTimer::timeout, this, &Vehicle::vectorControl);
 }
 
 // Disconnected Vehicle for offline editing
@@ -982,6 +987,62 @@ void Vehicle::sendSetPositionTargetGlobalInt(double latitude, double longitude, 
     );
 
     sendMessageOnLinkThreadSafe(sharedLink.get(), msg); // Send the message
+}
+
+void Vehicle::vectorControl() {
+    // Sends a command to the vehicle to set its velocity in the local NED frame
+    // and yaw rate. This is useful for precise control of the vehicle's movement.
+    
+    vx = _jPitch * 1.0   # Avancer/reculer
+    vy = _jRoll * 1.0    # Gauche/droite
+    vz = _jThrust * 1.0  # Haut/bas
+    yaw_rate = _jYaw * 1.0  # Yaw (rad/s)
+
+    if(flightMode() == "Offboard") {
+        sendSetPositionTargetLocalNed(vx, vy, vz, yaw_rate);
+    }
+}
+
+void Vehicle::sendSetPositionTargetLocalNed(double vx, double vy, double vz, double yaw_rate) {
+    SharedLinkInterfacePtr sharedLink = vehicleLinkManager()->primaryLink().lock();
+    if (!sharedLink) {
+        qCDebug(VehicleLog) << "sendSetPositionTargetLocalNed: primary link gone!";
+        return;
+    }
+
+    mavlink_message_t msg;
+    mavlink_set_position_target_local_ned cmd;
+
+    memset(&cmd, 0, sizeof(cmd)); // Initialize the structure to zero
+    
+    qCDbug(VehicleLog) << "Setting local NED velocity: vx=" << vx << ", vy=" << vy << ", vz=" << vz << ", yaw_rate=" << yaw_rate;
+    cmd.vx = vx; // X velocity in NED frame (m/s)
+    cmd.vy = vy; // Y velocity in NED frame (m/s)
+    cmd.vz = vz; // Z velocity in NED frame (m/s)
+    cmd.yaw_rate = yaw_rate; // Yaw rate (rad/s)
+    cmd.target_system = id(); // Target system ID (the drone)
+    cmd.target_component = _defaultComponentId; // Target component ID (autopilot)
+    cmd.coordinate_frame = MAV_FRAME_GLOBAL_RELATIVE_ALT_INT; // Reference frame
+    cmd.type_mask = 0b0000111111000111; // Bitmask to indicate which dimensions should be ignored by the vehicle
+    // The type_mask is set to ignore position, acceleration, and yaw, allowing only velocity and yaw rate to be set
+
+    mavlink_msg_set_position_target_local_ned_encode_chan(
+        _mavlink->getSystemId(), // Sender system ID
+        _mavlink->getComponentId(), // Sender component ID
+        sharedLink->mavlinkChannel(), // MAVLink channel used
+        &msg, // MAVLink message to fill
+        &cmd // Command structure
+    );
+
+    sendMessageOnLinkThreadSafe(sharedLink.get(), msg); // Send the message
+}
+
+void Vehicle::setJoysticksValues(float roll, float pitch, float yaw, float thrust){
+    _jYaw = yaw;
+    _jPitch = pitch;
+    _jRoll = roll;
+    _jThrust = thrust;
+    qCDebug(VehicleLog) << "Joystick values set: Roll:" << roll << "Pitch:" << pitch << "Yaw:" << yaw << "Thrust:" << thrust;
 }
 
 void Vehicle::_offlineFirmwareTypeSettingChanged(QVariant varFirmwareType)
@@ -3131,6 +3192,16 @@ void Vehicle::_setFlying(bool flying)
     if (_flying != flying) {
         _flying = flying;
         emit flyingChanged(flying);
+    }
+    
+    canControl = flying;
+    
+    if(_isFlying && !timerVector->isActive() && canControl) {
+        timerVector->start(40);
+    }
+
+    if(!_isFlying && timerVector->isActive()){
+        timerVector->stop();
     }
 }
 

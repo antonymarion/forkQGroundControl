@@ -945,6 +945,7 @@ public:
     void setEventsMetadata(uint8_t compid, const QString& metadataJsonFileName);
     void setActuatorsMetadata(uint8_t compid, const QString& metadataJsonFileName);
     void sendSetPositionTargetGlobalInt(double latitude, double longitude, float altitude, float yaw, float speed);
+    void setJoysticksValues(float roll, float pitch, float yaw, float thrust);
 
     HealthAndArmingCheckReport* healthAndArmingCheckReport() { return &_healthAndArmingCheckReport; }
 
@@ -1178,6 +1179,7 @@ private:
 
     QTimer              _csvLogTimer;
     QFile               _csvLogFile;
+    QTimer*             timerVector = nullptr;                         // send vector command timer
     
     QStringList         specialGimbalList   = { "Tundra 2" };                       // special aircraft list
     QStringList         axisList            = { "pitch", "yaw", "roll", "thrust" }; // global axis list
@@ -1186,6 +1188,11 @@ private:
     QString         _dgUas = "";
     QString         _dgProductName = "";
     QString         _dgUID = "";
+
+    double          _jYaw = 0.0; ///< Joystick yaw value
+    double          _jPitch = 0.0; ///< Joystick pitch value
+    double          _jRoll = 0.0; ///< Joystick roll value
+    double          _jThrust = 0.0; ///< Joystick thrust value
 
     bool            _isActiveVehicle = false;
     bool            _joystickEnabled = false;
