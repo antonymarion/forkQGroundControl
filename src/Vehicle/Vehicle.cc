@@ -995,7 +995,7 @@ void Vehicle::vectorControl() {
     
     double vx = _jPitch * 1.0;     // Avancer/reculer
     double vy = _jRoll * 1.0;      // Gauche/droite
-    double vz = _jThrust * 1.0;    // Haut/bas
+    double vz = _jThrust * -1.0;    // Haut/bas
     double yaw_rate = _jYaw * 1.0; // Yaw (rad/s)
 
     if(flightMode() == "Offboard" || _offboardWarmup) {
