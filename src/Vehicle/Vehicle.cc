@@ -1022,7 +1022,7 @@ void Vehicle::sendSetPositionTargetLocalNed(double vx, double vy, double vz, dou
     cmd.yaw_rate = yaw_rate; // Yaw rate (rad/s)
     cmd.target_system = id(); // Target system ID (the drone)
     cmd.target_component = _defaultComponentId; // Target component ID (autopilot)
-    cmd.coordinate_frame = MAV_FRAME_GLOBAL_RELATIVE_ALT_INT; // Reference frame
+    cmd.coordinate_frame = MAV_FRAME_LOCAL_NED; // Reference frame
     cmd.type_mask = 0b0000111111000111; // Bitmask to indicate which dimensions should be ignored by the vehicle
     // The type_mask is set to ignore position, acceleration, and yaw, allowing only velocity and yaw rate to be set
 
