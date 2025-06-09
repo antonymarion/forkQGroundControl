@@ -1011,7 +1011,7 @@ void Vehicle::sendSetPositionTargetLocalNed(double vx, double vy, double vz, dou
     }
 
     mavlink_message_t msg;
-    mavlink_set_position_target_local_ned cmd;
+    mavlink_set_position_target_local_ned_t cmd;
 
     memset(&cmd, 0, sizeof(cmd)); // Initialize the structure to zero
     
