@@ -3192,16 +3192,14 @@ void Vehicle::_setFlying(bool flying)
     if (_flying != flying) {
         _flying = flying;
         emit flyingChanged(flying);
-    }
     
-    canControl = flying;
-    
-    if(_isFlying && !timerVector->isActive() && canControl) {
-        timerVector->start(40);
-    }
+        if(_flying && !timerVector->isActive()) {
+            timerVector->start(40);
+        }
 
-    if(!_isFlying && timerVector->isActive()){
-        timerVector->stop();
+        if(!_flying && timerVector->isActive()){
+            timerVector->stop();
+        }
     }
 }
 
