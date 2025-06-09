@@ -993,10 +993,10 @@ void Vehicle::vectorControl() {
     // Sends a command to the vehicle to set its velocity in the local NED frame
     // and yaw rate. This is useful for precise control of the vehicle's movement.
     
-    vx = _jPitch * 1.0   # Avancer/reculer
-    vy = _jRoll * 1.0    # Gauche/droite
-    vz = _jThrust * 1.0  # Haut/bas
-    yaw_rate = _jYaw * 1.0  # Yaw (rad/s)
+    double vx = _jPitch * 1.0      // Avancer/reculer;
+    double vy = _jRoll * 1.0       // Gauche/droite;
+    double vz = _jThrust * 1.0     // Haut/bas;
+    double yaw_rate = _jYaw * 1.0  // Yaw (rad/s);
 
     if(flightMode() == "Offboard") {
         sendSetPositionTargetLocalNed(vx, vy, vz, yaw_rate);
