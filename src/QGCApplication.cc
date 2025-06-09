@@ -1052,7 +1052,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
     }
 
     QJsonObject tAttitude, iso, aperture;
-    QString cameraName;
+    QString cameraName, flightMode;
     int state_value = -1;
     switch (commandsList.indexOf(message["instruction"].toString())){
         case 0:
@@ -1331,15 +1331,15 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qWarning() << "=================================================";
             qWarning() << "recieved CHANGE_FLIGHT_MODE";
             qWarning() << "=================================================";
-            QString mode = message["mode"].toString();
-            if(mode == "Offboard"){
+            flightMode = message["mode"].toString();
+            if(flightMode == "Offboard"){
                 requestVehicle->setOffboardWarmup(true);
                 QThread::msleep(500);
-                requestVehicle->setFlightMode(mode);
+                requestVehicle->setFlightMode(flightMode);
             }
             else{
                 requestVehicle->setOffboardWarmup(false);
-                requestVehicle->setFlightMode(mode);
+                requestVehicle->setFlightMode(flightMode);
             }
             state_value = 0;
             break;
