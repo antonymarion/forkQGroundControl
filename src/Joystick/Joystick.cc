@@ -717,7 +717,7 @@ void Joystick::_handleAxis()
             if(roll < -0.1 || roll > 0.1 ||  pitch < -0.1 ||  pitch > 0.1 || yaw < -0.1 || yaw > 0.1 || throttle < t_moed || throttle > t_moeu){
                 if(!_isOverriding) {
                     _isOverriding = true;
-                    qgcApp()->vectorControlOverride();
+                //    qgcApp()->vectorControlOverride();
                 }
                 if(!_activeVehicle->flying()) _isOverriding = false;
             }
@@ -727,12 +727,12 @@ void Joystick::_handleAxis()
                 _activeVehicle->sendJoystickDataThreadSafe(roll, pitch, yaw, throttle, shortButtons, "JOYSTICKS");
             }
             else {
-                if(qgcApp()->_roll < -0.1 || qgcApp()->_roll > 0.1 ||  qgcApp()->_pitch < -0.1 ||  qgcApp()->_pitch > 0.1 || qgcApp()->_yaw < -0.1 || qgcApp()->_yaw > 0.1 || qgcApp()->_thrust < t_moed || qgcApp()->_thrust > t_moeu){
+                /* if(qgcApp()->_roll < -0.1 || qgcApp()->_roll > 0.1 ||  qgcApp()->_pitch < -0.1 ||  qgcApp()->_pitch > 0.1 || qgcApp()->_yaw < -0.1 || qgcApp()->_yaw > 0.1 || qgcApp()->_thrust < t_moed || qgcApp()->_thrust > t_moeu){
                     _activeVehicle->sendJoystickDataThreadSafe(qgcApp()->_roll, qgcApp()->_pitch, qgcApp()->_yaw, qgcApp()->_thrust, shortButtons, "JOYSTICKS");
                 }
-                else{
+                else{ */
                     _activeVehicle->sendJoystickDataThreadSafe(roll, pitch, yaw, throttle, shortButtons, "JOYSTICKS");
-                }
+                // }
             }
         }
     }

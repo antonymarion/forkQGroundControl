@@ -124,7 +124,7 @@ public:
     static QString cachedParameterMetaDataFile(void);
     static QString cachedAirframeMetaDataFile(void);
 
-    void        vectorControlOverride   (); // Take over station control
+    // void        vectorControlOverride   (); // Take over station control
     void        setMqttHost             (QString host); // Set MQTT broker host;
     void        dgAuthenticate          (const QString& email, const QString& password); // Login to DG account
     void        addAircraftInfo         (const QString& uid, const QString& uas, const QString& sn, const QString& model);
