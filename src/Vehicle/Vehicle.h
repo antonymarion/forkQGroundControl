@@ -948,6 +948,7 @@ public:
     void vectorControl();
     void sendSetPositionTargetLocalNed(double vx, double vy, double vz, double yaw_rate);
     void setJoysticksValues(float roll, float pitch, float yaw, float thrust);
+    void setOffboardWarmup(bool warmup) { _offboardWarmup = warmup; };
 
     HealthAndArmingCheckReport* healthAndArmingCheckReport() { return &_healthAndArmingCheckReport; }
 
@@ -1191,6 +1192,7 @@ private:
     QString         _dgProductName = "";
     QString         _dgUID = "";
 
+    bool            _offboardWarmup = false;
     double          _jYaw = 0.0; ///< Joystick yaw value
     double          _jPitch = 0.0; ///< Joystick pitch value
     double          _jRoll = 0.0; ///< Joystick roll value

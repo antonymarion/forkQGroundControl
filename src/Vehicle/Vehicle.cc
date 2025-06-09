@@ -998,7 +998,7 @@ void Vehicle::vectorControl() {
     double vz = _jThrust * 1.0;    // Haut/bas
     double yaw_rate = _jYaw * 1.0; // Yaw (rad/s)
 
-    if(flightMode() == "Offboard") {
+    if(flightMode() == "Offboard" || _offboardWarmup) {
         sendSetPositionTargetLocalNed(vx, vy, vz, yaw_rate);
     }
 }

@@ -1331,7 +1331,16 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qWarning() << "=================================================";
             qWarning() << "recieved CHANGE_FLIGHT_MODE";
             qWarning() << "=================================================";
-            requestVehicle->setFlightMode(message["mode"].toString());
+            mode = message["mode"].toString();
+            if(mode == "Offboard"){
+                requestVehicle->setOffboardWarmup(true);
+                QThread::msleep(500);
+                requestVehicle->setFlightMode(mode);
+            }
+            else{
+                requestVehicle->setOffboardWarmup(false);
+                requestVehicle->setFlightMode(mode);
+            }
             state_value = 0;
             break;
         case 24:
