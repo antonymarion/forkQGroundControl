@@ -1015,7 +1015,7 @@ void Vehicle::sendSetPositionTargetLocalNed(double vx, double vy, double vz, dou
 
     memset(&cmd, 0, sizeof(cmd)); // Initialize the structure to zero
     
-    qCDbug(VehicleLog) << "Setting local NED velocity: vx=" << vx << ", vy=" << vy << ", vz=" << vz << ", yaw_rate=" << yaw_rate;
+    qCDebug(VehicleLog) << "Setting local NED velocity: vx=" << vx << ", vy=" << vy << ", vz=" << vz << ", yaw_rate=" << yaw_rate;
     cmd.vx = vx; // X velocity in NED frame (m/s)
     cmd.vy = vy; // Y velocity in NED frame (m/s)
     cmd.vz = vz; // Z velocity in NED frame (m/s)
