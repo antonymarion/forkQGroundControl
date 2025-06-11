@@ -1338,8 +1338,17 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
                 requestVehicle->setFlightMode(flightMode);
             }
             else{
-                requestVehicle->setOffboardWarmup(false);
                 requestVehicle->setFlightMode(flightMode);
+                QThread::msleep(500);
+                if(vehicle->flightMode() == "Offboard") {
+                    qWarning() << "*****   Mode not supported   *****";
+                    message.insert("status","KO");
+                    message.insert("error","Mode not supported. Chnaged to default mode HOLD.");
+                    requestVehicle->setFlightMode("Hold");
+                }
+                else {
+                    requestVehicle->setOffboardWarmup(false);
+                }
             }
             state_value = 0;
             break;
