@@ -1343,7 +1343,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
                 if(requestVehicle->flightMode() == "Offboard") {
                     qWarning() << "*****   Mode not supported   *****";
                     message.insert("status","KO");
-                    message.insert("error","Mode not supported. Chnaged to default mode HOLD.");
+                    message.insert("error","Mode not supported. Back to default mode HOLD.");
                     requestVehicle->setFlightMode("Hold");
                 }
                 else {

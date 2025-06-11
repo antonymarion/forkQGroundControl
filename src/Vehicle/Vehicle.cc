@@ -995,7 +995,7 @@ void Vehicle::vectorControl() {
     
     double vx = _jPitch * 1.0;     // Avancer/reculer
     double vy = _jRoll * 1.0;      // Gauche/droite
-    double vz = _jThrust * 1.0;    // Haut/bas
+    double vz = _jThrust * -1.0;    // Haut/bas
     double yaw_rate = _jYaw * 1.0; // Yaw (rad/s)
 
     if(flightMode() == "Offboard" || _offboardWarmup) {
@@ -1023,7 +1023,7 @@ void Vehicle::sendSetPositionTargetLocalNed(double vx, double vy, double vz, dou
     cmd.target_system = id(); // Target system ID (the drone)
     cmd.target_component = _defaultComponentId; // Target component ID (autopilot)
     cmd.coordinate_frame = MAV_FRAME_BODY_NED; // Reference frame
-    cmd.type_mask = 0b0000111111000111; // Bitmask to indicate which dimensions should be ignored by the vehicle
+    cmd.type_mask = 0b0000111111000011; // Bitmask to indicate which dimensions should be ignored by the vehicle
     // The type_mask is set to ignore position, acceleration, and yaw, allowing only velocity and yaw rate to be set
 
     mavlink_msg_set_position_target_local_ned_encode_chan(
