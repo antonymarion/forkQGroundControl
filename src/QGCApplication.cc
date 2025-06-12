@@ -1332,25 +1332,32 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qWarning() << "recieved CHANGE_FLIGHT_MODE";
             qWarning() << "=================================================";
             flightMode = message["mode"].toString();
-            if(flightMode == "Offboard"){
+
+            bool verifyFlightMode = [&]() -> bool {
+                QThread::msleep(1000);
+                return requestVehicle->flightMode() == "Offboard";
+            };
+
+            if (flightMode == "Offboard") {
                 requestVehicle->setOffboardWarmup(true);
                 QThread::msleep(500);
                 requestVehicle->setFlightMode(flightMode);
-            }
-            else{
+
+                sendResponseMessage(msg, message, verifyFlightMode());
+            } else {
                 requestVehicle->setFlightMode(flightMode);
-                QThread::msleep(500);
-                if(requestVehicle->flightMode() == "Offboard") {
+
+                if (verifyFlightMode()) {
                     qWarning() << "*****   Mode not supported   *****";
-                    message.insert("status","KO");
-                    message.insert("error","Mode not supported. Back to default mode HOLD.");
+                    message.insert("error", "Mode not supported. Back to default mode HOLD.");
                     requestVehicle->setFlightMode("Hold");
-                }
-                else {
+
+                    sendResponseMessage(msg, message, !verifyFlightMode());
+                } else {
                     requestVehicle->setOffboardWarmup(false);
                 }
             }
-            state_value = 0;
+            state_value = -2;
             break;
         case 24:
             qWarning() << "=================================================";
