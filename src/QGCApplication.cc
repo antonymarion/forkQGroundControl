@@ -1054,6 +1054,12 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
     QJsonObject tAttitude, iso, aperture;
     QString cameraName, flightMode;
     int state_value = -1;
+
+    auto verifyFlightMode = [&]() -> bool {
+        QThread::msleep(1000);
+        return requestVehicle->flightMode() == "Offboard";
+    };
+    
     switch (commandsList.indexOf(message["instruction"].toString())){
         case 0:
             qWarning() << "=================================================";
@@ -1332,11 +1338,6 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qWarning() << "recieved CHANGE_FLIGHT_MODE";
             qWarning() << "=================================================";
             flightMode = message["mode"].toString();
-
-            auto verifyFlightMode = [&]() -> bool {
-                QThread::msleep(1000);
-                return requestVehicle->flightMode() == "Offboard";
-            };
 
             if (flightMode == "Offboard") {
                 requestVehicle->setOffboardWarmup(true);
