@@ -1333,7 +1333,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qWarning() << "=================================================";
             flightMode = message["mode"].toString();
 
-            bool verifyFlightMode = [&]() -> bool {
+            auto verifyFlightMode = [&]() -> bool {
                 QThread::msleep(1000);
                 return requestVehicle->flightMode() == "Offboard";
             };
