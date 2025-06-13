@@ -1337,7 +1337,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
                     sendResponseMessage(msg, message, success);
                     QObject::disconnect(requestVehicle, &Vehicle::repositionResult, this, nullptr);
                 });
-                requestVehicle->goToWaypoint(1, qobject_cast<Fact*>(requestVehicle->heading())->rawValue(), requestVehicle->coordinate().latitude(), requestVehicle->coordinate().longitude(), requestVehicle->coordinate().altitude()); // check if do_reposition supports this (see guidedmodereposition)
+                requestVehicle->goToWaypoint(1, (qobject_cast<Fact*>(requestVehicle->heading())->rawValueString()).toDouble(), requestVehicle->coordinate().latitude(), requestVehicle->coordinate().longitude(), requestVehicle->coordinate().altitude()); // check if do_reposition supports this (see guidedmodereposition)
                 state_value = -2;
             }
             if(requestVehicle->apmFirmware()) {
