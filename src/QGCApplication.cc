@@ -1328,12 +1328,37 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             break;
         case 22:
             qWarning() << "=================================================";
+            qWarning() << "recieved PAUSE_DRONE";
+            qWarning() << "=================================================";
+            requestVehicle->pauseVehicle(); // rework cause if pause then other drone will not listen to sma and pause too
+            if(requestVehicle->px4Firmware()) {
+                qWarning() << "*****   PX4 firmware detected   *****";
+                QObject::connect(requestVehicle, &Vehicle::repositionResult, this, [this, msg, message, requestVehicle](bool success) {
+                    sendResponseMessage(msg, message, success);
+                    QObject::disconnect(requestVehicle, &Vehicle::repositionResult, this, nullptr);
+                });
+                requestVehicle->goToWaypoint(1, qobject_cast<Fact*>(requestVehicle->heading())->rawValue(), requestVehicle->coordinate().latitude(), requestVehicle->coordinate().longitude(), requestVehicle->coordinate().altitude()); // check if do_reposition supports this (see guidedmodereposition)
+                state_value = -2;
+            }
+            if(requestVehicle->apmFirmware()) {
+                qWarning() << "*****   ArduPilot firmware detected   *****";
+                if(requestVehicle->guidedModeSupported()){
+                    requestVehicle->setFlightMode("Guided");
+                    requestVehicle->sendSetPositionTargetGlobalInt(w_lat, w_lon, w_alt, w_speed, w_yaw); // no response for this one
+                    
+                }
+                state_value = 0;
+            }
+            state_value = 0;
+            break;
+        case 23:
+            qWarning() << "=================================================";
             qWarning() << "recieved RESUME_SMA";
             qWarning() << "=================================================";
             _smaAuthorized = true;
             state_value = 0;
             break;
-        case 23:
+        case 24:
             qWarning() << "=================================================";
             qWarning() << "recieved CHANGE_FLIGHT_MODE";
             qWarning() << "=================================================";
@@ -1360,7 +1385,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             }
             state_value = -2;
             break;
-        case 24:
+        case 25:
             qWarning() << "=================================================";
             qWarning() << "recieved SET_DATA";
             qWarning() << "=================================================";
@@ -1372,7 +1397,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             _vehicle->setSn(message["sn"].toString());
             state_value = 0;
             break;
-        case 25:
+        case 26:
             qWarning() << "=================================================";
             qWarning() << "recieved SET_GEOFENCING";
             qWarning() << "=================================================";
@@ -1383,7 +1408,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             requestVehicle->loadAndSendGeofence(message);
             state_value = 0;
             break;
-        case 26:
+        case 27:
             qWarning() << "=================================================";
             qWarning() << "recieved TESTING_1";
             qWarning() << "=================================================";
@@ -1395,7 +1420,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qWarning() << _vehicle->sn();
             state_value = 0;
             break;
-        case 27:
+        case 28:
             qWarning() << "=================================================";
             qWarning() << "recieved TESTING_2";
             qWarning() << "=================================================";
