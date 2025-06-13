@@ -1331,13 +1331,18 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qWarning() << "recieved PAUSE_DRONE";
             qWarning() << "=================================================";
             requestVehicle->pauseVehicle(); // rework cause if pause then other drone will not listen to sma and pause too
+            w_lat = requestVehicle->coordinate().latitude();
+            w_lon = requestVehicle->coordinate().longitude();
+            w_alt = requestVehicle->coordinate().altitude();
+            w_speed = 1; // default speed
+            w_yaw = (qobject_cast<Fact*>(requestVehicle->heading())->rawValueString()).toDouble();
             if(requestVehicle->px4Firmware()) {
                 qWarning() << "*****   PX4 firmware detected   *****";
                 QObject::connect(requestVehicle, &Vehicle::repositionResult, this, [this, msg, message, requestVehicle](bool success) {
                     sendResponseMessage(msg, message, success);
                     QObject::disconnect(requestVehicle, &Vehicle::repositionResult, this, nullptr);
                 });
-                requestVehicle->goToWaypoint(1, (qobject_cast<Fact*>(requestVehicle->heading())->rawValueString()).toDouble(), requestVehicle->coordinate().latitude(), requestVehicle->coordinate().longitude(), requestVehicle->coordinate().altitude()); // check if do_reposition supports this (see guidedmodereposition)
+                requestVehicle->goToWaypoint(w_speed, w_yaw, w_lat, w_lon, w_alt); // check if do_reposition supports this (see guidedmodereposition)
                 state_value = -2;
             }
             if(requestVehicle->apmFirmware()) {
