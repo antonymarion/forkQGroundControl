@@ -2219,8 +2219,8 @@ void QGCApplication::goToWaypoint(Vehicle* requestVehicle,
                                     double w_lat,
                                     double w_lon,
                                     double w_alt,
-                                    const QString& msg,
-                                    const QString& message,
+                                    const QMqttMessage& msg,
+                                    const QJsonObject& message,
                                     int& state_value){
     if(requestVehicle->px4Firmware()) {
         qWarning() << "*****   PX4 firmware detected   *****";
@@ -2241,12 +2241,12 @@ void QGCApplication::goToWaypoint(Vehicle* requestVehicle,
     }
 }
 
-void QGCApplication::pauseVehicle(Vehicle* requestVehicle, const QString& msg, const QString& message, int& state_value){
-    w_lat = requestVehicle->coordinate().latitude();
-    w_lon = requestVehicle->coordinate().longitude();
-    w_alt = requestVehicle->coordinate().altitude();
-    w_speed = 1; // default speed
-    w_yaw = (qobject_cast<Fact*>(requestVehicle->heading())->rawValueString()).toDouble();
+void QGCApplication::pauseVehicle(Vehicle* requestVehicle, const QMqttMessage& msg, const QJsonObject& message, int& state_value){
+    double w_lat = requestVehicle->coordinate().latitude();
+    double w_lon = requestVehicle->coordinate().longitude();
+    double w_alt = requestVehicle->coordinate().altitude();
+    double w_speed = 1; // default speed
+    double w_yaw = (qobject_cast<Fact*>(requestVehicle->heading())->rawValueString()).toDouble();
     goToWaypoint(requestVehicle, w_speed, w_yaw, w_lat, w_lon, w_alt, msg, message, state_value);
 }
 
