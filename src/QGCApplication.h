@@ -315,13 +315,15 @@ private:
 
     // Station Commands
 
-    void         startStream       ();
-    void         stopStream        ();
-    int          takePhoto         ();
-    int          startRecording    ();
-    int          stopRecording     ();
-    void         vectorControl     ();
-    void         pauseAll          ();
+    void        startStream     ();
+    void        stopStream      ();
+    int         takePhoto       ();
+    int         startRecording  ();
+    int         stopRecording   ();
+    void        vectorControl   ();
+    void        pauseAll        ();
+    void        goToWaypoint    (Vehicle* requestVehicle, double w_speed, double w_yaw, double w_lat, double w_lon, double w_alt, const QString& msg, const QString& message, int& state_value);
+    void        pauseVehicle    (Vehicle* requestVehicle, const QString& msg, const QString& message, int& state_value);
 
     // Utilities
     bool isFileEmpty(const std::string& filePath);
