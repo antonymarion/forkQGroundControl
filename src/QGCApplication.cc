@@ -1889,6 +1889,7 @@ void QGCApplication::sendAircraftPositionInfo() {
         newResponse.insert("verticalSpeed",         qobject_cast<Fact*>(vehicle->climbRate())->rawValueString());
         newResponse.insert("horizontalSpeed",       qobject_cast<Fact*>(vehicle->groundSpeed())->rawValueString());
         newResponse.insert("gpsSatelliteCount",     qobject_cast<VehicleGPSFactGroup*>(vehicle->gpsFactGroup())->count()->rawValueString());
+        newResponse.insert("hdop",                  qobject_cast<VehicleGPSFactGroup*>(vehicle->gpsFactGroup())->hdop()->rawValueString());
         newResponse.insert("firmwareVersionUav",    vehicle->firmwarePatchVersion());
         newResponse.insert("firmwareVersion",       _buildVersion);
         int totalFlightTime = qobject_cast<Fact*>(vehicle->flightTime())->rawValue().toInt();
