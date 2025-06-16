@@ -2207,7 +2207,7 @@ void QGCApplication::testing3()
 void QGCApplication::pauseAll(const QMqttMessage& msg, const QJsonObject& message)
 {
     _smaAuthorized = false;
-    state_value = 0;
+    int state_value = 0;
     QmlObjectListModel* vehicles = _vehicleManager->vehicles();
     for(int i = 0; i<vehicles->count(); i++){
         pauseVehicle(qobject_cast<Vehicle*>(vehicles->get(i)), msg, message, state_value);
