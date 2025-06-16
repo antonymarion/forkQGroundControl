@@ -1298,7 +1298,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qWarning() << "=================================================";
             qWarning() << "recieved PAUSE_ALL_AND_DISABLE_SMA";
             qWarning() << "=================================================";
-            QGCApplication::pauseAll();
+            QGCApplication::pauseAll(msg, message);
             state_value = 0;
             break;
         case 21:
@@ -2204,9 +2204,10 @@ void QGCApplication::testing3()
 {
 }
 
-void QGCApplication::pauseAll()
+void QGCApplication::pauseAll(const QMqttMessage& msg, const QJsonObject& message)
 {
     _smaAuthorized = false;
+    state_value = 0;
     QmlObjectListModel* vehicles = _vehicleManager->vehicles();
     for(int i = 0; i<vehicles->count(); i++){
         pauseVehicle(qobject_cast<Vehicle*>(vehicles->get(i)), msg, message, state_value);

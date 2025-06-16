@@ -321,7 +321,7 @@ private:
     int         startRecording  ();
     int         stopRecording   ();
     void        vectorControl   ();
-    void        pauseAll        ();
+    void        pauseAll        (const QMqttMessage& msg, const QJsonObject& message);
     void        goToWaypoint    (Vehicle* requestVehicle, double w_speed, double w_yaw, double w_lat, double w_lon, double w_alt, const QMqttMessage& msg, const QJsonObject& message, int& state_value);
     void        pauseVehicle    (Vehicle* requestVehicle, const QMqttMessage& msg, const QJsonObject& message, int& state_value);
 
