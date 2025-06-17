@@ -2250,7 +2250,7 @@ void QGCApplication::pauseVehicle(Vehicle* requestVehicle, const QMqttMessage& m
     double w_yaw = (qobject_cast<Fact*>(requestVehicle->heading())->rawValueString()).toDouble();
     goToWaypoint(requestVehicle, w_speed, w_yaw, w_lat, w_lon, w_alt, msg, message, state_value);
     
-    QThread::msleep(500);
+    QThread::msleep(1000);
     
     w_lat = requestVehicle->coordinate().latitude();
     w_lon = requestVehicle->coordinate().longitude();
