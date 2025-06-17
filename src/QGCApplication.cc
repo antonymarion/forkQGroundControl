@@ -2250,15 +2250,14 @@ void QGCApplication::pauseVehicle(Vehicle* requestVehicle, const QMqttMessage& m
     double w_yaw = (qobject_cast<Fact*>(requestVehicle->heading())->rawValueString()).toDouble();
     goToWaypoint(requestVehicle, w_speed, w_yaw, w_lat, w_lon, w_alt, msg, message, state_value);
     
-    QObject::connect(requestVehicle, &Vehicle::repositionResult, this, [this, msg, message, requestVehicle](bool success) {
+    QObject::connect(requestVehicle, &Vehicle::repositionResult, this, [this, msg, message, requestVehicle, state_value](bool success) {
         double w_lat = requestVehicle->coordinate().latitude();
         double w_lon = requestVehicle->coordinate().longitude();
         double w_alt = requestVehicle->coordinate().altitude();
         double w_yaw = (qobject_cast<Fact*>(requestVehicle->heading())->rawValueString()).toDouble();
-        goToWaypoint(requestVehicle, w_speed, w_yaw, w_lat, w_lon, w_alt, msg, message, state_value);
+        goToWaypoint(requestVehicle, 1, w_yaw, w_lat, w_lon, w_alt, msg, message, state_value);
         QObject::disconnect(requestVehicle, &Vehicle::repositionResult, this, nullptr);
     });
-
 }
 
 bool QGCApplication::_initForNormalAppBoot()
