@@ -17,6 +17,7 @@
 #include <QQueue>
 #include <QSharedPointer>
 #include <QMap>
+#include <QMqttMessage>
 
 #include "FactGroup.h"
 #include "QGCMAVLink.h"
