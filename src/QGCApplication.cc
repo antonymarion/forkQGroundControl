@@ -1306,14 +1306,14 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qWarning() << "recieved PAUSE_DRONE_AND_DISABLE_SMA";
             qWarning() << "=================================================";
             _smaAuthorized = false;
-            requestVehicle->pauseVehicleDG(msg, message, state_value);
+            requestVehicle->pauseVehicle();
             state_value = 0;
             break;
         case 22:
             qWarning() << "=================================================";
             qWarning() << "recieved PAUSE_DRONE";
             qWarning() << "=================================================";
-            requestVehicle->pauseVehicleDG(msg, message, state_value);
+            requestVehicle->pauseVehicle();
             break;
         case 23:
             qWarning() << "=================================================";
@@ -2210,7 +2210,7 @@ void QGCApplication::pauseAll(const QMqttMessage& msg, const QJsonObject& messag
     int state_value = 0;
     QmlObjectListModel* vehicles = _vehicleManager->vehicles();
     for(int i = 0; i<vehicles->count(); i++){
-        qobject_cast<Vehicle*>(vehicles->get(i))->pauseVehicleDG(msg, message, state_value);
+        qobject_cast<Vehicle*>(vehicles->get(i))->pauseVehicle();
     }
 }
 
