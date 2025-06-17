@@ -1290,7 +1290,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             w_lat = message["latitude"].toDouble();
             w_lon = message["longitude"].toDouble();
             w_alt = message["altitude"].toDouble();
-            goToWaypoint(requestVehicle, w_speed, w_yaw, w_lat, w_lon, w_alt, msg, message, state_value);
+            requestVehicle->goToWaypointGeneric(w_speed, w_yaw, w_lat, w_lon, w_alt, msg, message, state_value);
             // requestVehicle->sendSetPositionTargetGlobalInt(w_lat, w_lon, w_alt, w_speed, w_yaw); // no response for this one
             // requestVehicle->goToWaypoint(w_speed, w_yaw, w_lat, w_lon, w_alt); // check if do_reposition supports this (see guidedmodereposition)
             break;
@@ -1306,14 +1306,14 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qWarning() << "recieved PAUSE_DRONE_AND_DISABLE_SMA";
             qWarning() << "=================================================";
             _smaAuthorized = false;
-            pauseVehicle(requestVehicle, msg, message, state_value);
+            requestVehicle->pauseVehicleDG(msg, message, state_value);
             state_value = 0;
             break;
         case 22:
             qWarning() << "=================================================";
             qWarning() << "recieved PAUSE_DRONE";
             qWarning() << "=================================================";
-            pauseVehicle(requestVehicle, msg, message, state_value);
+            requestVehicle->pauseVehicleDG(msg, message, state_value);
             break;
         case 23:
             qWarning() << "=================================================";
@@ -2210,53 +2210,8 @@ void QGCApplication::pauseAll(const QMqttMessage& msg, const QJsonObject& messag
     int state_value = 0;
     QmlObjectListModel* vehicles = _vehicleManager->vehicles();
     for(int i = 0; i<vehicles->count(); i++){
-        pauseVehicle(qobject_cast<Vehicle*>(vehicles->get(i)), msg, message, state_value);
+        qobject_cast<Vehicle*>(vehicles->get(i))->pauseVehicleDG(msg, message, state_value);
     }
-}
-
-void QGCApplication::goToWaypoint(Vehicle* requestVehicle, 
-                                    double w_speed,
-                                    double w_yaw,
-                                    double w_lat,
-                                    double w_lon,
-                                    double w_alt,
-                                    const QMqttMessage& msg,
-                                    const QJsonObject& message,
-                                    int& state_value){
-    if(requestVehicle->px4Firmware()) {
-        qWarning() << "*****   PX4 firmware detected   *****";
-        QObject::connect(requestVehicle, &Vehicle::repositionResult, this, [this, msg, message, requestVehicle](bool success) {
-            sendResponseMessage(msg, message, success);
-            QObject::disconnect(requestVehicle, &Vehicle::repositionResult, this, nullptr);
-        });
-        requestVehicle->goToWaypoint(w_speed, w_yaw, w_lat, w_lon, w_alt); // check if do_reposition supports this (see guidedmodereposition)
-        state_value = -2;
-    }
-    if(requestVehicle->apmFirmware()) {
-        qWarning() << "*****   ArduPilot firmware detected   *****";
-        if(requestVehicle->guidedModeSupported()){
-            requestVehicle->setFlightMode("Guided");
-            requestVehicle->sendSetPositionTargetGlobalInt(w_lat, w_lon, w_alt, w_speed, w_yaw); // no response for this one
-        }
-        state_value = 0;
-    }
-}
-
-void QGCApplication::pauseVehicle(Vehicle* requestVehicle, const QMqttMessage& msg, const QJsonObject& message, int& state_value){
-    double w_lat = requestVehicle->coordinate().latitude();
-    double w_lon = requestVehicle->coordinate().longitude();
-    double w_alt = requestVehicle->coordinate().altitude();
-    double w_speed = 1; // default speed
-    double w_yaw = (qobject_cast<Fact*>(requestVehicle->heading())->rawValueString()).toDouble();
-    QObject::connect(requestVehicle, &Vehicle::repositionResult, this, [this, msg, message, requestVehicle, &state_value](bool success) {
-        double w_lat = requestVehicle->coordinate().latitude();
-        double w_lon = requestVehicle->coordinate().longitude();
-        double w_alt = requestVehicle->coordinate().altitude();
-        double w_yaw = (qobject_cast<Fact*>(requestVehicle->heading())->rawValueString()).toDouble();
-        goToWaypoint(requestVehicle, 1, w_yaw, w_lat, w_lon, w_alt, msg, message, state_value);
-        QObject::disconnect(requestVehicle, &Vehicle::repositionResult, this, nullptr);
-    });
-    goToWaypoint(requestVehicle, w_speed, w_yaw, w_lat, w_lon, w_alt, msg, message, state_value);
 }
 
 bool QGCApplication::_initForNormalAppBoot()

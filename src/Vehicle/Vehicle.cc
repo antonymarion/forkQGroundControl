@@ -928,6 +928,51 @@ void Vehicle::_setNewVehicleData()
     }
 }
 
+void Vehicle::goToWaypointGeneric(double w_speed,
+                                    double w_yaw,
+                                    double w_lat,
+                                    double w_lon,
+                                    double w_alt,
+                                    const QMqttMessage& msg,
+                                    const QJsonObject& message,
+                                    int& state_value){
+    if(px4Firmware()) {
+        qWarning() << "*****   PX4 firmware detected   *****";
+        QObject::connect(this, &Vehicle::repositionResult, this, [this, msg, message](bool success) {
+            sendResponseMessage(msg, message, success);
+            QObject::disconnect(this, &Vehicle::repositionResult, this, nullptr);
+        });
+
+        goToWaypoint(w_speed, w_yaw, w_lat, w_lon, w_alt); // check if do_reposition supports this (see guidedmodereposition)
+        state_value = -2;
+    }
+
+    if(apmFirmware()) {
+        qWarning() << "*****   ArduPilot firmware detected   *****";
+        if(guidedModeSupported()){
+            setFlightMode("Guided");
+            sendSetPositionTargetGlobalInt(w_lat, w_lon, w_alt, w_speed, w_yaw); // no response for this one
+        }
+        state_value = 0;
+    }
+}
+
+void Vehicle::pauseVehicleDG(const QMqttMessage& msg, const QJsonObject& message, int& state_value){
+    double w_lat = coordinate().latitude();
+    double w_lon = coordinate().longitude();
+    double w_alt = coordinate().altitude();
+    double w_yaw = (qobject_cast<Fact*>(heading())->rawValueString()).toDouble();
+    goToWaypointGeneric(1, w_yaw, w_lat, w_lon, w_alt, msg, message, state_value);
+
+    QThread::msleep(500);
+    
+    w_lat = coordinate().latitude();
+    w_lon = coordinate().longitude();
+    w_alt = coordinate().altitude();
+    w_yaw = (qobject_cast<Fact*>(heading())->rawValueString()).toDouble();
+    goToWaypointGeneric(1, w_yaw, w_lat, w_lon, w_alt, msg, message, state_value);
+}
+
 void Vehicle::sendSetPositionTargetGlobalInt(double latitude, double longitude, float altitude, float yaw, float speed) {
     SharedLinkInterfacePtr sharedLink = vehicleLinkManager()->primaryLink().lock();
     if (!sharedLink) {
