@@ -135,6 +135,7 @@ public:
     void        addSMAClientId          (QString clientId); // add SMA client id from list
     void        removeSMAClientId       (QString clientId); // remove SMA client id by index
     QMap<QString, QStringList> getAircraftInfo() { return aircraftUasSnList; } // Get aircraft list
+    void sendResponseMessage    (const QMqttMessage &inputMessage, QJsonObject outputMessage, bool success);
     
     
     QStringList         excludeList         =   {};                         // exclude mac list
@@ -295,7 +296,6 @@ private:
     void updateMessage          (const QMqttMessage &msg);
     void updateStatus           (QMqttSubscription::SubscriptionState state);
     void sendEventMessage       (QString command, int value, QString sn);
-    void sendResponseMessage    (const QMqttMessage &inputMessage, QJsonObject outputMessage, bool success);
     void loadFromConfigFile     (QFile& file, QJsonObject& jsonObject);
     void writeInConfigFile      (QFile& file, QJsonObject& jsonObject);
     void saveSMAClientIds       (); // save SMA client ids
