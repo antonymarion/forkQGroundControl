@@ -321,7 +321,7 @@ private:
     int         startRecording  ();
     int         stopRecording   ();
     void        vectorControl   ();
-    void        pauseAll        (const QMqttMessage& msg, const QJsonObject& message);
+    void        pauseAll        ();
 
     // Utilities
     bool isFileEmpty(const std::string& filePath);
