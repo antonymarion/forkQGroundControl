@@ -939,7 +939,7 @@ void Vehicle::goToWaypointGeneric(double w_speed,
     if(px4Firmware()) {
         qWarning() << "*****   PX4 firmware detected   *****";
         QObject::connect(this, &Vehicle::repositionResult, this, [this, msg, message](bool success) {
-            sendResponseMessage(msg, message, success);
+            qgcApp()->sendResponseMessage(msg, message, success);
             QObject::disconnect(this, &Vehicle::repositionResult, this, nullptr);
         });
 
@@ -965,7 +965,7 @@ void Vehicle::pauseVehicleDG(const QMqttMessage& msg, const QJsonObject& message
     goToWaypointGeneric(1, w_yaw, w_lat, w_lon, w_alt, msg, message, state_value);
 
     QThread::msleep(500);
-    
+
     w_lat = coordinate().latitude();
     w_lon = coordinate().longitude();
     w_alt = coordinate().altitude();
