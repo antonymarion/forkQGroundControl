@@ -2249,6 +2249,15 @@ void QGCApplication::pauseVehicle(Vehicle* requestVehicle, const QMqttMessage& m
     double w_speed = 1; // default speed
     double w_yaw = (qobject_cast<Fact*>(requestVehicle->heading())->rawValueString()).toDouble();
     goToWaypoint(requestVehicle, w_speed, w_yaw, w_lat, w_lon, w_alt, msg, message, state_value);
+    
+    QThread::msleep(500);
+    
+    w_lat = requestVehicle->coordinate().latitude();
+    w_lon = requestVehicle->coordinate().longitude();
+    w_alt = requestVehicle->coordinate().altitude();
+    w_yaw = (qobject_cast<Fact*>(requestVehicle->heading())->rawValueString()).toDouble();
+    goToWaypoint(requestVehicle, w_speed, w_yaw, w_lat, w_lon, w_alt, msg, message, state_value);
+
 }
 
 bool QGCApplication::_initForNormalAppBoot()
