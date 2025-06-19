@@ -1330,9 +1330,9 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
 
             if (flightMode == "Offboard") {
                 requestVehicle->setOffboardWarmup(true);
-                QTimer::singleShot(500, this, [this, requestVehicle, flightMode, msg, message, verifyFlightMode]() mutable {
+                QTimer::singleShot(500, this, [this, requestVehicle, flightMode, msg, message]() {
                     requestVehicle->setFlightMode(flightMode);
-                    sendResponseMessage(msg, message, verifyFlightMode());
+                    sendResponseMessage(msg, message, requestVehicle->flightMode() == "Offboard");
                 });
             } else {
                 requestVehicle->setFlightMode(flightMode);
@@ -1341,6 +1341,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
                     qWarning() << "*****   Mode not supported   *****";
                     message.insert("error", "Mode not supported. Back to default mode HOLD.");
                     requestVehicle->setFlightMode("Hold");
+                    requestVehicle->setOffboardWarmup(false);
 
                     sendResponseMessage(msg, message, !verifyFlightMode());
                 } else {
