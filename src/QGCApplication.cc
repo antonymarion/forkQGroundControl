@@ -1330,10 +1330,10 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
 
             if (flightMode == "Offboard") {
                 requestVehicle->setOffboardWarmup(true);
-                QThread::msleep(500);
-                requestVehicle->setFlightMode(flightMode);
-
-                sendResponseMessage(msg, message, verifyFlightMode());
+                QTimer::singleShot(500, this, [this, requestVehicle, flightMode, msg, message, verifyFlightMode]() mutable {
+                    requestVehicle->setFlightMode(flightMode);
+                    sendResponseMessage(msg, message, verifyFlightMode());
+                });
             } else {
                 requestVehicle->setFlightMode(flightMode);
 
