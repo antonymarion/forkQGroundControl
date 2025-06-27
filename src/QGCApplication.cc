@@ -876,8 +876,9 @@ void QGCApplication::_initCommon()
     loadCustomData(); // Load aircraft list
     
     // Setup MqttClient
+    mqttHost = mqttHost.isEmpty() ? "152.228.246.204" : mqttHost;
     m_client = new QMqttClient(this);
-    m_client->setHostname(mqttHost.isEmpty() ? "152.228.246.204" : mqttHost);
+    m_client->setHostname(mqttHost);
     m_client->setPort(1883);
     m_client->setUsername(QString(""));
     m_client->setCleanSession(false);
@@ -916,6 +917,7 @@ void QGCApplication::updateLogStateChange()
 
 void QGCApplication::brokerConnected()
 {
+    connectionAttempts = 0;
     QmlObjectListModel* vehicles = _vehicleManager->vehicles();
     for(int i=0; i<vehicles->count(); i++){
         Vehicle* vehicle = qobject_cast<Vehicle*>(vehicles->get(i));
@@ -944,7 +946,12 @@ void QGCApplication::brokerDisconnected()
     qWarning() << m_client->error();
     qWarning() << "Mqtt Disconnected";
     delay(5);
-    qWarning() << "Trying to reconnect";
+    qWarning() << "Trying to reconnect to " << mqttHost;
+    connectionAttempts++;
+    if (connectionAttempts > 5) {
+        qWarning() << "Failed to reconnect after 5 attempts. Please check your connection.";
+        return;
+    }
     m_client->connectToHost();
 }
 

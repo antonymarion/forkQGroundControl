@@ -340,6 +340,7 @@ private:
     bool                    clientState         = false;
     bool                    _recording;
     bool                    canControl          = true;                    // false if remote pilote override commands
+    int                     connectionAttempts   = 0;                      // number of connection attempts to MQTT broker
     bool                    _smaAuthorized      = true;                    // true if SMA control is enabled
     bool                    _production          = false; // true if production build, false if debug build
     Vehicle*                _vehicle{nullptr};                             // current vehicle
