@@ -937,7 +937,7 @@ void QGCApplication::brokerConnected()
     }
     clientState = true;
 
-    qWarning() << "Mqtt Connected" to << mqttHost;
+    qWarning() << "Mqtt Connected to " << mqttHost;
 }
 
 void QGCApplication::brokerDisconnected()
