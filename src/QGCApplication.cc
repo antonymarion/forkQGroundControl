@@ -946,12 +946,13 @@ void QGCApplication::brokerDisconnected()
     qWarning() << m_client->error();
     qWarning() << "Mqtt Disconnected";
     delay(5);
-    qWarning() << "Trying to reconnect to " << mqttHost;
+    qWarning() << "Trying to reconnect to " << mqttHost << " try " << connectionAttempts;
     connectionAttempts++;
     if (connectionAttempts > 5) {
         qWarning() << "Failed to reconnect after 5 attempts. Please check your connection.";
         return;
     }
+    m_client->setHostname(mqttHost);
     m_client->connectToHost();
 }
 
