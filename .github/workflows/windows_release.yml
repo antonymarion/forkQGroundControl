@@ -96,8 +96,14 @@ jobs:
           git clone git://code.qt.io/qt/qtmqtt.git --branch 5.15.2
           dir
           cd qtmqtt
+          dir
           mkdir build
           cd build
+          dir C:\a
+          dir C:\a\_temp
+          dir C:\a\_temp\Qt
+          dir C:\a\_temp\Qt\5.15.2
+          dir C:\a\_temp\Qt\5.15.2\msvc2019_64
           dir C:\a\_temp\Qt\5.15.2\msvc2019_64\bin
           %QMAKE_BIN_DIR%/qmake ../qtmqtt.pro
           nmake
