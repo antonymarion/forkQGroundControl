@@ -946,19 +946,19 @@ void QGCApplication::brokerDisconnected()
     qWarning() << m_client->error();
     qWarning() << "Mqtt Disconnected";
     delay(5);
-    qWarning() << "Trying to reconnect to " << mqttHost << " try " << connectionAttempts;
-    connectionAttempts++;
-    if (connectionAttempts > 5) {
-        qWarning() << "Failed to reconnect after 5 attempts. Please check your connection.";
+    if (connectionAttempts > 2) {
+        qWarning() << "Failed to reconnect after 3 attempts. Please check your connection.";
         return;
     }
+    qWarning() << "Trying to reconnect to " << mqttHost << " try " << connectionAttempts;
+    connectionAttempts++;
     m_client->setHostname(mqttHost);
     m_client->connectToHost();
 }
 
 void QGCApplication::disconnectFromMqtt()
 {
-    if (m_client->state() == QMqttClient::Connected) {
+    if (m_client->state() == QMqttClient::Connected && m_client->state() == QMqttClient::Connecting) {
         qWarning() << "Disconnecting from MQTT...";
         m_client->disconnectFromHost();
         clientState = false;
@@ -970,6 +970,7 @@ void QGCApplication::disconnectFromMqtt()
 
 void QGCApplication::setMqttHost(QString host)
 {
+    connectionAttempts = 0;
     if (host == mqttHost) {
         return;
     }
