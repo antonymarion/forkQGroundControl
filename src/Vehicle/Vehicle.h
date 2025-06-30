@@ -943,15 +943,16 @@ public:
 
     double loadProgress                 () const { return _loadProgress; }
 
-    void setEventsMetadata(uint8_t compid, const QString& metadataJsonFileName);
-    void setActuatorsMetadata(uint8_t compid, const QString& metadataJsonFileName);
-    void sendSetPositionTargetGlobalInt(double latitude, double longitude, float altitude, float yaw, float speed);
-    void vectorControl();
-    void sendSetPositionTargetLocalNed(double vx, double vy, double vz, double yaw_rate);
-    void setJoysticksValues(float roll, float pitch, float yaw, float thrust);
-    void setOffboardWarmup(bool warmup) { _offboardWarmup = warmup; };
-    void goToWaypointGeneric(double w_speed, double w_yaw, double w_lat, double w_lon, double w_alt, const QMqttMessage& msg, const QJsonObject& message, int& state_value);
-    void pauseVehicleDG(const QMqttMessage& msg, const QJsonObject& message, int& state_value);
+    void setEventsMetadata              (uint8_t compid, const QString& metadataJsonFileName);
+    void setActuatorsMetadata           (uint8_t compid, const QString& metadataJsonFileName);
+    void sendSetPositionTargetGlobalInt (double latitude, double longitude, float altitude, float yaw, float speed);
+    void vectorControl                  ();
+    void sendSetPositionTargetLocalNed  (double vx, double vy, double vz, double yaw_rate);
+    void setJoysticksValues             (float roll, float pitch, float yaw, float thrust);
+    void setOffboardWarmup              (bool warmup) { _offboardWarmup = warmup; };
+    void goToWaypointGeneric            (double w_speed, double w_yaw, double w_lat, double w_lon, double w_alt, const QMqttMessage& msg, const QJsonObject& message, int& state_value);
+    void pauseVehicleDG                 (const QMqttMessage& msg, const QJsonObject& message, int& state_value);
+    void setNewVehicleData              ();
 
     HealthAndArmingCheckReport* healthAndArmingCheckReport() { return &_healthAndArmingCheckReport; }
 
@@ -1071,7 +1072,6 @@ signals:
     void sensorsParametersResetAck      (bool success);
 
 private slots:
-    void _setNewVehicleData                 ();
     void _mavlinkMessageReceived            (LinkInterface* link, mavlink_message_t message);
     void _sendMessageMultipleNext           ();
     void _parametersReady                   (bool parametersReady);

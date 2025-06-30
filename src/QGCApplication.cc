@@ -1835,6 +1835,11 @@ void QGCApplication::sendAircraftPositionInfo() {
             qWarning() << "*****   Aircraft init not completed   *****";
             continue;
         }
+        if(vehicle->sn().isEmpty()) {
+            vehicle->setNewVehicleData();
+            qWarning() << "*****   Aircraft SN not available   *****";
+            continue;
+        }
 
         QJsonObject newResponse;
         newResponse.insert("registrationNumber",    vehicle->uasString());

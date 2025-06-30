@@ -382,7 +382,7 @@ void Vehicle::_commonInit()
     connect(this, &Vehicle::homePositionChanged,    this, &Vehicle::_updateDistanceHeadingToHome);
     connect(this, &Vehicle::hobbsMeterChanged,      this, &Vehicle::_updateHobbsMeter);
     connect(this, &Vehicle::coordinateChanged,      this, &Vehicle::_updateAltAboveTerrain);
-    connect(this, &Vehicle::initialConnectComplete, this, &Vehicle::_setNewVehicleData);
+    connect(this, &Vehicle::initialConnectComplete, this, &Vehicle::setNewVehicleData);
     // Initialize alt above terrain to Nan so frontend can display it correctly in case the terrain query had no response
     _altitudeAboveTerrFact.setRawValue(qQNaN());
 
@@ -840,7 +840,7 @@ void Vehicle::land(){
     );
 }
 
-void Vehicle::_setNewVehicleData()
+void Vehicle::setNewVehicleData()
 {
     QMap<QString, QStringList> uasSnMap = qgcApp()->getAircraftInfo();
     QStringList uasSn;
