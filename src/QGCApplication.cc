@@ -958,7 +958,7 @@ void QGCApplication::brokerDisconnected()
 
 void QGCApplication::disconnectFromMqtt()
 {
-    if (m_client->state() == QMqttClient::Connected && m_client->state() == QMqttClient::Connecting) {
+    if (m_client->state() == QMqttClient::Connected || m_client->state() == QMqttClient::Connecting) {
         qWarning() << "Disconnecting from MQTT...";
         m_client->disconnectFromHost();
         clientState = false;
