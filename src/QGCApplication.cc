@@ -979,7 +979,9 @@ void QGCApplication::setMqttHost(QString host)
         }
         mqttHost = "152.228.246.204";
     }
-    mqttHost = host;
+    else {
+        mqttHost = host;
+    }
     disconnectFromMqtt();
     m_client->setHostname(mqttHost);
     if(connectionAttempts > 3){
