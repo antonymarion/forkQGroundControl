@@ -2734,7 +2734,7 @@ bool QGCApplication::event(QEvent *e)
 
 void QGCApplication::sendMission(const QString& planFilePath)
 {
-    PlanMasterController* planController = new PlanMasterController(qgcApp()->toolbox()->multiVehicleManager()->activeVehicle(), nullptr);
+    PlanMasterController* planController = new PlanMasterController(nullptr);
     planController->start();
 
     QFile planFile(planFilePath);

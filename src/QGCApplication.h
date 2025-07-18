@@ -322,7 +322,7 @@ private:
     int         stopRecording   ();
     void        vectorControl   ();
     void        pauseAll        ();
-    void        sendMission     ();
+    void        sendMission     (const QString& planFilePath);
 
     // Utilities
     bool isFileEmpty(const std::string& filePath);
