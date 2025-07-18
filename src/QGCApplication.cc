@@ -2732,41 +2732,45 @@ bool QGCApplication::event(QEvent *e)
     return QApplication::event(e);
 }
 
-void QGCApplication::sendMission(const QString& planFilePath)
+void QGCApplication::sendMission(const QString& mission)
 {
+    QString outputDir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+
+    QDir dir(outputDir);
+    if (!dir.exists()) {
+        if (!dir.mkpath(".")) {
+            qWarning() << "Can not create dir :" << outputDir;
+            return false;
+        }
+    }
+
+    QString timestamp = QDateTime::currentDateTime().toString("yyyyMMdd_HHmmss");
+    QString fileName = QString("mission_%1.plan").arg(timestamp);
+    QString filePath = QDir(dir).filePath(fileName);
+    QFile file(filePath);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        qWarning() << "Can not create PlanFile :" << filePath;
+        return;
+    }
+
+    QTextStream out(&file);
+    out << mission;
+    file.close();
+
     PlanMasterController* planController = new PlanMasterController(nullptr);
     planController->start();
 
-    QFile planFile(planFilePath);
-    if (!planFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qWarning() << "Can not open PlanFile:" << planFilePath;
-        return;
-    }
-
-    QByteArray planData = planFile.readAll();
-    planFile.close();
-
-    QJsonParseError error;
-    QJsonDocument planDoc = QJsonDocument::fromJson(planData, &error);
-    if (error.error != QJsonParseError::NoError) {
-        qWarning() << "Error parsing JSON:" << error.errorString();
-        return;
-    }
-
-    if (!planDoc.isObject()) {
-        qWarning() << "PlanFile is unvalide";
-        return;
-    }
-
-    QJsonObject planJson = planDoc.object();
-
-    bool success = planController->loadFromJson(planJson, planFilePath);
+    bool success = planController->loadFromFile(file);
     if (!success) {
         qWarning() << "Error loading PlanFile";
         return;
     }
 
-    planController->sendToVehicle();
+    success = planController->sendToVehicle();
+    if (!success) {
+        qWarning() << "Error sending PlanFile";
+        return;
+    }
 
-    qDebug() << "Mission sent succesfully:" << planFilePath;
+    qDebug() << "Mission sent succesfully:" << file;
 }
