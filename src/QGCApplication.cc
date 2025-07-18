@@ -2759,18 +2759,8 @@ void QGCApplication::sendMission(const QString& mission)
 
     PlanMasterController* planController = new PlanMasterController(nullptr);
     planController->start();
-
-    bool success = planController->loadFromFile(filePath);
-    if (!success) {
-        qWarning() << "Error loading PlanFile";
-        return;
-    }
-
-    success = planController->sendToVehicle();
-    if (!success) {
-        qWarning() << "Error sending PlanFile";
-        return;
-    }
+    planController->loadFromFile(filePath);
+    planController->sendToVehicle();
 
     qDebug() << "Mission sent succesfully:" << filePath;
 }
