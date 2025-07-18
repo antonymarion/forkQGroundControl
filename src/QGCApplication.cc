@@ -1407,6 +1407,17 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             QGCApplication::testing3();
             state_value = 0;
             break;
+        case 29:
+            qWarning() << "=================================================";
+            qWarning() << "recieved SEND_MISSION";
+            qWarning() << "=================================================";
+            if(!requestVehicle) {
+                qWarning() << "*****   No vehicle available   *****";
+                break;
+            };
+
+            state_value = 0;
+            break;
         default:
             message.insert("status","KO");
             message.insert("error","KO");
@@ -2719,4 +2730,43 @@ bool QGCApplication::event(QEvent *e)
         }
     }
     return QApplication::event(e);
+}
+
+void QGCApplication::sendMission(const QString& planFilePath)
+{
+    PlanMasterController* planController = new PlanMasterController(qgcApp()->toolbox()->multiVehicleManager()->activeVehicle(), nullptr);
+    planController->start();
+
+    QFile planFile(planFilePath);
+    if (!planFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qWarning() << "Can not open PlanFile:" << planFilePath;
+        return;
+    }
+
+    QByteArray planData = planFile.readAll();
+    planFile.close();
+
+    QJsonParseError error;
+    QJsonDocument planDoc = QJsonDocument::fromJson(planData, &error);
+    if (error.error != QJsonParseError::NoError) {
+        qWarning() << "Error parsing JSON:" << error.errorString();
+        return;
+    }
+
+    if (!planDoc.isObject()) {
+        qWarning() << "PlanFile is unvalide";
+        return;
+    }
+
+    QJsonObject planJson = planDoc.object();
+
+    bool success = planController->loadFromJson(planJson, planFilePath);
+    if (!success) {
+        qWarning() << "Error loading PlanFile";
+        return;
+    }
+
+    planController->sendToVehicle();
+
+    qDebug() << "Mission sent succesfully:" << planFilePath;
 }
