@@ -2740,7 +2740,7 @@ void QGCApplication::sendMission(const QString& mission)
     if (!dir.exists()) {
         if (!dir.mkpath(".")) {
             qWarning() << "Can not create dir :" << outputDir;
-            return false;
+            return;
         }
     }
 
@@ -2760,7 +2760,7 @@ void QGCApplication::sendMission(const QString& mission)
     PlanMasterController* planController = new PlanMasterController(nullptr);
     planController->start();
 
-    bool success = planController->loadFromFile(file);
+    bool success = planController->loadFromFile(filePath);
     if (!success) {
         qWarning() << "Error loading PlanFile";
         return;
@@ -2772,5 +2772,5 @@ void QGCApplication::sendMission(const QString& mission)
         return;
     }
 
-    qDebug() << "Mission sent succesfully:" << file;
+    qDebug() << "Mission sent succesfully:" << filePath;
 }
