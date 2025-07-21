@@ -1058,9 +1058,6 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
         }
     }
 
-    // mission
-    QString mission = message["mission"].toString();
-
     // TEMPORARY
     if(!_smaAuthorized && clientId == "oseSMA"){ // change this to real clientId
         qWarning() << "=================================================";
@@ -1414,11 +1411,12 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qWarning() << "=================================================";
             qWarning() << "recieved SEND_MISSION";
             qWarning() << "=================================================";
+            qDebug() << "Raw message:" << QJsonDocument(message).toJson(QJsonDocument::Indented);
             if(!requestVehicle) {
                 qWarning() << "*****   No vehicle available   *****";
                 break;
             };
-            QGCApplication::sendMission(mission);
+            QGCApplication::sendMission(message["mission"].toString());
             state_value = 0;
             break;
         default:
