@@ -1058,6 +1058,17 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
         }
     }
 
+    // Mission
+    QString mission;
+    QJsonValue val = message["mission"];
+    if (val.isObject()) {
+        QJsonObject missionObject = val.toObject();
+        QJsonDocument doc(missionObject);
+        mission = QString::fromUtf8(doc.toJson(QJsonDocument::Indented));
+    } else {
+        qWarning() << "Mission is not a JSON objet. Abort!";
+    }
+
     // TEMPORARY
     if(!_smaAuthorized && clientId == "oseSMA"){ // change this to real clientId
         qWarning() << "=================================================";
@@ -1416,7 +1427,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
                 qWarning() << "*****   No vehicle available   *****";
                 break;
             };
-            QGCApplication::sendMission(message["mission"].toString());
+            QGCApplication::sendMission(mission);
             state_value = 0;
             break;
         default:
