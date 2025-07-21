@@ -1415,7 +1415,8 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
                 qWarning() << "*****   No vehicle available   *****";
                 break;
             };
-            QGCApplication::sendMission(message["mission"].toString());
+            QString mission = QString(message["mission"].toString());
+            QGCApplication::sendMission(mission);
             state_value = 0;
             break;
         default:
@@ -2732,7 +2733,7 @@ bool QGCApplication::event(QEvent *e)
     return QApplication::event(e);
 }
 
-void QGCApplication::sendMission(const QString& mission)
+void QGCApplication::sendMission(QString mission)
 {
     QString outputDir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
 
