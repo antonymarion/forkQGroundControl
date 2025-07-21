@@ -1422,7 +1422,6 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qWarning() << "=================================================";
             qWarning() << "recieved SEND_MISSION";
             qWarning() << "=================================================";
-            qDebug() << "Raw message:" << QJsonDocument(message).toJson(QJsonDocument::Indented);
             if(!requestVehicle) {
                 qWarning() << "*****   No vehicle available   *****";
                 break;
@@ -2769,7 +2768,7 @@ void QGCApplication::sendMission(QString mission)
     out << mission;
     file.close();
 
-    qDebug() << "Mission content:" << mission;
+    //qDebug() << "Mission content:" << mission;
 
     PlanMasterController* planController = new PlanMasterController(nullptr);
     planController->start();
