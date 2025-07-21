@@ -2732,7 +2732,7 @@ bool QGCApplication::event(QEvent *e)
     return QApplication::event(e);
 }
 
-void QGCApplication::sendMission(QString mission)
+void QGCApplication::sendMission(const QString& mission)
 {
     QString outputDir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
 
