@@ -1415,7 +1415,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
                 qWarning() << "*****   No vehicle available   *****";
                 break;
             };
-            QString mission = QString(message["mission"].toString());
+            QString mission = message["mission"].toString();
             QGCApplication::sendMission(mission);
             state_value = 0;
             break;
