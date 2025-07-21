@@ -2757,7 +2757,7 @@ void QGCApplication::sendMission(QString mission)
     out << mission;
     file.close();
 
-    qWarning() << mission;
+    qDebug() << mission;
 
     PlanMasterController* planController = new PlanMasterController(nullptr);
     planController->start();
