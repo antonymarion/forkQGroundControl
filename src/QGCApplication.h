@@ -322,6 +322,7 @@ private:
     int         stopRecording   ();
     void        vectorControl   ();
     void        pauseAll        ();
+    void        sendMission     (QString mission);
 
     // Utilities
     bool isFileEmpty(const std::string& filePath);
@@ -385,7 +386,8 @@ private:
         "SET_DATA",
         "SET_GEOFENCING",
         "TESTING_1",
-        "TESTING_2"
+        "TESTING_2",
+        "SEND_MISSION"
     };
     QStringList smaClients = {}; // list of SMA clients ids
 

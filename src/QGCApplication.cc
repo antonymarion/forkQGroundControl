@@ -1058,6 +1058,17 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
         }
     }
 
+    // Mission
+    QString mission;
+    QJsonValue val = message["mission"];
+    if (val.isObject()) {
+        QJsonObject missionObject = val.toObject();
+        QJsonDocument doc(missionObject);
+        mission = QString::fromUtf8(doc.toJson(QJsonDocument::Indented));
+    } else {
+        qWarning() << "Mission is not a JSON objet. Abort!";
+    }
+
     // TEMPORARY
     if(!_smaAuthorized && clientId == "oseSMA"){ // change this to real clientId
         qWarning() << "=================================================";
@@ -1405,6 +1416,17 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qWarning() << "recieved TESTING_2";
             qWarning() << "=================================================";
             QGCApplication::testing3();
+            state_value = 0;
+            break;
+        case 29:
+            qWarning() << "=================================================";
+            qWarning() << "recieved SEND_MISSION";
+            qWarning() << "=================================================";
+            if(!requestVehicle) {
+                qWarning() << "*****   No vehicle available   *****";
+                break;
+            };
+            QGCApplication::sendMission(mission);
             state_value = 0;
             break;
         default:
@@ -2719,4 +2741,39 @@ bool QGCApplication::event(QEvent *e)
         }
     }
     return QApplication::event(e);
+}
+
+void QGCApplication::sendMission(QString mission)
+{
+    QString outputDir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+
+    QDir dir(outputDir);
+    if (!dir.exists()) {
+        if (!dir.mkpath(".")) {
+            qWarning() << "Can not create dir :" << outputDir;
+            return;
+        }
+    }
+
+    QString timestamp = QDateTime::currentDateTime().toString("yyyyMMdd_HHmmss");
+    QString fileName = QString("mission_%1.plan").arg(timestamp);
+    QString filePath = QDir(dir).filePath(fileName);
+    QFile file(filePath);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        qWarning() << "Can not create PlanFile :" << filePath;
+        return;
+    }
+
+    QTextStream out(&file);
+    out << mission;
+    file.close();
+
+    //qDebug() << "Mission content:" << mission;
+
+    PlanMasterController* planController = new PlanMasterController(nullptr);
+    planController->start();
+    planController->loadFromFile(filePath);
+    planController->sendToVehicle();
+
+    qDebug() << "Mission sent succesfully:" << filePath;
 }
