@@ -1424,7 +1424,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
                 qWarning() << "*****   No vehicle available   *****";
                 break;
             };
-            QGCApplication::sendMission(QString convertWaypointsToPlan(Waypoints));
+            QGCApplication::sendMission(convertWaypointsToPlan(Waypoints));
             state_value = 0;
             break;
         default:
