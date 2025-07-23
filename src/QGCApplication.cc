@@ -1061,7 +1061,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
     // Waypoints
     QJsonObject Waypoints;
     QJsonValue val = message["waypoints"];
-    if (val.isObject()) {
+    if (val.isArray()) {
         Waypoints = val.toObject();
     } else {
         qWarning() << "Waypoints is not a JSON objet. Abort!";
