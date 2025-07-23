@@ -1424,7 +1424,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
                 qWarning() << "*****   No vehicle available   *****";
                 break;
             };
-            QGCApplication::sendMission(convertWaypointsToPlan(Waypoints));
+            QGCApplication::sendMission(QGCApplication::convertWaypointsToPlan(Waypoints));
             state_value = 0;
             break;
         default:
@@ -2776,7 +2776,7 @@ void QGCApplication::sendMission(QString mission)
     qDebug() << "Mission sent succesfully:" << filePath;
 }
 
-QString convertWaypointsToPlan(const QJsonObject& input) {
+QString QGCApplication::convertWaypointsToPlan(const QJsonObject& input) {
     QJsonObject plan;
     QJsonObject mission;
     QJsonArray items;
