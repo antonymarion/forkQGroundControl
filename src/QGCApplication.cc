@@ -2784,8 +2784,9 @@ QString QGCApplication::convertWaypointsToPlan(const QJsonObject& input) {
 
     int doJumpId = 1;
 
-    if (!input.contains("waypoints") || !input["waypoints"].isArray()) {
+    if (!input.contains("waypoints")) {
         qWarning() << "Input object does not contain a valid 'waypoints' array.";
+        qDebug() << "Waypoints list : " << input["waypoints"];
         return QString();
     }
 
