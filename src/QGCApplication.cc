@@ -1059,10 +1059,10 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
     }
 
     // Waypoints
-    QJsonObject Waypoints;
+    QJsonArray Waypoints;
     QJsonValue val = message["waypoints"];
     if (val.isArray()) {
-        Waypoints = val.toObject();
+        Waypoints = val.toArray();
     } else {
         qWarning() << "Waypoints is not a JSON objet. Abort!";
     }
@@ -2776,21 +2776,22 @@ void QGCApplication::sendMission(QString mission)
     qDebug() << "Mission sent succesfully:" << filePath;
 }
 
-QString QGCApplication::convertWaypointsToPlan(const QJsonObject& input) {
+QString QGCApplication::convertWaypointsToPlan(const QJsonArray& waypoints) {
     QJsonObject plan;
     QJsonObject mission;
     QJsonArray items;
     QString planString;
 
     int doJumpId = 1;
-
+    /*
     if (!input.contains("waypoints")) {
         qWarning() << "Input object does not contain a valid 'waypoints' array.";
         qDebug() << "Waypoints list : " << input["waypoints"];
         return QString();
     }
+        */
 
-    QJsonArray waypoints = input["waypoints"].toArray();
+    //QJsonArray waypoints = input["waypoints"].toArray();
     if (waypoints.isEmpty()) {
         qWarning() << "Waypoint list is empty.";
         return QString();
