@@ -323,6 +323,7 @@ private:
     void        vectorControl   ();
     void        pauseAll        ();
     void        sendMission     (QString mission);
+    QString     convertWaypointsToPlan(const QJsonObject& input);
 
     // Utilities
     bool isFileEmpty(const std::string& filePath);

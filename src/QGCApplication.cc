@@ -1058,15 +1058,13 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
         }
     }
 
-    // Mission
-    QString mission;
-    QJsonValue val = message["mission"];
+    // Waypoints
+    QJsonObject Waypoints;
+    QJsonValue val = message["waypoints"];
     if (val.isObject()) {
-        QJsonObject missionObject = val.toObject();
-        QJsonDocument doc(missionObject);
-        mission = QString::fromUtf8(doc.toJson(QJsonDocument::Indented));
+        Waypoints = val.toObject();
     } else {
-        qWarning() << "Mission is not a JSON objet. Abort!";
+        qWarning() << "Waypoints is not a JSON objet. Abort!";
     }
 
     // TEMPORARY
@@ -1426,7 +1424,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
                 qWarning() << "*****   No vehicle available   *****";
                 break;
             };
-            QGCApplication::sendMission(mission);
+            QGCApplication::sendMission(QString convertWaypointsToPlan(Waypoints));
             state_value = 0;
             break;
         default:
@@ -2777,3 +2775,110 @@ void QGCApplication::sendMission(QString mission)
 
     qDebug() << "Mission sent succesfully:" << filePath;
 }
+
+QString convertWaypointsToPlan(const QJsonObject& input) {
+    QJsonObject plan;
+    QJsonObject mission;
+    QJsonArray items;
+
+    int doJumpId = 1;
+
+    if (!input.contains("waypoints") || !input["waypoints"].isArray()) {
+        qWarning() << "Input object does not contain a valid 'waypoints' array.";
+        return QJsonObject();
+    }
+
+    QJsonArray waypoints = input["waypoints"].toArray();
+    if (waypoints.isEmpty()) {
+        qWarning() << "Waypoint list is empty.";
+        return QJsonObject();
+    }
+
+    // Home = first waypoint
+    QJsonObject firstWp = waypoints.first().toObject();
+    double homeLat = firstWp["latitude"].toDouble();
+    double homeLon = firstWp["longitude"].toDouble();
+    double homeAlt = firstWp["altitude"].toDouble();
+
+    // Take off
+    QJsonObject takeoffItem;
+    takeoffItem["AMSLAltAboveTerrain"] = QJsonValue::Null;
+    takeoffItem["Altitude"] = homeAlt;
+    takeoffItem["AltitudeMode"] = 0;
+    takeoffItem["autoContinue"] = true;
+    takeoffItem["command"] = 22;
+    takeoffItem["doJumpId"] = doJumpId++;
+    takeoffItem["frame"] = 3;
+    takeoffItem["params"] = QJsonArray({15, 0, 0, QJsonValue::Null, homeLat, homeLon, homeAlt});
+    takeoffItem["type"] = "SimpleItem";
+    items.append(takeoffItem);
+
+    // Add waypoints
+    for (const QJsonValue &val : waypoints) {
+        if (!val.isObject()) continue;
+        QJsonObject wp = val.toObject();
+
+        double lat = wp["latitude"].toDouble();
+        double lon = wp["longitude"].toDouble();
+        double alt = wp["altitude"].toDouble();
+
+        int command = 16;
+        if (wp.contains("instruction") && wp["instruction"].isArray()) {
+            QJsonArray instructions = wp["instruction"].toArray();
+            for (const QJsonValue &instVal : instructions) {
+                if (instVal.isObject()) QString cmd = instVal.toObject()["command"].toString().toLower();
+            }
+        }
+
+        QJsonObject item;
+        item["AMSLAltAboveTerrain"] = QJsonValue::Null;
+        item["Altitude"] = alt;
+        item["AltitudeMode"] = 0;
+        item["autoContinue"] = true;
+        item["command"] = command;
+        item["doJumpId"] = doJumpId++;
+        item["frame"] = 3;
+        item["params"] = QJsonArray({0, 0, 0, QJsonValue::Null, lat, lon, alt});
+        item["type"] = "SimpleItem";
+        items.append(item);
+    }
+
+    // Land
+    QJsonObject lastWp = waypoints.last().toObject();
+    double landLat = lastWp["latitude"].toDouble();
+    double landLon = lastWp["longitude"].toDouble();
+
+    QJsonObject landItem;
+    landItem["AMSLAltAboveTerrain"] = QJsonValue::Null;
+    landItem["Altitude"] = 0;
+    landItem["AltitudeMode"] = 0;
+    landItem["autoContinue"] = true;
+    landItem["command"] = 21;
+    landItem["doJumpId"] = doJumpId++;
+    landItem["frame"] = 3;
+    landItem["params"] = QJsonArray({0, 0, 0, QJsonValue::Null, landLat, landLon, 0});
+    landItem["type"] = "SimpleItem";
+    items.append(landItem);
+
+    mission["cruiseSpeed"] = 15;
+    mission["firmwareType"] = 12;
+    mission["globalPlanAltitudeMode"] = 1;
+    mission["hoverSpeed"] = 5;
+    mission["items"] = items;
+    mission["plannedHomePosition"] = QJsonArray({homeLat, homeLon, homeAlt});
+    mission["vehicleType"] = 2;
+    mission["version"] = 2;
+
+    plan["fileType"] = "Plan";
+    plan["geoFence"] = QJsonObject({{"circles", QJsonArray()}, {"polygons", QJsonArray()}, {"version", 2}});
+    plan["groundStation"] = "QGroundControl";
+    plan["mission"] = mission;
+    plan["rallyPoints"] = QJsonObject({{"points", QJsonArray()}, {"version", 2}});
+    plan["version"] = 1;
+
+    QJsonDocument doc(plan);
+    QString planString = QString::fromUtf8(doc.toJson(QJsonDocument::Indented));
+
+    return planString;
+}
+
