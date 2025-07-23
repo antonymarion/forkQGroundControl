@@ -2780,18 +2780,19 @@ QString convertWaypointsToPlan(const QJsonObject& input) {
     QJsonObject plan;
     QJsonObject mission;
     QJsonArray items;
+    QString planString;
 
     int doJumpId = 1;
 
     if (!input.contains("waypoints") || !input["waypoints"].isArray()) {
         qWarning() << "Input object does not contain a valid 'waypoints' array.";
-        return QJsonObject();
+        return QString();
     }
 
     QJsonArray waypoints = input["waypoints"].toArray();
     if (waypoints.isEmpty()) {
         qWarning() << "Waypoint list is empty.";
-        return QJsonObject();
+        return QString();
     }
 
     // Home = first waypoint
@@ -2877,7 +2878,7 @@ QString convertWaypointsToPlan(const QJsonObject& input) {
     plan["version"] = 1;
 
     QJsonDocument doc(plan);
-    QString planString = QString::fromUtf8(doc.toJson(QJsonDocument::Indented));
+    planString = QString::fromUtf8(doc.toJson(QJsonDocument::Indented));
 
     return planString;
 }
