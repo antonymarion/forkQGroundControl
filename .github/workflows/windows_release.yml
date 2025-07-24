@@ -5,7 +5,7 @@ on:
     branches:
       - 'master'
       - 'Stable*'
-      - 'updated-qgc-mission'
+      - 'updated-qgc'
     tags:
       - 'v*'
     paths-ignore:
