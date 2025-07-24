@@ -2783,15 +2783,7 @@ QString QGCApplication::convertWaypointsToPlan(const QJsonArray& waypoints) {
     QString planString;
 
     int doJumpId = 1;
-    /*
-    if (!input.contains("waypoints")) {
-        qWarning() << "Input object does not contain a valid 'waypoints' array.";
-        qDebug() << "Waypoints list : " << input["waypoints"];
-        return QString();
-    }
-        */
-
-    //QJsonArray waypoints = input["waypoints"].toArray();
+    
     if (waypoints.isEmpty()) {
         qWarning() << "Waypoint list is empty.";
         return QString();
@@ -2824,24 +2816,27 @@ QString QGCApplication::convertWaypointsToPlan(const QJsonArray& waypoints) {
         double lat = wp["latitude"].toDouble();
         double lon = wp["longitude"].toDouble();
         double alt = wp["altitude"].toDouble();
+        double pause = wp["pauseTime"].toDouble();
 
-        int command = 16;
+        //Instruction
+        /*
         if (wp.contains("instruction") && wp["instruction"].isArray()) {
             QJsonArray instructions = wp["instruction"].toArray();
             for (const QJsonValue &instVal : instructions) {
                 if (instVal.isObject()) QString cmd = instVal.toObject()["command"].toString().toLower();
             }
         }
+        */
 
         QJsonObject item;
         item["AMSLAltAboveTerrain"] = QJsonValue::Null;
         item["Altitude"] = alt;
         item["AltitudeMode"] = 0;
         item["autoContinue"] = true;
-        item["command"] = command;
+        item["command"] = 16;
         item["doJumpId"] = doJumpId++;
         item["frame"] = 3;
-        item["params"] = QJsonArray({0, 0, 0, QJsonValue::Null, lat, lon, alt});
+        item["params"] = QJsonArray({pause, 0, 0, QJsonValue::Null, lat, lon, alt});
         item["type"] = "SimpleItem";
         items.append(item);
     }
