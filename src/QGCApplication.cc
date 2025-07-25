@@ -2880,9 +2880,9 @@ void QGCApplication::sendMissionInstruction(QMqttClient client, QString clientId
 
     int i = 0;
     while(i < waypoints.size()){
-        if(abs(currentLatitude-waypoints.at(i)["latitude"]) < lat_tolerance &&
-            abs(currentLongitude-waypoints.at(i)["longitude"]) < long_tolerance &&
-            abs(currentAltitude-waypoints.at(i)["altitude"]) < alt_tolerance){
+        if(abs(currentLatitude-waypoints.at(i)["latitude"].toDouble()) < lat_tolerance &&
+            abs(currentLongitude-waypoints.at(i)["longitude"].toDouble()) < long_tolerance &&
+            abs(currentAltitude-waypoints.at(i)["altitude"].toDouble()) < alt_tolerance){
 
             QMqttPublishProperties props;
             props.setResponseTopic("RESPONSE/"+requestVehicle->sn()+"/"+waypoints.at(i)["instruction"]+clientId+"/");
