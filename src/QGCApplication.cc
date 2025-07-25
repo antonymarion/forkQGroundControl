@@ -2885,14 +2885,16 @@ void QGCApplication::sendMissionInstruction(QMqttClient client, QString clientId
             abs(currentAltitude-waypoints.at(i)["altitude"].toDouble()) < alt_tolerance){
 
             QMqttPublishProperties props;
-            props.setResponseTopic("RESPONSE/"+requestVehicle->sn()+"/"+waypoints.at(i)["instruction"]+clientId+"/");
+            QString responseTopic = "RESPONSE/" + requestVehicle->sn() + "/"+waypoints.at(i)["instruction"] + clientId;
+            QString requestTopic = "REQUEST/" + requestVehicle->sn() + "/"+waypoints.at(i)["instruction"] + clientId;
+            props.setResponseTopic(responseTopic);
             props.setCorrelationData("89f3d8d9-5741-43c0-b353-fd2ee1b887cc");
 
             QJsonObject jsonPayload;
             jsonPayload["instruction"] = waypoints.at(i)["instruction"];
             QByteArray payload = QJsonDocument(jsonPayload).toJson(QJsonDocument::Compact);
 
-            client->publish("REQUEST/"+requestVehicle->sn()+"/"+waypoints.at(i)["instruction"]+clientId+"/", payload, 0, false, props); // No clientID
+            client->publish(requestTopic, payload, 0, false, props); // No clientID
             i++;
         }
     }
