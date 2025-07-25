@@ -2879,7 +2879,7 @@ void QGCApplication::sendMissionInstruction(QMqttClient client, QString clientId
     _gpsRtkFactGroup->currentAltitude()->setRawValue(currentAltitude);
 
     int i = 0;
-    While(i < waypoints.size()){
+    while(i < waypoints.size()){
         if(abs(currentLatitude - waypoints.at(i)["latitude"]) < lat_tolerance &&
             abs(currentLongitude - waypoints.at(i)["longitude"]) < long_tolerance &&
             abs(currentAltitude - waypoints.at(i)["altitude"]) < alt_tolerance){
