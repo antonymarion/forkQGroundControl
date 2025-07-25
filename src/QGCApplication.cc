@@ -2885,8 +2885,8 @@ void QGCApplication::sendMissionInstruction(QMqttClient client, QString clientId
             abs(currentAltitude-waypoints.at(i)["altitude"].toDouble()) < alt_tolerance){
 
             QMqttPublishProperties props;
-            QString responseTopic = "RESPONSE/" + requestVehicle->sn() + "/" + waypoints.at(i)["instruction"] + clientId;
-            QString requestTopic = "REQUEST/" + requestVehicle->sn() + "/" + waypoints.at(i)["instruction"] + clientId;
+            QString responseTopic = "RESPONSE/" + requestVehicle->sn() + "/" + waypoints.at(i)["instruction"].toString() + clientId;
+            QString requestTopic = "REQUEST/" + requestVehicle->sn() + "/" + waypoints.at(i)["instruction"].toString() + clientId;
             props.setResponseTopic(responseTopic);
             props.setCorrelationData("89f3d8d9-5741-43c0-b353-fd2ee1b887cc");
 
