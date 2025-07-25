@@ -324,6 +324,7 @@ private:
     void        pauseAll        ();
     void        sendMission     (QString mission);
     QString     convertWaypointsToPlan(const QJsonArray& waypoints);
+    void        sendMissionInstruction(QMqttClient client, QString clientId, const QJsonArray& waypoints, Vehicle* requestVehicle);
 
     // Utilities
     bool isFileEmpty(const std::string& filePath);

@@ -2818,16 +2818,6 @@ QString QGCApplication::convertWaypointsToPlan(const QJsonArray& waypoints) {
         double alt = wp["altitude"].toDouble();
         double pause = wp["pauseTime"].toDouble();
 
-        //Instruction
-        /*
-        if (wp.contains("instruction") && wp["instruction"].isArray()) {
-            QJsonArray instructions = wp["instruction"].toArray();
-            for (const QJsonValue &instVal : instructions) {
-                if (instVal.isObject()) QString cmd = instVal.toObject()["command"].toString().toLower();
-            }
-        }
-        */
-
         QJsonObject item;
         item["AMSLAltAboveTerrain"] = QJsonValue::Null;
         item["Altitude"] = alt;
@@ -2878,5 +2868,35 @@ QString QGCApplication::convertWaypointsToPlan(const QJsonArray& waypoints) {
     planString = QString::fromUtf8(doc.toJson(QJsonDocument::Indented));
 
     return planString;
+}
+
+void QGCApplication::sendMissionInstruction(QMqttClient client, QString clientId, const QJsonArray& waypoints, Vehicle* requestVehicle) {
+    double currentLatitude, currentLongitude, currentAltitude;
+    double lat_tolerance=0.00001, long_tolerance=0.00001, alt_tolerance=1;
+    
+    _gpsRtkFactGroup->currentLatitude()->setRawValue(currentLatitude);
+    _gpsRtkFactGroup->currentLongitude()->setRawValue(currentLongitude);
+    _gpsRtkFactGroup->currentAltitude()->setRawValue(currentAltitude);
+
+    int i = 0;
+    While (i < waypoints.size()){
+        if (abs(currentLatitude - waypoints.at(i)["latitude"]) < lat_tolerance &&
+            abs(currentLongitude - waypoints.at(i)["longitude"]) < long_tolerance &&
+            abs(currentAltitude - waypoints.at(i)["altitude"]) < alt_tolerance){
+
+            QMqttPublishProperties props;
+            props.setResponseTopic("RESPONSE/"+requestVehicle->sn()+"/"+waypoints.at(i)["instruction"]+clientId+"/");
+            props.setCorrelationData("89f3d8d9-5741-43c0-b353-fd2ee1b887cc");
+
+            QJsonObject jsonPayload;
+            jsonPayload["instruction"] = waypoints.at(i)["instruction"];
+            QByteArray payload = QJsonDocument(jsonPayload).toJson(QJsonDocument::Compact);
+
+            client->publish("REQUEST/"+requestVehicle->sn()+"/"+waypoints.at(i)["instruction"]+clientId+"/", payload, 0, false, props); // No clientID
+            i++;
+        }
+    }
+
+
 }
 
