@@ -2873,14 +2873,14 @@ QString QGCApplication::convertWaypointsToPlan(const QJsonArray& waypoints) {
 void QGCApplication::sendMissionInstruction(QMqttClient client, QString clientId, const QJsonArray& waypoints, Vehicle* requestVehicle) {
     double currentLatitude, currentLongitude, currentAltitude;
     double lat_tolerance=0.00001, long_tolerance=0.00001, alt_tolerance=1;
-    
+
     _gpsRtkFactGroup->currentLatitude()->setRawValue(currentLatitude);
     _gpsRtkFactGroup->currentLongitude()->setRawValue(currentLongitude);
     _gpsRtkFactGroup->currentAltitude()->setRawValue(currentAltitude);
 
     int i = 0;
-    While (i < waypoints.size()){
-        if (abs(currentLatitude - waypoints.at(i)["latitude"]) < lat_tolerance &&
+    While(i < waypoints.size()){
+        if(abs(currentLatitude - waypoints.at(i)["latitude"]) < lat_tolerance &&
             abs(currentLongitude - waypoints.at(i)["longitude"]) < long_tolerance &&
             abs(currentAltitude - waypoints.at(i)["altitude"]) < alt_tolerance){
 
