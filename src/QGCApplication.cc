@@ -2893,17 +2893,21 @@ void QGCApplication::sendMissionInstruction(QString clientId, const QJsonArray& 
 
             QMqttPublishProperties props;
             QString responseTopic = "RESPONSE/" + requestVehicle->sn() + "/" + waypoints.at(i)["instruction"].toString() + clientId;
+            qDebug() << "responseTopic:" << responseTopic;
             QString requestTopic = "REQUEST/" + requestVehicle->sn() + "/" + waypoints.at(i)["instruction"].toString() + clientId;
+            qDebug() << "requestTopic:" << requestTopic;
             props.setResponseTopic(responseTopic);
             props.setCorrelationData("89f3d8d9-5741-43c0-b353-fd2ee1b887cc");
 
             QJsonObject jsonPayload;
             jsonPayload["instruction"] = waypoints.at(i)["instruction"];
+            qDebug() << "jsonPayload:" << jsonPayload;
             QByteArray payload = QJsonDocument(jsonPayload).toJson(QJsonDocument::Compact);
 
             //client.publish(requestTopic, payload, 0, false, props); // No clientID
             m_client->publish(requestTopic, props, payload, 1, false);
             i++;
+            qDebug() << "i+++++++++++++++++++++++++++++";
         }
     }
 
