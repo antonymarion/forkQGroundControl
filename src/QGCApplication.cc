@@ -2895,7 +2895,7 @@ void QGCApplication::sendMissionInstruction(QString clientId, const QJsonArray& 
             QByteArray payload = QJsonDocument(jsonPayload).toJson(QJsonDocument::Compact);
 
             //client.publish(requestTopic, payload, 0, false, props); // No clientID
-            m_client->publish(requestTopic, props, payload, 1, false)
+            m_client->publish(requestTopic, props, payload, 1, false);
             i++;
         }
     }
