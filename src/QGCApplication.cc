@@ -1428,7 +1428,9 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
                 break;
             };
             QGCApplication::sendMission(QGCApplication::convertWaypointsToPlan(Waypoints));
-            mission_instruction = std::thread(QGCApplication::sendMissionInstruction(clientId, Waypoints, requestVehicle));
+            mission_instruction = std::thread([=]() {
+                QGCApplication::sendMissionInstruction(clientId, Waypoints, requestVehicle);
+            });
             mission_instruction.detach();
             state_value = 0;
             break;
