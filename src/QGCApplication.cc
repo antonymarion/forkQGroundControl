@@ -2870,7 +2870,7 @@ QString QGCApplication::convertWaypointsToPlan(const QJsonArray& waypoints) {
     return planString;
 }
 
-void QGCApplication::sendMissionInstruction(QMqttClient client, QString clientId, const QJsonArray& waypoints, Vehicle* requestVehicle) {
+void QGCApplication::sendMissionInstruction(QString clientId, const QJsonArray& waypoints, Vehicle* requestVehicle) {
     double currentLatitude, currentLongitude, currentAltitude;
     double lat_tolerance=0.00001, long_tolerance=0.00001, alt_tolerance=1;
 
@@ -2894,7 +2894,8 @@ void QGCApplication::sendMissionInstruction(QMqttClient client, QString clientId
             jsonPayload["instruction"] = waypoints.at(i)["instruction"];
             QByteArray payload = QJsonDocument(jsonPayload).toJson(QJsonDocument::Compact);
 
-            client.publish(requestTopic, payload, 0, false, props); // No clientID
+            //client.publish(requestTopic, payload, 0, false, props); // No clientID
+            m_client->publish(requestTopic, props, payload, 1, false)
             i++;
         }
     }
