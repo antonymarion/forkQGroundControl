@@ -2894,7 +2894,7 @@ void QGCApplication::sendMissionInstruction(QMqttClient client, QString clientId
             jsonPayload["instruction"] = waypoints.at(i)["instruction"];
             QByteArray payload = QJsonDocument(jsonPayload).toJson(QJsonDocument::Compact);
 
-            client->publish(requestTopic, payload, 0, false, props); // No clientID
+            client.publish(requestTopic, payload, 0, false, props); // No clientID
             i++;
         }
     }
