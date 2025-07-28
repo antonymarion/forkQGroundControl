@@ -2878,6 +2878,9 @@ QString QGCApplication::convertWaypointsToPlan(const QJsonArray& waypoints) {
 }
 
 void QGCApplication::sendMissionInstruction(QString clientId, const QJsonArray& waypoints, Vehicle* requestVehicle) {
+    
+    qDebug() << "sendMissionInstruction" << clientId;
+
     double currentLatitude=0.0, currentLongitude=0.0, currentAltitude=0.0;
     double lat_tolerance=0.00001, long_tolerance=0.00001, alt_tolerance=1;
 
