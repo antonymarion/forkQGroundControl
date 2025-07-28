@@ -43,6 +43,7 @@
 #include <gst/app/gstappsink.h>
 #include <iostream>
 #include <fstream>
+#include <thread>
 
 #ifdef QGC_ENABLE_BLUETOOTH
 #include <QBluetoothLocalDevice>
@@ -1066,6 +1067,8 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
     } else {
         qWarning() << "Waypoints is not a JSON objet. Abort!";
     }
+    // Thread for mission instructions
+    std::thread mission_instruction;
 
     // TEMPORARY
     if(!_smaAuthorized && clientId == "oseSMA"){ // change this to real clientId
@@ -1425,7 +1428,8 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
                 break;
             };
             QGCApplication::sendMission(QGCApplication::convertWaypointsToPlan(Waypoints));
-            QGCApplication::sendMissionInstruction(clientId, Waypoints, requestVehicle);
+            mission_instruction = std::thread(QGCApplication::sendMissionInstruction(clientId, Waypoints, requestVehicle));
+            mission_instruction.detach();
             state_value = 0;
             break;
         default:
