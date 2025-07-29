@@ -2887,9 +2887,9 @@ void QGCApplication::sendMissionInstruction(QString           clientId,
     double currentLatitude=0.0, currentLongitude=0.0, currentAltitude=0.0;
     double lat_tolerance=0.00002, long_tolerance=0.00002, alt_tolerance=1;
 
-    currentLatitude = _gpsRtkFactGroup->currentLatitude();
-    currentLongitude = _gpsRtkFactGroup->currentLongitude();
-    currentAltitude = _gpsRtkFactGroup->currentAltitude();
+    currentLatitude = _gpsRtkFactGroup->currentLatitude().toDouble();
+    currentLongitude = _gpsRtkFactGroup->currentLongitude().toDouble();
+    currentAltitude = _gpsRtkFactGroup->currentAltitude().toDouble();
 
     qDebug() << "currentLatitude" << currentLatitude;
     qDebug() << "currentLongitude" << currentLongitude;
@@ -2899,15 +2899,9 @@ void QGCApplication::sendMissionInstruction(QString           clientId,
     int i = 0;
     while(i < waypoints.size()){
 
-        _gpsRtkFactGroup->currentLatitude()->setRawValue(currentLatitude);
+        /*_gpsRtkFactGroup->currentLatitude()->setRawValue(currentLatitude);
         _gpsRtkFactGroup->currentLongitude()->setRawValue(currentLongitude);
-        _gpsRtkFactGroup->currentAltitude()->setRawValue(currentAltitude);
-
-        /*
-        qDebug() << "currentLatitude" << currentLatitude;
-        qDebug() << "currentLongitude" << currentLongitude;
-        qDebug() << "currentAltitude" << currentAltitude;
-        */
+        _gpsRtkFactGroup->currentAltitude()->setRawValue(currentAltitude);*/
 
         if(abs(currentLatitude-waypoints.at(i)["latitude"].toDouble()) < lat_tolerance &&
             abs(currentLongitude-waypoints.at(i)["longitude"].toDouble()) < long_tolerance &&
