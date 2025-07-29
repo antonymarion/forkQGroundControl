@@ -2885,11 +2885,11 @@ void QGCApplication::sendMissionInstruction(QString           clientId,
     qDebug() << "sendMissionInstruction" << clientId;
 
     double currentLatitude=0.0, currentLongitude=0.0, currentAltitude=0.0;
-    double lat_tolerance=0.00002, long_tolerance=0.00002, alt_tolerance=1;
+    double lat_tolerance=0.00001, long_tolerance=0.00001, alt_tolerance=1;
 
-    currentLatitude = _gpsRtkFactGroup->currentLatitude().toDouble();
-    currentLongitude = _gpsRtkFactGroup->currentLongitude().toDouble();
-    currentAltitude = _gpsRtkFactGroup->currentAltitude().toDouble();
+    currentLatitude = requestVehicle->latitude();
+    currentLongitude = requestVehicle->longitude();
+    currentAltitude = requestVehicle->altitudeRelative();
 
     qDebug() << "currentLatitude" << currentLatitude;
     qDebug() << "currentLongitude" << currentLongitude;
