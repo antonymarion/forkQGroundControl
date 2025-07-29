@@ -2887,9 +2887,8 @@ void QGCApplication::sendMissionInstruction(QString           clientId,
     double currentLatitude=0.0, currentLongitude=0.0, currentAltitude=0.0;
     double lat_tolerance=0.00001, long_tolerance=0.00001, alt_tolerance=1;
 
-    currentLatitude = requestVehicle->latitude();
-    currentLongitude = requestVehicle->longitude();
-    currentAltitude = requestVehicle->altitudeRelative();
+    double t_hSpeed, t_vSpeed, t_yaw, t_pitch, t_roll;// not necessary
+    requestVehicle->getTelemetry(currentLatitude, currentLongitude, currentAltitude, t_hSpeed, t_vSpeed, t_yaw, t_pitch, t_roll);
 
     qDebug() << "currentLatitude" << currentLatitude;
     qDebug() << "currentLongitude" << currentLongitude;
