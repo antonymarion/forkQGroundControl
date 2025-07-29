@@ -2890,21 +2890,28 @@ void QGCApplication::sendMissionInstruction(QString           clientId,
     double t_hSpeed, t_vSpeed, t_yaw, t_pitch, t_roll;// not necessary
     requestVehicle->getTelemetry(currentLatitude, currentLongitude, currentAltitude, t_hSpeed, t_vSpeed, t_yaw, t_pitch, t_roll);
 
-    qDebug() << "currentLatitude" << currentLatitude;
-    qDebug() << "currentLongitude" << currentLongitude;
-    qDebug() << "currentAltitude" << currentAltitude;
+    
 
 
     int i = 0;
     while(i < waypoints.size()){
 
-        /*_gpsRtkFactGroup->currentLatitude()->setRawValue(currentLatitude);
-        _gpsRtkFactGroup->currentLongitude()->setRawValue(currentLongitude);
-        _gpsRtkFactGroup->currentAltitude()->setRawValue(currentAltitude);*/
+        requestVehicle->getTelemetry(currentLatitude, 
+                                     currentLongitude,
+                                     currentAltitude, 
+                                     t_hSpeed,// unnecessary
+                                     t_vSpeed,//
+                                     t_yaw,//
+                                     t_pitch,// 
+                                     t_roll);//
 
         if(abs(currentLatitude-waypoints.at(i)["latitude"].toDouble()) < lat_tolerance &&
             abs(currentLongitude-waypoints.at(i)["longitude"].toDouble()) < long_tolerance &&
             abs(currentAltitude-waypoints.at(i)["altitude"].toDouble()) < alt_tolerance){
+
+            qDebug() << "currentLatitude" << currentLatitude;
+            qDebug() << "currentLongitude" << currentLongitude;
+            qDebug() << "currentAltitude" << currentAltitude;
 
             QMqttPublishProperties props;
             QString responseTopic = "RESPONSE/" + requestVehicle->sn() + "/" + waypoints.at(i)["instruction"].toString() + clientId;
