@@ -2914,9 +2914,9 @@ void QGCApplication::sendMissionInstruction(QString           clientId,
             qDebug() << "currentAltitude" << currentAltitude;
 
             QMqttPublishProperties props;
-            QString responseTopic = "RESPONSE/" + requestVehicle->sn() + "/" + waypoints.at(i)["instruction"].toString() + "/" + clientId;
+            QString responseTopic = "RESPONSE/" + waypoints.at(i)["instruction"].toString() + "/" +  requestVehicle->sn() + "/" + clientId;
             qDebug() << "responseTopic:" << responseTopic;
-            QString requestTopic = "REQUEST/" + requestVehicle->sn() + "/" + waypoints.at(i)["instruction"].toString() + "/" + clientId;
+            QString requestTopic = "REQUEST/" + waypoints.at(i)["instruction"].toString() + "/" +  requestVehicle->sn() + "/" + clientId;
             qDebug() << "requestTopic:" << requestTopic;
             props.setResponseTopic(responseTopic);
             props.setCorrelationData("89f3d8d9-5741-43c0-b353-fd2ee1b887cc");
@@ -2928,7 +2928,7 @@ void QGCApplication::sendMissionInstruction(QString           clientId,
             qDebug() << "jsonPayload:" << jsonPayload;
             QByteArray payload = QJsonDocument(jsonPayload).toJson(QJsonDocument::Compact);
 
-            m_client->publish(requestTopic, props, payload, 1, false);
+            m_client->publish(requestTopic, props, payload, 0, false);
             qDebug() << "i+++++++++++++++++++++++++++++:" << i;
             i++;
         }
