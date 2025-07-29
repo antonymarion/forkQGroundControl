@@ -2884,12 +2884,17 @@ void QGCApplication::sendMissionInstruction(QString clientId, const QJsonArray& 
     double currentLatitude=0.0, currentLongitude=0.0, currentAltitude=0.0;
     double lat_tolerance=0.00001, long_tolerance=0.00001, alt_tolerance=1;
 
-    _gpsRtkFactGroup->currentLatitude()->setRawValue(currentLatitude);
-    _gpsRtkFactGroup->currentLongitude()->setRawValue(currentLongitude);
-    _gpsRtkFactGroup->currentAltitude()->setRawValue(currentAltitude);
-
     int i = 0;
     while(i < waypoints.size()){
+
+        _gpsRtkFactGroup->currentLatitude()->setRawValue(currentLatitude);
+        _gpsRtkFactGroup->currentLongitude()->setRawValue(currentLongitude);
+        _gpsRtkFactGroup->currentAltitude()->setRawValue(currentAltitude);
+
+        qDebug() << "currentLatitude" << currentLatitude;
+        qDebug() << "currentLongitude" << currentLongitude;
+        qDebug() << "currentAltitude" << currentAltitude;
+
         if(abs(currentLatitude-waypoints.at(i)["latitude"].toDouble()) < lat_tolerance &&
             abs(currentLongitude-waypoints.at(i)["longitude"].toDouble()) < long_tolerance &&
             abs(currentAltitude-waypoints.at(i)["altitude"].toDouble()) < alt_tolerance){
@@ -2907,7 +2912,6 @@ void QGCApplication::sendMissionInstruction(QString clientId, const QJsonArray& 
             qDebug() << "jsonPayload:" << jsonPayload;
             QByteArray payload = QJsonDocument(jsonPayload).toJson(QJsonDocument::Compact);
 
-            //client.publish(requestTopic, payload, 0, false, props); // No clientID
             m_client->publish(requestTopic, props, payload, 1, false);
             i++;
             qDebug() << "i+++++++++++++++++++++++++++++";
