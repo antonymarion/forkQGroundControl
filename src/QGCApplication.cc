@@ -2882,7 +2882,7 @@ void QGCApplication::sendMissionInstruction(QString clientId, const QJsonArray& 
     qDebug() << "sendMissionInstruction" << clientId;
 
     double currentLatitude=0.0, currentLongitude=0.0, currentAltitude=0.0;
-    double lat_tolerance=0.00001, long_tolerance=0.00001, alt_tolerance=1;
+    double lat_tolerance=0.00002, long_tolerance=0.00002, alt_tolerance=1;
 
     int i = 0;
     while(i < waypoints.size()){
@@ -2891,9 +2891,11 @@ void QGCApplication::sendMissionInstruction(QString clientId, const QJsonArray& 
         _gpsRtkFactGroup->currentLongitude()->setRawValue(currentLongitude);
         _gpsRtkFactGroup->currentAltitude()->setRawValue(currentAltitude);
 
+        /*
         qDebug() << "currentLatitude" << currentLatitude;
         qDebug() << "currentLongitude" << currentLongitude;
         qDebug() << "currentAltitude" << currentAltitude;
+        */
 
         if(abs(currentLatitude-waypoints.at(i)["latitude"].toDouble()) < lat_tolerance &&
             abs(currentLongitude-waypoints.at(i)["longitude"].toDouble()) < long_tolerance &&
