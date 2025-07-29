@@ -2877,12 +2877,24 @@ QString QGCApplication::convertWaypointsToPlan(const QJsonArray& waypoints) {
     return planString;
 }
 
-void QGCApplication::sendMissionInstruction(QString clientId, const QJsonArray& waypoints, Vehicle* requestVehicle) {
+void QGCApplication::sendMissionInstruction(QString           clientId,
+                                            const QJsonArray& waypoints,
+                                            Vehicle*          requestVehicle)
+{
     
     qDebug() << "sendMissionInstruction" << clientId;
 
     double currentLatitude=0.0, currentLongitude=0.0, currentAltitude=0.0;
     double lat_tolerance=0.00002, long_tolerance=0.00002, alt_tolerance=1;
+
+    _gpsRtkFactGroup->currentLatitude()->setRawValue(currentLatitude);
+    _gpsRtkFactGroup->currentLongitude()->setRawValue(currentLongitude);
+    _gpsRtkFactGroup->currentAltitude()->setRawValue(currentAltitude);
+
+    qDebug() << "currentLatitude" << currentLatitude;
+    qDebug() << "currentLongitude" << currentLongitude;
+    qDebug() << "currentAltitude" << currentAltitude;
+
 
     int i = 0;
     while(i < waypoints.size()){
