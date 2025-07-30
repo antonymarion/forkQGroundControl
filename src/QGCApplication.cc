@@ -894,7 +894,7 @@ void QGCApplication::_initCommon()
     m_client->connectToHost();
 
     ////////////////New client for publishing mission commands//////
-    m_client_mission = new QMqttClient(this);
+    QMqttClient *m_client_mission = new QMqttClient(this);
     m_client_mission->setHostname(mqttHost);
     m_client_mission->setPort(1883);
     m_client_mission->setUsername(QString(""));
