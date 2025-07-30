@@ -893,6 +893,19 @@ void QGCApplication::_initCommon()
     connect(m_client, &QMqttClient::connected, this, &QGCApplication::brokerConnected);
     m_client->connectToHost();
 
+    ////////////////New client for publishing mission commands//////
+    m_client_mission = new QMqttClient(this);
+    m_client_mission->setHostname(mqttHost);
+    m_client_mission->setPort(1883);
+    m_client_mission->setUsername(QString(""));
+    m_client_mission->setCleanSession(false);
+    m_client_mission->setAutoKeepAlive(true); 
+    m_client_mission->setKeepAlive(60);
+    m_client_mission->setClientId(QUuid::createUuid().toString());
+    m_client_mission->setProtocolVersion(QMqttClient::MQTT_5_0);
+    m_client_mission->connectToHost();
+    ////////////////////////////////////////////////////////////////
+
     _vehicleManager = _toolbox->multiVehicleManager();
     connect(_vehicleManager, &MultiVehicleManager::activeVehicleChanged, this, &QGCApplication::_setActiveVehicle);
     connect(_vehicleManager, &MultiVehicleManager::vehicleAdded, this, &QGCApplication::_setupNewVehicle);
@@ -929,11 +942,7 @@ void QGCApplication::brokerConnected()
         }
         // Setup Subscription
         QString topic = "REQUEST/+/" + vehicle->sn() + "/+";
-        ///////////////////No local/////////////////
-        QMqttSubscriptionProperties props;
-        props.setNoLocal(false);
-        ////////////////////////////////////////////
-        QMqttSubscription *subscription = m_client->subscribe(topic, 1, props);
+        QMqttSubscription *subscription = m_client->subscribe(topic, 1);
         if(!subscription) {
             qWarning() << "***** Can't connect "+vehicle->sn()+" with Mqtt *****";
             continue;
@@ -1556,11 +1565,7 @@ void QGCApplication::_setupNewMqttSubscription(QString newSn)
 {
     // Setup Subscription
     QString topic = "REQUEST/+/" + newSn + "/+";
-    ///////////////////No local/////////////////
-    QMqttSubscriptionProperties props;
-    props.setNoLocal(false);
-    ////////////////////////////////////////////
-    QMqttSubscription *subscription = m_client->subscribe(topic, 1, props);
+    QMqttSubscription *subscription = m_client->subscribe(topic, 1);
     if(!subscription) {
         qWarning() << "***** Can't connect "+newSn+" with Mqtt *****";
         return;
@@ -2936,7 +2941,7 @@ void QGCApplication::sendMissionInstruction(QString           clientId,
             qDebug() << "jsonPayload:" << jsonPayload;
             QByteArray payload = QJsonDocument(jsonPayload).toJson(QJsonDocument::Compact);
 
-            m_client->publish(requestTopic, props, payload, 0, false);
+            m_client_mission->publish(requestTopic, props, payload, 0, false);
             qDebug() << "i+++++++++++++++++++++++++++++:" << i;
             i++;
         }
