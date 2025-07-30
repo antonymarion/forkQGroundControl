@@ -901,7 +901,7 @@ void QGCApplication::_initCommon()
     m_client_mission->setCleanSession(false);
     m_client_mission->setAutoKeepAlive(true); 
     m_client_mission->setKeepAlive(60);
-    m_client_mission->setClientId(QUuid::createUuid().toString());
+    m_client_mission->setClientId("mission_pub");
     m_client_mission->setProtocolVersion(QMqttClient::MQTT_5_0);
 
         ///DEBUG///
