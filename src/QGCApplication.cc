@@ -905,43 +905,43 @@ void QGCApplication::_initCommon()
     m_client_mission->setProtocolVersion(QMqttClient::MQTT_5_0);
 
         ///DEBUG///
-        connect(m_client_mission, &QMqttClient::errorChanged, this, [](QMqttClient::ClientError error) {
-            qWarning() << "[MQTT] Erreur client:" << error;
+    connect(m_client_mission, &QMqttClient::errorChanged, this, [](QMqttClient::ClientError error) {
+        qWarning() << "[MQTT] Erreur client:" << error;
 
-            switch (error) {
-                case QMqttClient::NoError:
-                    qDebug() << "Aucune erreur";
-                    break;
-                case QMqttClient::InvalidProtocolVersion:
-                    qDebug() << "Version du protocole invalide";
-                    break;
-                case QMqttClient::IdRejected:
-                    qDebug() << "Client ID rejeté par le broker";
-                    break;
-                case QMqttClient::ServerUnavailable:
-                    qDebug() << "Broker MQTT indisponible";
-                    break;
-                case QMqttClient::BadUsernameOrPassword:
-                    qDebug() << "Nom d'utilisateur ou mot de passe incorrect";
-                    break;
-                case QMqttClient::NotAuthorized:
-                    qDebug() << "Client non autorisé";
-                    break;
-                case QMqttClient::TransportInvalid:
-                    qDebug() << "Transport invalide (socket)";
-                    break;
-                case QMqttClient::ProtocolViolation:
-                    qDebug() << "Violation du protocole MQTT";
-                    break;
-                case QMqttClient::UnknownError:
-                    qDebug() << "Erreur inconnue";
-                    break;
-            }
-        });
+        switch (error) {
+            case QMqttClient::NoError:
+                qDebug() << "Aucune erreur";
+                break;
+            case QMqttClient::InvalidProtocolVersion:
+                qDebug() << "Version du protocole invalide";
+                break;
+            case QMqttClient::IdRejected:
+                qDebug() << "Client ID rejeté par le broker";
+                break;
+            case QMqttClient::ServerUnavailable:
+                qDebug() << "Broker MQTT indisponible";
+                break;
+            case QMqttClient::BadUsernameOrPassword:
+                qDebug() << "Nom d'utilisateur ou mot de passe incorrect";
+                break;
+            case QMqttClient::NotAuthorized:
+                qDebug() << "Client non autorisé";
+                break;
+            case QMqttClient::TransportInvalid:
+                qDebug() << "Transport invalide (socket)";
+                break;
+            case QMqttClient::ProtocolViolation:
+                qDebug() << "Violation du protocole MQTT";
+                break;
+            case QMqttClient::UnknownError:
+                qDebug() << "Erreur inconnue";
+                break;
+        }
+    });
 
-        connect(m_client_mission, &QMqttClient::stateChanged, this, [](QMqttClient::ClientState state) {
-            qDebug() << "[MQTT] État du client changé:" << state;
-        });
+    connect(m_client_mission, &QMqttClient::stateChanged, this, [](QMqttClient::ClientState state) {
+        qDebug() << "[MQTT] État du client changé:" << state;
+    });
         ///////////
     m_client_mission->connectToHost();
     ////////////////////////////////////////////////////////////////
@@ -2966,6 +2966,8 @@ void QGCApplication::sendMissionInstruction(QString           clientId,
             qDebug() << "currentLongitude" << currentLongitude;
             qDebug() << "currentAltitude" << currentAltitude;
 
+            if(waypoints.at(i)["instruction"].toString() == ""){continue;}
+
             QMqttPublishProperties props;
             QString responseTopic = "RESPONSE/" + waypoints.at(i)["instruction"].toString() + "/" +  requestVehicle->sn() + "/" + clientId;
             qDebug() << "responseTopic:" << responseTopic;
@@ -2981,7 +2983,7 @@ void QGCApplication::sendMissionInstruction(QString           clientId,
             qDebug() << "jsonPayload:" << jsonPayload;
             QByteArray payload = QJsonDocument(jsonPayload).toJson(QJsonDocument::Compact);
 
-            if (m_client_mission->publish(requestTopic, props, payload, 1, false) == -1) {
+            if (m_client_mission->publish(requestTopic, props, payload, 0, false) == -1) {
                 qWarning() << "Failed to publish request to topic:" << requestTopic;
             }
             qDebug() << "i+++++++++++++++++++++++++++++:" << i;
