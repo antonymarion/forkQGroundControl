@@ -2941,7 +2941,7 @@ void QGCApplication::sendMissionInstruction(QString           clientId,
             qDebug() << "jsonPayload:" << jsonPayload;
             QByteArray payload = QJsonDocument(jsonPayload).toJson(QJsonDocument::Compact);
 
-            m_client_mission->publish(requestTopic, props, payload, 0, false);
+            m_client_mission->publish(requestTopic, props, payload, 1, false);
             qDebug() << "i+++++++++++++++++++++++++++++:" << i;
             i++;
         }
