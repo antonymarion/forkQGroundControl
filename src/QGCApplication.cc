@@ -2966,7 +2966,10 @@ void QGCApplication::sendMissionInstruction(QString           clientId,
             qDebug() << "currentLongitude" << currentLongitude;
             qDebug() << "currentAltitude" << currentAltitude;
 
-            if(waypoints.at(i)["instruction"].toString() == ""){continue;}
+            if(waypoints.at(i)["instruction"].toString() == ""){
+                i++;
+                continue;
+            }
 
             QMqttPublishProperties props;
             QString responseTopic = "RESPONSE/" + waypoints.at(i)["instruction"].toString() + "/" +  requestVehicle->sn() + "/" + clientId;
