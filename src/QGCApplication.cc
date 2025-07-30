@@ -929,7 +929,11 @@ void QGCApplication::brokerConnected()
         }
         // Setup Subscription
         QString topic = "REQUEST/+/" + vehicle->sn() + "/+";
-        QMqttSubscription *subscription = m_client->subscribe(topic, 1);
+        ///////////////////No local/////////////////
+        QMqttSubscriptionProperties props;
+        props.setNoLocal(false);
+        ////////////////////////////////////////////
+        QMqttSubscription *subscription = m_client->subscribe(topic, 1, props);
         if(!subscription) {
             qWarning() << "***** Can't connect "+vehicle->sn()+" with Mqtt *****";
             continue;
@@ -1552,7 +1556,11 @@ void QGCApplication::_setupNewMqttSubscription(QString newSn)
 {
     // Setup Subscription
     QString topic = "REQUEST/+/" + newSn + "/+";
-    QMqttSubscription *subscription = m_client->subscribe(topic, 1);
+    ///////////////////No local/////////////////
+    QMqttSubscriptionProperties props;
+    props.setNoLocal(false);
+    ////////////////////////////////////////////
+    QMqttSubscription *subscription = m_client->subscribe(topic, 1, props);
     if(!subscription) {
         qWarning() << "***** Can't connect "+newSn+" with Mqtt *****";
         return;
