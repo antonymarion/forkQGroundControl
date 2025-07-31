@@ -2938,7 +2938,6 @@ void QGCApplication::sendMissionInstruction(QString           clientId,
                                             const QJsonArray& waypoints,
                                             Vehicle*          requestVehicle)
 {
-    
     qDebug() << "sendMissionInstruction" << clientId;
 
     double currentLatitude=0.0, currentLongitude=0.0, currentAltitude=0.0;
@@ -2946,9 +2945,6 @@ void QGCApplication::sendMissionInstruction(QString           clientId,
 
     double t_hSpeed, t_vSpeed, t_yaw, t_pitch, t_roll;// not necessary
     requestVehicle->getTelemetry(currentLatitude, currentLongitude, currentAltitude, t_hSpeed, t_vSpeed, t_yaw, t_pitch, t_roll);
-
-    
-
 
     int i = 0;
     while(i < waypoints.size()){
@@ -2965,10 +2961,6 @@ void QGCApplication::sendMissionInstruction(QString           clientId,
         if(abs(currentLatitude-waypoints.at(i)["latitude"].toDouble()) < lat_tolerance &&
             abs(currentLongitude-waypoints.at(i)["longitude"].toDouble()) < long_tolerance &&
             abs(currentAltitude-waypoints.at(i)["altitude"].toDouble()) < alt_tolerance){
-
-            qDebug() << "currentLatitude" << currentLatitude;
-            qDebug() << "currentLongitude" << currentLongitude;
-            qDebug() << "currentAltitude" << currentAltitude;
 
             if(waypoints.at(i)["instruction"].toString() == ""){
                 i++;
@@ -2987,21 +2979,16 @@ void QGCApplication::sendMissionInstruction(QString           clientId,
             jsonPayload["instruction"] = waypoints.at(i)["instruction"];
             jsonPayload["clientId"] = clientId;
             jsonPayload["serialNumber"] = requestVehicle->sn();
-            qDebug() << "jsonPayload:" << jsonPayload;
             QByteArray payload = QJsonDocument(jsonPayload).toJson(QJsonDocument::Compact);
 
-            /*if (m_client_mission->publish(requestTopic, props, payload, 0, false) == -1) {
-                qWarning() << "Failed to publish request to topic:" << requestTopic;
-            }*/
             QMetaObject::invokeMethod(m_client_mission, [=]() {
-            int res = m_client_mission->publish(requestTopic, props, payload, 0, false);
-            if (res == -1) {
-                qWarning() << "Échec de publication sur le topic:" << requestTopic;
-            } else {
-                qDebug() << "Publication envoyée avec ID:" << res;
-            }
-        }, Qt::QueuedConnection);
-            qDebug() << "i+++++++++++++++++++++++++++++:" << i;
+                int res = m_client_mission->publish(requestTopic, props, payload, 0, false);
+                if (res == -1) {
+                    qWarning() << "Publishing error on topic:" << requestTopic;
+                } else {
+                    qDebug() << "Payload published, ID:" << res;
+                }
+            }, Qt::QueuedConnection);
             i++;
         }
     }
