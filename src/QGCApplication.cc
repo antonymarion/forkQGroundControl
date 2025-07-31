@@ -2990,9 +2990,17 @@ void QGCApplication::sendMissionInstruction(QString           clientId,
             qDebug() << "jsonPayload:" << jsonPayload;
             QByteArray payload = QJsonDocument(jsonPayload).toJson(QJsonDocument::Compact);
 
-            if (m_client_mission->publish(requestTopic, props, payload, 0, false) == -1) {
+            /*if (m_client_mission->publish(requestTopic, props, payload, 0, false) == -1) {
                 qWarning() << "Failed to publish request to topic:" << requestTopic;
+            }*/
+            QMetaObject::invokeMethod(m_client_mission, [=]() {
+            int res = m_client_mission->publish(requestTopic, props, payload, 0, false);
+            if (res == -1) {
+                qWarning() << "Échec de publication sur le topic:" << requestTopic;
+            } else {
+                qDebug() << "Publication envoyée avec ID:" << res;
             }
+        }, Qt::QueuedConnection);
             qDebug() << "i+++++++++++++++++++++++++++++:" << i;
             i++;
         }
