@@ -906,45 +906,45 @@ void QGCApplication::_initCommon()
 
         ///DEBUG///
     connect(m_client_mission, &QMqttClient::errorChanged, this, [](QMqttClient::ClientError error) {
-        qWarning() << "[MQTT] Erreur client:" << error;
+        qWarning() << "[MQTT] Client error:" << error;
 
         switch (error) {
             case QMqttClient::NoError:
-                qDebug() << "Aucune erreur";
+                qDebug() << "No Error";
                 break;
             case QMqttClient::InvalidProtocolVersion:
-                qDebug() << "Version du protocole invalide";
+                qDebug() << "Invalid Protocol Version";
                 break;
             case QMqttClient::IdRejected:
-                qDebug() << "Client ID rejeté par le broker";
+                qDebug() << "Id Rejected";
                 break;
             case QMqttClient::ServerUnavailable:
-                qDebug() << "Broker MQTT indisponible";
+                qDebug() << "Server Unavailable";
                 break;
             case QMqttClient::BadUsernameOrPassword:
-                qDebug() << "Nom d'utilisateur ou mot de passe incorrect";
+                qDebug() << "Bad Username Or Password";
                 break;
             case QMqttClient::NotAuthorized:
-                qDebug() << "Client non autorisé";
+                qDebug() << "Client Not Authorized";
                 break;
             case QMqttClient::TransportInvalid:
-                qDebug() << "Transport invalide (socket)";
+                qDebug() << "Transport Invalid (socket)";
                 break;
             case QMqttClient::ProtocolViolation:
-                qDebug() << "Violation du protocole MQTT";
+                qDebug() << "MQTT Protocol Violation";
                 break;
             case QMqttClient::UnknownError:
-                qDebug() << "Erreur inconnue";
+                qDebug() << "Unknown Error";
                 break;
         }
     });
 
     connect(m_client_mission, &QMqttClient::stateChanged, this, [](QMqttClient::ClientState state) {
-        qDebug() << "[MQTT] État du client changé:" << state;
+        qDebug() << "[MQTT] Client State Changed:" << state;
     });
 
     connect(m_client_mission, &QMqttClient::connected, this, [=]() {
-        qDebug() << "[MQTT] Connecté, envoi de la requête";
+        qDebug() << "[MQTT] Connected: Send Request";
     });
         ///////////
     m_client_mission->connectToHost();
