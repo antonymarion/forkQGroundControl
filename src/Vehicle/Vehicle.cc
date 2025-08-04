@@ -845,9 +845,9 @@ void Vehicle::setNewVehicleData()
     QMap<QString, QStringList> uasSnMap = qgcApp()->getAircraftInfo();
     QStringList uasSn;
     if(true){ // change if simulated or not
-        qCWarning(VehicleLog) << "=======================================";
+        qCWarning(VehicleLog) << "======================================";
         qCWarning(VehicleLog) << "This uav id : " << _id;
-        qCWarning(VehicleLog) << "=======================================";
+        qCWarning(VehicleLog) << "======================================";
         uasSn = uasSnMap.value(QString::number(_id));
         if (uasSn.isEmpty()) {
             qCWarning(VehicleLog) << "*****  Vehicle Data Not Found ID  *****";
