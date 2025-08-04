@@ -362,6 +362,9 @@ public:
     /// Command vehicle to takeoff from current location
     Q_INVOKABLE void guidedModeTakeoff(double altitudeRelative);
 
+    /// Command vehicle to generic takeoff from current location
+    Q_INVOKABLE void takeoff(double altitudeRelative);
+
     /// @return The minimum takeoff altitude (relative) for guided takeoff.
     Q_INVOKABLE double minimumTakeoffAltitude();
 

@@ -941,6 +941,8 @@ bool APMFirmwarePlugin::_guidedModeTakeoff(Vehicle* vehicle, double altitudeRel)
         takeoffAltRel = altitudeRel;
     }
 
+    qWarning() << "Flight mode " << vehicle->flightMode();
+
     if (!_setFlightModeAndValidate(vehicle, "Guided")) {
         qgcApp()->showAppMessage(tr("Unable to takeoff: Vehicle failed to change to Guided mode."));
         return false;

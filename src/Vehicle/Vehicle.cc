@@ -3318,6 +3318,22 @@ void Vehicle::guidedModeTakeoff(double altitudeRelative)
     }
     _firmwarePlugin->guidedModeTakeoff(this, altitudeRelative);
 }
+void Vehicle::takeoff(double altitudeRelative)
+{
+    /* if(apmFirmware()){
+        setFlightMode("Guided");
+        if(flightMode() != "Guided") {
+            qWarning() << "Flight mode is not set to Guided";
+            if(!verifyFlightMode()) {
+                qWarning() << "Failed to set flight mode to Guided.";
+                return;
+            }
+        }
+    }
+    if(PX4Firmware()){
+        guidedModeTakeoff(takeOfHeight ? takeOfHeight : 4); // default takeoff height is 3m
+    } */
+}
 
 double Vehicle::minimumTakeoffAltitude()
 {
