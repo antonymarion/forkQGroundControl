@@ -2973,12 +2973,24 @@ void QGCApplication::sendMissionInstruction(QString           clientId,
             QString requestTopic = "REQUEST/" + waypoints.at(i)["instruction"].toString() + "/" +  requestVehicle->sn() + "/" + clientId;
             qDebug() << "requestTopic:" << requestTopic;
             props.setResponseTopic(responseTopic);
-            props.setCorrelationData("89f3d8d9-5741-43c0-b353-fd2ee1b887cc");
+            props.setCorrelationData(QUuid::createUuid().toString(QUuid::WithoutBraces).toUtf8());// Example: "89f3d8d9-5741-43c0-b353-fd2ee1b887cc"
 
             QJsonObject jsonPayload;
             jsonPayload["instruction"] = waypoints.at(i)["instruction"];
             jsonPayload["clientId"] = clientId;
             jsonPayload["serialNumber"] = requestVehicle->sn();
+            
+            // For commands that have more than 1 value
+            if(waypoints.at(i)["instruction"].toString() == "MOVE_GIMBAL"){
+                jsonPayload["axis"] = waypoints.at(i)["valueStr"];
+                jsonPayload["value"] = waypoints.at(i)["value1"];
+            }else if(waypoints.at(i)["instruction"].toString() == "ZOOM_CAMERA"){
+                jsonPayload["zoomValue"] = waypoints.at(i)["value1"];
+            }else if(waypoints.at(i)["instruction"].toString() == "MAV_CMD_DO_SET_SERVO"){
+                jsonPayload["param1"] = waypoints.at(i)["value1"];
+                jsonPayload["param2"] = waypoints.at(i)["value2"];
+            }
+
             QByteArray payload = QJsonDocument(jsonPayload).toJson(QJsonDocument::Compact);
 
             QMetaObject::invokeMethod(m_client_mission, [=]() {
