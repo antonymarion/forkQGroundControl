@@ -362,9 +362,6 @@ public:
     /// Command vehicle to takeoff from current location
     Q_INVOKABLE void guidedModeTakeoff(double altitudeRelative);
 
-    /// Command vehicle to generic takeoff from current location
-    Q_INVOKABLE void takeoff(double altitudeRelative);
-
     /// @return The minimum takeoff altitude (relative) for guided takeoff.
     Q_INVOKABLE double minimumTakeoffAltitude();
 
@@ -512,6 +509,9 @@ public:
     MAV_TYPE vehicleType() const { return _vehicleType; }
     QGCMAVLink::VehicleClass_t vehicleClass(void) const { return QGCMAVLink::vehicleClass(_vehicleType); }
     Q_INVOKABLE QString vehicleTypeName() const;
+
+    /// Command vehicle to generic takeoff from current location
+    void takeoff(double altitudeRelative);
 
     /// Sends a message to the specified link
     /// @return true: message sent, false: Link no longer connected
