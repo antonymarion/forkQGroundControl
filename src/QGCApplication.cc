@@ -2979,7 +2979,7 @@ void QGCApplication::sendMissionInstruction(QString           clientId,
             jsonPayload["instruction"] = waypoints.at(i)["instruction"];
             jsonPayload["clientId"] = clientId;
             jsonPayload["serialNumber"] = requestVehicle->sn();
-            
+
             // For commands that have more than 1 value
             if(waypoints.at(i)["instruction"].toString() == "MOVE_GIMBAL"){
                 jsonPayload["axis"] = waypoints.at(i)["valueStr"];
@@ -2989,6 +2989,10 @@ void QGCApplication::sendMissionInstruction(QString           clientId,
             }else if(waypoints.at(i)["instruction"].toString() == "MAV_CMD_DO_SET_SERVO"){
                 jsonPayload["param1"] = waypoints.at(i)["value1"];
                 jsonPayload["param2"] = waypoints.at(i)["value2"];
+            }else if(waypoints.at(i)["instruction"].toString() == "OPEN_STREAM"){
+                jsonPayload["rtmpChannel"] = waypoints.at(i)["valueStr"];
+            }else if(waypoints.at(i)["instruction"].toString() == "STOP_STREAM"){
+                jsonPayload["rtmpChannel"] = waypoints.at(i)["valueStr"];
             }
 
             QByteArray payload = QJsonDocument(jsonPayload).toJson(QJsonDocument::Compact);
