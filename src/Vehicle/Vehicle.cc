@@ -832,17 +832,28 @@ void Vehicle::_setUAVSn(QStringList uasSn){
     return;
 }
 
-void Vehicle::land(){
+void Vehicle::land(const QMqttMessage& msg, const QJsonObject& message, int& state_value){
     if(px4Firmware()) {
+        QObject::connect(this, &Vehicle::landResult, this, [this, msg, message](bool success) {
+            qgcApp()->sendResponseMessage(msg, message, success);
+            QObject::disconnect(this, &Vehicle::landResult, this, nullptr);
+        });
         sendMavCommand(
             _defaultComponentId,            // compId: Default vehicle component ID
             MAV_CMD_NAV_LAND,               // command: MAV_CMD to set servo
             true                            // showError: Display error if command fails
         );
+        state_value = -2;
     }
     if(apmFirmware()) {
-        qWarning() << "*****   ArduPilot firmware detected   *****";
+        QObject::connect(this, &Vehicle::flightModeChanged, this, [this, msg, message](const QString& flightMode) {
+            if(flightMode.compare("LAND", Qt::CaseInsensitive) == 0) {
+                qgcApp()->sendResponseMessage(msg, message, true);
+                QObject::disconnect(this, &Vehicle::flightModeChanged, this, nullptr);
+            }
+        });
         setFlightMode("LAND");
+        state_value = -2;
     }
 }
 

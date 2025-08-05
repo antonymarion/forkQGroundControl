@@ -1250,12 +1250,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qWarning() << "=================================================";
             qWarning() << "recieved VERTICAL_LANDING";
             qWarning() << "=================================================";
-            QObject::connect(requestVehicle, &Vehicle::landResult, this, [this, msg, message, requestVehicle](bool success) {
-                sendResponseMessage(msg, message, success);
-                QObject::disconnect(requestVehicle, &Vehicle::landResult, this, nullptr);
-            });
-            requestVehicle->land();
-            state_value = -2;
+            requestVehicle->land(msg, message, state_value);
             break; // check if isFlying == false for SMA (land can return true if on ground)
         case 17:
             qWarning() << "=================================================";
