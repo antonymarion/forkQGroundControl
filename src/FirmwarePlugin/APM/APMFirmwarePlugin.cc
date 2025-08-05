@@ -941,10 +941,10 @@ bool APMFirmwarePlugin::_guidedModeTakeoff(Vehicle* vehicle, double altitudeRel)
         takeoffAltRel = altitudeRel;
     }
 
-    QString vehicle = "Guided";
+    QString flightMode = "Guided";
 
-    if (vehicle->supported()) {
-        const QStringList modes = vehicle->flightModes();
+    if (vehicle->standardModesSupported()) {
+        const QStringList modes = vehicle->standardModes();
         for (const QString& mode : modes) {
             if (mode.compare(flightMode, Qt::CaseInsensitive) == 0) {
                 flightMode = mode;
