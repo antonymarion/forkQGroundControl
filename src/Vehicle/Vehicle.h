@@ -509,6 +509,8 @@ public:
     MAV_TYPE vehicleType() const { return _vehicleType; }
     QGCMAVLink::VehicleClass_t vehicleClass(void) const { return QGCMAVLink::vehicleClass(_vehicleType); }
     Q_INVOKABLE QString vehicleTypeName() const;
+    bool standardModesSupported() const { return _standardModes->supported(); }
+    QStringList standardModes() const { return _standardModes->flightModes(); }
 
     /// Command vehicle to generic takeoff from current location
     void takeoff(double altitudeRelative);

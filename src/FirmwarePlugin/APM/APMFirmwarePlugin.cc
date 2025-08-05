@@ -941,7 +941,19 @@ bool APMFirmwarePlugin::_guidedModeTakeoff(Vehicle* vehicle, double altitudeRel)
         takeoffAltRel = altitudeRel;
     }
 
-    if (!_setFlightModeAndValidate(vehicle, "Guided") && !_setFlightModeAndValidate(vehicle, "GUIDED")) {
+    QString flightMode = "Guided";
+
+    if (_standardModes->supported()) {
+        const QStringList modes = _standardModes->flightModes();
+        for (const QString& mode : modes) {
+            if (mode.compare(flightMode, Qt::CaseInsensitive) == 0) {
+                flightMode = mode;
+                break;
+            }
+        }
+    }
+
+    if (!_setFlightModeAndValidate(vehicle, flightMode)) {
         qgcApp()->showAppMessage(tr("Unable to takeoff: Vehicle failed to change to Guided mode."));
         return false;
     }

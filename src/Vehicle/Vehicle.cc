@@ -2831,9 +2831,16 @@ void Vehicle::setFlightMode(const QString& flightMode)
 {
     uint8_t     base_mode;
     uint32_t    custom_mode;
-
-    qWarning() << "flightModes:" << _standardModes->flightModes();
-    qWarning() << "flightMode to set :" << flightMode;
+    
+    if (_standardModes->supported()) {
+        const QStringList modes = _standardModes->flightModes();
+        for (const QString& mode : modes) {
+            if (mode.compare(flightMode, Qt::CaseInsensitive) == 0) {
+                flightMode = mode;
+                break;
+            }
+        }
+    }
 
     if (setFlightModeCustom(flightMode, &base_mode, &custom_mode)) {
         SharedLinkInterfacePtr sharedLink = vehicleLinkManager()->primaryLink().lock();
