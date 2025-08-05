@@ -2831,18 +2831,19 @@ void Vehicle::setFlightMode(const QString& flightMode)
 {
     uint8_t     base_mode;
     uint32_t    custom_mode;
+    QString     realFlightMode = flightMode;
     
     if (_standardModes->supported()) {
         const QStringList modes = _standardModes->flightModes();
         for (const QString& mode : modes) {
             if (mode.compare(flightMode, Qt::CaseInsensitive) == 0) {
-                flightMode = mode;
+                realFlightMode = mode;
                 break;
             }
         }
     }
 
-    if (setFlightModeCustom(flightMode, &base_mode, &custom_mode)) {
+    if (setFlightModeCustom(realFlightMode, &base_mode, &custom_mode)) {
         SharedLinkInterfacePtr sharedLink = vehicleLinkManager()->primaryLink().lock();
         if (!sharedLink) {
             qCDebug(VehicleLog) << "setFlightMode: primary link gone!";
@@ -2873,14 +2874,14 @@ void Vehicle::setFlightMode(const QString& flightMode)
             sendMessageOnLinkThreadSafe(sharedLink.get(), msg);
         }
         qCWarning(VehicleLog) << "================================";
-        qCWarning(VehicleLog) << flightMode;
+        qCWarning(VehicleLog) << realFlightMode;
         qCWarning(VehicleLog) << "================================";
-        if (flightMode == "Return") {
+        if (realFlightMode == "Return") {
             emit rthResult(true);
         }
     } else {
-        qCWarning(VehicleLog) << "FirmwarePlugin::setFlightMode failed, flightMode:" << flightMode;
-        if (flightMode == "Return") {
+        qCWarning(VehicleLog) << "FirmwarePlugin::setFlightMode failed, flightMode:" << realFlightMode;
+        if (realFlightMode == "Return") {
             emit rthResult(false);
         }
     }
