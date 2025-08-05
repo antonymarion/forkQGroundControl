@@ -1254,6 +1254,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
                 sendResponseMessage(msg, message, success);
                 QObject::disconnect(requestVehicle, &Vehicle::landResult, this, nullptr);
             });
+            qWarning() << "langFlightMode: " << requestVehicle->landFlightMode();
             requestVehicle->land();
             state_value = -2;
             break; // check if isFlying == false for SMA (land can return true if on ground)
