@@ -833,11 +833,16 @@ void Vehicle::_setUAVSn(QStringList uasSn){
 }
 
 void Vehicle::land(){
-    sendMavCommand(
-        _defaultComponentId,            // compId: Default vehicle component ID
-        MAV_CMD_NAV_LAND,               // command: MAV_CMD to set servo
-        true                            // showError: Display error if command fails
-    );
+    if(px4Firmware()) {
+        sendMavCommand(
+            _defaultComponentId,            // compId: Default vehicle component ID
+            MAV_CMD_NAV_LAND,               // command: MAV_CMD to set servo
+            true                            // showError: Display error if command fails
+        );
+    }
+    if(apmFirmware()) {
+        setFlightMode("LAND");
+    }
 }
 
 void Vehicle::setNewVehicleData()
