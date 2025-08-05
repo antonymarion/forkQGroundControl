@@ -841,6 +841,7 @@ void Vehicle::land(){
         );
     }
     if(apmFirmware()) {
+        qWarning() << "*****   ArduPilot firmware detected   *****";
         setFlightMode("LAND");
     }
 }
@@ -2832,6 +2833,7 @@ void Vehicle::setFlightMode(const QString& flightMode)
     uint32_t    custom_mode;
 
     qWarning() << "flightModes:" << _standardModes->flightModes();
+    qWarning() << "flightMode to set :" << flightMode;
 
     if (setFlightModeCustom(flightMode, &base_mode, &custom_mode)) {
         SharedLinkInterfacePtr sharedLink = vehicleLinkManager()->primaryLink().lock();
