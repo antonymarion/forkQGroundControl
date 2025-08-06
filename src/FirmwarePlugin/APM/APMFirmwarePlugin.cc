@@ -912,13 +912,22 @@ double APMFirmwarePlugin::minimumTakeoffAltitude(Vehicle* vehicle)
     QString takeoffAltParam(vehicle->vtol() ? QStringLiteral("Q_RTL_ALT") : QStringLiteral("PILOT_TKOFF_ALT"));
     float paramDivisor = vehicle->vtol() ? 1.0 : 100.0; // PILOT_TAKEOFF_ALT is in centimeters
 
+    qWarning() << "ALTITUDE 1 " << minTakeoffAlt;
+
     if (vehicle->parameterManager()->parameterExists(FactSystem::defaultComponentId, takeoffAltParam)) {
-        minTakeoffAlt = vehicle->parameterManager()->getParameter(FactSystem::defaultComponentId, takeoffAltParam)->rawValue().toDouble() / static_cast<double>(paramDivisor);
+        minTakeoffAlt = vehicle->parameterManager()->getParameter(FactSystem::defaultComponentId, takeoffAltParam)->rawValue().toDouble();
+        qWarning() << "ALTITUDE 2 " << minTakeoffAlt;
+        minTakeoffAlt = minTakeoffAlt / static_cast<double>(paramDivisor);
+        qWarning() << "ALTITUDE 3 " << minTakeoffAlt;
     }
+
+    qWarning() << "ALTITUDE 4 " << minTakeoffAlt;
 
     if (minTakeoffAlt == 0) {
         minTakeoffAlt = FirmwarePlugin::minimumTakeoffAltitude(vehicle);
     }
+
+    qWarning() << "ALTITUDE 5 " << minTakeoffAlt;
 
     return minTakeoffAlt;
 }
@@ -962,8 +971,6 @@ bool APMFirmwarePlugin::_guidedModeTakeoff(Vehicle* vehicle, double altitudeRel)
         qgcApp()->showAppMessage(tr("Unable to takeoff: Vehicle failed to arm."));
         return false;
     }
-
-    qWarning() << "ALTITUDE" << takeoffAltRel << " " << altitudeRel;
 
     vehicle->sendMavCommand(vehicle->defaultComponentId(),
                             MAV_CMD_NAV_TAKEOFF,
