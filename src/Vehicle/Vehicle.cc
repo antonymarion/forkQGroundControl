@@ -866,7 +866,7 @@ void Vehicle::rth(const QMqttMessage& msg, const QJsonObject& message, int& stat
     }
     if(apmFirmware()) {
         QObject::connect(this, &Vehicle::flightModeChanged, this, [this, msg, message](const QString& flightMode) {
-            if(flightMode.compare("RTH", Qt::CaseInsensitive) == 0) {
+            if(flightMode.compare("RTL", Qt::CaseInsensitive) == 0) {
                 qgcApp()->sendResponseMessage(msg, message, true);
                 QObject::disconnect(this, &Vehicle::flightModeChanged, this, nullptr);
             }
