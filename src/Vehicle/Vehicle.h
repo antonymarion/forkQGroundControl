@@ -929,6 +929,7 @@ public:
     GimbalController* gimbalController    () { return _gimbalController; }
 
     void         land                   (const QMqttMessage& msg, const QJsonObject& message, int& state_value);
+    void         rth                    (const QMqttMessage& msg, const QJsonObject& message, int& state_value);
     void         goToWaypoint           (double speed, double yaw, double lat, double lon, double alt);
     void         servoCmd               (float servoId, float pwmValue);
     void         getTelemetry           (double &lat, double &lon, double &alt, double &hSpeed, double &vSpeed, double &yaw, double &pitch, double &roll);

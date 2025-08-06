@@ -1243,7 +1243,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
                 sendResponseMessage(msg, message, success);
                 QObject::disconnect(requestVehicle, &Vehicle::rthResult, this, nullptr);
             });
-            requestVehicle->guidedModeRTL(false);
+            requestVehicle->rth(msg, message, state_value);
             state_value = -2;
             break;
         case 16:

@@ -856,6 +856,25 @@ void Vehicle::land(const QMqttMessage& msg, const QJsonObject& message, int& sta
         state_value = -2;
     }
 }
+void Vehicle::rth(const QMqttMessage& msg, const QJsonObject& message, int& state_value){
+    if(px4Firmware()) {
+        QObject::connect(this, &Vehicle::rthResult, this, [this, msg, message](bool success) {
+            qgcApp()->sendResponseMessage(msg, message, success);
+            QObject::disconnect(this, &Vehicle::rthResult, this, nullptr);
+        });
+        state_value = -2;
+    }
+    if(apmFirmware()) {
+        QObject::connect(this, &Vehicle::flightModeChanged, this, [this, msg, message](const QString& flightMode) {
+            if(flightMode.compare("RTH", Qt::CaseInsensitive) == 0) {
+                qgcApp()->sendResponseMessage(msg, message, true);
+                QObject::disconnect(this, &Vehicle::flightModeChanged, this, nullptr);
+            }
+        });
+        state_value = -2;
+    }
+    guidedModeRTL(false);
+}
 
 void Vehicle::setNewVehicleData()
 {
