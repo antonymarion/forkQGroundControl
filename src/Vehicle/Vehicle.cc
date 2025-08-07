@@ -1081,6 +1081,7 @@ void Vehicle::vectorControl() {
     double yaw_rate = _jYaw * 1.0; // Yaw (rad/s)
 
     if((flightMode() == "Offboard" || _offboardWarmup) || (apmFirmware() && flightMode() == "Guided")) {
+        qWarning(VehicleLog) << "Command sent";
         sendSetPositionTargetLocalNed(vx, vy, vz, yaw_rate);
     }
 }
