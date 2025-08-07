@@ -856,6 +856,7 @@ void Vehicle::land(const QMqttMessage& msg, const QJsonObject& message, int& sta
         state_value = -2;
     }
 }
+
 void Vehicle::rth(const QMqttMessage& msg, const QJsonObject& message, int& state_value){
     if(px4Firmware()) {
         QObject::connect(this, &Vehicle::rthResult, this, [this, msg, message](bool success) {
@@ -1079,7 +1080,7 @@ void Vehicle::vectorControl() {
     double vz = _jThrust * -1.0;    // Haut/bas
     double yaw_rate = _jYaw * 1.0; // Yaw (rad/s)
 
-    if(flightMode() == "Offboard" || _offboardWarmup) {
+    if((flightMode() == "Offboard" || _offboardWarmup) || (apmFirmware() && flightMode() == "Guided")) {
         sendSetPositionTargetLocalNed(vx, vy, vz, yaw_rate);
     }
 }
