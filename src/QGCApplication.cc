@@ -43,6 +43,7 @@
 #include <gst/app/gstappsink.h>
 #include <iostream>
 #include <fstream>
+#include <thread>
 
 #ifdef QGC_ENABLE_BLUETOOTH
 #include <QBluetoothLocalDevice>
@@ -892,6 +893,63 @@ void QGCApplication::_initCommon()
     connect(m_client, &QMqttClient::connected, this, &QGCApplication::brokerConnected);
     m_client->connectToHost();
 
+    ////////////////New client for publishing mission commands//////
+    m_client_mission = new QMqttClient(this);
+    m_client_mission->setHostname(mqttHost);
+    m_client_mission->setPort(1883);
+    m_client_mission->setUsername(QString(""));
+    m_client_mission->setCleanSession(false);
+    m_client_mission->setAutoKeepAlive(true); 
+    m_client_mission->setKeepAlive(60);
+    m_client_mission->setClientId(QUuid::createUuid().toString());
+    m_client_mission->setProtocolVersion(QMqttClient::MQTT_5_0);
+
+        ///DEBUG///
+    connect(m_client_mission, &QMqttClient::errorChanged, this, [](QMqttClient::ClientError error) {
+        qWarning() << "[MQTT] Client error:" << error;
+
+        switch (error) {
+            case QMqttClient::NoError:
+                qDebug() << "No Error";
+                break;
+            case QMqttClient::InvalidProtocolVersion:
+                qDebug() << "Invalid Protocol Version";
+                break;
+            case QMqttClient::IdRejected:
+                qDebug() << "Id Rejected";
+                break;
+            case QMqttClient::ServerUnavailable:
+                qDebug() << "Server Unavailable";
+                break;
+            case QMqttClient::BadUsernameOrPassword:
+                qDebug() << "Bad Username Or Password";
+                break;
+            case QMqttClient::NotAuthorized:
+                qDebug() << "Client Not Authorized";
+                break;
+            case QMqttClient::TransportInvalid:
+                qDebug() << "Transport Invalid (socket)";
+                break;
+            case QMqttClient::ProtocolViolation:
+                qDebug() << "MQTT Protocol Violation";
+                break;
+            case QMqttClient::UnknownError:
+                qDebug() << "Unknown Error";
+                break;
+        }
+    });
+
+    connect(m_client_mission, &QMqttClient::stateChanged, this, [](QMqttClient::ClientState state) {
+        qDebug() << "[MQTT] Client State Changed:" << state;
+    });
+
+    connect(m_client_mission, &QMqttClient::connected, this, [=]() {
+        qDebug() << "[MQTT] Connected: Send Request";
+    });
+        ///////////
+    m_client_mission->connectToHost();
+    ////////////////////////////////////////////////////////////////
+
     _vehicleManager = _toolbox->multiVehicleManager();
     connect(_vehicleManager, &MultiVehicleManager::activeVehicleChanged, this, &QGCApplication::_setActiveVehicle);
     connect(_vehicleManager, &MultiVehicleManager::vehicleAdded, this, &QGCApplication::_setupNewVehicle);
@@ -1066,6 +1124,8 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
     } else {
         qWarning() << "Waypoints is not a JSON objet. Abort!";
     }
+    // Thread for mission instructions
+    std::thread mission_instruction;
 
     // TEMPORARY
     if(!_smaAuthorized && clientId == "oseSMA"){ // change this to real clientId
@@ -1420,6 +1480,10 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
                 break;
             };
             QGCApplication::sendMission(QGCApplication::convertWaypointsToPlan(Waypoints));
+            mission_instruction = std::thread([=]() {
+                QGCApplication::sendMissionInstruction(clientId, Waypoints, requestVehicle);
+            });
+            mission_instruction.detach();
             state_value = 0;
             break;
         default:
@@ -2813,16 +2877,6 @@ QString QGCApplication::convertWaypointsToPlan(const QJsonArray& waypoints) {
         double alt = wp["altitude"].toDouble();
         double pause = wp["pauseTime"].toDouble();
 
-        //Instruction
-        /*
-        if (wp.contains("instruction") && wp["instruction"].isArray()) {
-            QJsonArray instructions = wp["instruction"].toArray();
-            for (const QJsonValue &instVal : instructions) {
-                if (instVal.isObject()) QString cmd = instVal.toObject()["command"].toString().toLower();
-            }
-        }
-        */
-
         QJsonObject item;
         item["AMSLAltAboveTerrain"] = QJsonValue::Null;
         item["Altitude"] = alt;
@@ -2873,5 +2927,81 @@ QString QGCApplication::convertWaypointsToPlan(const QJsonArray& waypoints) {
     planString = QString::fromUtf8(doc.toJson(QJsonDocument::Indented));
 
     return planString;
+}
+
+void QGCApplication::sendMissionInstruction(QString           clientId,
+                                            const QJsonArray& waypoints,
+                                            Vehicle*          requestVehicle)
+{
+    qDebug() << "sendMissionInstruction" << clientId;
+
+    double currentLatitude=0.0, currentLongitude=0.0, currentAltitude=0.0;
+    double lat_tolerance=0.00001, long_tolerance=0.00001, alt_tolerance=1;
+
+    double t_hSpeed, t_vSpeed, t_yaw, t_pitch, t_roll;// not necessary
+    requestVehicle->getTelemetry(currentLatitude, currentLongitude, currentAltitude, t_hSpeed, t_vSpeed, t_yaw, t_pitch, t_roll);
+
+    int i = 0;
+    while(i < waypoints.size()){
+
+        requestVehicle->getTelemetry(currentLatitude, 
+                                     currentLongitude,
+                                     currentAltitude, 
+                                     t_hSpeed,// unnecessary
+                                     t_vSpeed,//
+                                     t_yaw,//
+                                     t_pitch,// 
+                                     t_roll);//
+
+        if(abs(currentLatitude-waypoints.at(i)["latitude"].toDouble()) < lat_tolerance &&
+            abs(currentLongitude-waypoints.at(i)["longitude"].toDouble()) < long_tolerance &&
+            abs(currentAltitude-waypoints.at(i)["altitude"].toDouble()) < alt_tolerance){
+
+            if(waypoints.at(i)["instruction"].toString() == ""){
+                i++;
+                continue;
+            }
+
+            QMqttPublishProperties props;
+            QString responseTopic = "RESPONSE/" + waypoints.at(i)["instruction"].toString() + "/" +  requestVehicle->sn() + "/" + clientId;
+            qDebug() << "responseTopic:" << responseTopic;
+            QString requestTopic = "REQUEST/" + waypoints.at(i)["instruction"].toString() + "/" +  requestVehicle->sn() + "/" + clientId;
+            qDebug() << "requestTopic:" << requestTopic;
+            props.setResponseTopic(responseTopic);
+            props.setCorrelationData(QUuid::createUuid().toString(QUuid::WithoutBraces).toUtf8());// Example: "89f3d8d9-5741-43c0-b353-fd2ee1b887cc"
+
+            QJsonObject jsonPayload;
+            jsonPayload["instruction"] = waypoints.at(i)["instruction"];
+            jsonPayload["clientId"] = clientId;
+            jsonPayload["serialNumber"] = requestVehicle->sn();
+
+            // For commands that have more than 1 value
+            if(waypoints.at(i)["instruction"].toString() == "MOVE_GIMBAL"){
+                jsonPayload["axis"] = waypoints.at(i)["valueStr"];
+                jsonPayload["value"] = waypoints.at(i)["value1"];
+            }else if(waypoints.at(i)["instruction"].toString() == "ZOOM_CAMERA"){
+                jsonPayload["zoomValue"] = waypoints.at(i)["value1"];
+            }else if(waypoints.at(i)["instruction"].toString() == "MAV_CMD_DO_SET_SERVO"){
+                jsonPayload["param1"] = waypoints.at(i)["value1"];
+                jsonPayload["param2"] = waypoints.at(i)["value2"];
+            }else if(waypoints.at(i)["instruction"].toString() == "OPEN_STREAM"){
+                jsonPayload["rtmpChannel"] = waypoints.at(i)["valueStr"];
+            }else if(waypoints.at(i)["instruction"].toString() == "STOP_STREAM"){
+                jsonPayload["rtmpChannel"] = waypoints.at(i)["valueStr"];
+            }
+
+            QByteArray payload = QJsonDocument(jsonPayload).toJson(QJsonDocument::Compact);
+
+            QMetaObject::invokeMethod(m_client_mission, [=]() {
+                int res = m_client_mission->publish(requestTopic, props, payload, 0, false);
+                if (res == -1) {
+                    qWarning() << "Publishing error on topic:" << requestTopic;
+                } else {
+                    qDebug() << "Payload published, ID:" << res;
+                }
+            }, Qt::QueuedConnection);
+            i++;
+        }
+    }
 }
 
