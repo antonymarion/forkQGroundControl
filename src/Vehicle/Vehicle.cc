@@ -879,6 +879,13 @@ void Vehicle::rth(const QMqttMessage& msg, const QJsonObject& message, int& stat
 
 void Vehicle::setNewVehicleData()
 {
+    QString udpAddress;
+    SharedLinkInterfacePtr sharedLink = vehicleLinkManager()->primaryLink().lock();
+    if (sharedLink) {
+        udpAddress = sharedLink->linkConfiguration()->address();
+        qCWarning(VehicleLog) << "Vehicle connected from UDP address:" << udpAddress;
+    }
+    
     QMap<QString, QStringList> uasSnMap = qgcApp()->getAircraftInfo();
     QStringList uasSn;
     if(true){ // change if simulated or not
