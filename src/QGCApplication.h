@@ -324,6 +324,7 @@ private:
     void        pauseAll        ();
     void        sendMission     (QString mission);
     QString     convertWaypointsToPlan(const QJsonArray& waypoints);
+    void        sendMissionInstruction(QString clientId, const QJsonArray& waypoints, Vehicle* requestVehicle);
 
     // Utilities
     bool isFileEmpty(const std::string& filePath);
@@ -339,6 +340,7 @@ private:
     // QString               uavSn               = "1600FTR2STD24289930B";  // Aircraft serial number
     bool                    isStreaming         = false;                   // is currently streaming on rtmp URL
     QMqttClient*            m_client            = nullptr;                 // mqtt client
+    QMqttClient*            m_client_mission    = nullptr;                 // mqtt client for mission
     bool                    clientState         = false;
     bool                    _recording;
     bool                    canControl          = true;                    // false if remote pilote override commands
