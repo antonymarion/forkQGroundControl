@@ -882,7 +882,7 @@ void Vehicle::setNewVehicleData()
     QString udpAddress;
     SharedLinkInterfacePtr sharedLink = vehicleLinkManager()->primaryLink().lock();
     if (sharedLink) {
-        udpAddress = sharedLink->linkConfiguration()->address();
+        udpAddress = ""; //sharedLink->linkConfiguration()->address();
         qCWarning(VehicleLog) << "Vehicle connected from UDP address:" << udpAddress;
     }
     
