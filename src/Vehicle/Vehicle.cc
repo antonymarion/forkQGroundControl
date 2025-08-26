@@ -888,7 +888,7 @@ void Vehicle::setNewVehicleData()
     
     QMap<QString, QStringList> uasSnMap = qgcApp()->getAircraftInfo();
     QStringList uasSn;
-    if(false){ // change if simulated or not
+    if(true){ // change if simulated or not
         qCWarning(VehicleLog) << "======================================";
         qCWarning(VehicleLog) << "This uav id : " << _id;
         qCWarning(VehicleLog) << "======================================";
@@ -995,6 +995,7 @@ void Vehicle::goToWaypointGeneric(double w_speed,
         qWarning() << "*****   ArduPilot firmware detected   *****";
         if(guidedModeSupported()){
             setFlightMode("Guided");
+            w_lat = w_lat - (coordinate().latitude() - altitudeRelative()->rawValue());
             sendSetPositionTargetGlobalInt(w_lat, w_lon, w_alt, w_speed, w_yaw); // no response for this one
         }
         state_value = 0;
