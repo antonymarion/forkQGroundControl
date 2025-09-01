@@ -995,7 +995,7 @@ void Vehicle::goToWaypointGeneric(double w_speed,
         qWarning() << "*****   ArduPilot firmware detected   *****";
         if(guidedModeSupported()){
             setFlightMode("Guided");
-            w_lat = w_lat - (coordinate().altitude() - altitudeRelative()->rawValue().toDouble());
+            w_alt = w_alt - (coordinate().altitude() - altitudeRelative()->rawValue().toDouble());
             sendSetPositionTargetGlobalInt(w_lat, w_lon, w_alt, w_speed, w_yaw); // no response for this one
         }
         state_value = 0;
