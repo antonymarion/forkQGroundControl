@@ -888,7 +888,7 @@ void Vehicle::setNewVehicleData()
     
     QMap<QString, QStringList> uasSnMap = qgcApp()->getAircraftInfo();
     QStringList uasSn;
-    if(false){ // change if simulated or not
+    if(true){ // change if simulated or not
         qCWarning(VehicleLog) << "======================================";
         qCWarning(VehicleLog) << "This uav id : " << _id;
         qCWarning(VehicleLog) << "======================================";
@@ -1019,6 +1019,7 @@ void Vehicle::pauseVehicleDG(const QMqttMessage& msg, const QJsonObject& message
 }
 
 void Vehicle::sendSetPositionTargetGlobalInt(double latitude, double longitude, float altitude, float yaw, float speed) {
+    qCDebug(VehicleLog) << "sending this pos : "<< latitude << longitude << altitude << yaw << speed;
     SharedLinkInterfacePtr sharedLink = vehicleLinkManager()->primaryLink().lock();
     if (!sharedLink) {
         qCDebug(VehicleLog) << "sendSetPositionTargetGlobalInt: primary link gone!";
