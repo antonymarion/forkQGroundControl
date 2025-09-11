@@ -1277,6 +1277,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
                 qWarning() << "*****   No vehicle available   *****";
                 break;
             ;
+            }
             if(verifyManualMode()){
                 break;
             }
