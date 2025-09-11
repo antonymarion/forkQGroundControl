@@ -1369,6 +1369,7 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             w_lat = message["latitude"].toDouble();
             w_lon = message["longitude"].toDouble();
             w_alt = message["altitude"].toDouble();
+            qWarning() << "speed: " << w_speed << " yaw: " << w_yaw << " lat: " << w_lat << " lon: " << w_lon << " alt: " << w_alt;
             requestVehicle->goToWaypointGeneric(w_speed, w_yaw, w_lat, w_lon, w_alt, msg, message, state_value);
             // requestVehicle->sendSetPositionTargetGlobalInt(w_lat, w_lon, w_alt, w_speed, w_yaw); // no response for this one
             // requestVehicle->goToWaypoint(w_speed, w_yaw, w_lat, w_lon, w_alt); // check if do_reposition supports this (see guidedmodereposition)
@@ -1925,6 +1926,8 @@ void QGCApplication::sendAircraftPositionInfo() {
             qWarning() << "*****   Aircraft SN not available   *****";
             continue;
         }
+
+        qWarning() << "current coords : " << vehicle->coordinate().latitude() << "," << vehicle->coordinate().longitude() << "," << vehicle->coordinate().altitude() << " relative alt : " << qobject_cast<Fact*>(vehicle->altitudeRelative())->rawValueString();
 
         QJsonObject newResponse;
         newResponse.insert("registrationNumber",    vehicle->uasString());
