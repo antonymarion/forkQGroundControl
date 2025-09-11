@@ -1143,6 +1143,10 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
         QThread::msleep(1000);
         return requestVehicle->flightMode() == "Offboard";
     };
+
+    auto verifyManualMode = [&]() -> bool {
+        return requestVehicle->flightMode().compare("POSITION", Qt::CaseInsensitive) == 0 || requestVehicle->flightMode().compare("Stabilize", Qt::CaseInsensitive) == 0;
+    };
     
     switch (commandsList.indexOf(message["instruction"].toString())){
         case 0:
@@ -1272,7 +1276,10 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             if(!_vehicle) {
                 qWarning() << "*****   No vehicle available   *****";
                 break;
-            };
+            ;
+            if(verifyManualMode()){
+                break;
+            }
             requestVehicle->setJoysticksValues(
                 message["roll"].toDouble(), 
                 message["pitch"].toDouble(), 
@@ -1286,6 +1293,9 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qWarning() << "recieved TAKE_OFF";
             qWarning() << "=================================================";
             {
+                if(verifyManualMode()){
+                    break;
+                }
                 QObject::connect(requestVehicle, &Vehicle::takeOffResult, this, [this, msg, message, requestVehicle](bool success) {
                     sendResponseMessage(msg, message, success);
                     QObject::disconnect(requestVehicle, &Vehicle::takeOffResult, this, nullptr);
@@ -1299,6 +1309,9 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qWarning() << "=================================================";
             qWarning() << "recieved RETURN_TO_HOME";
             qWarning() << "=================================================";
+            if(verifyManualMode()){
+                break;
+            }
             QObject::connect(requestVehicle, &Vehicle::rthResult, this, [this, msg, message, requestVehicle](bool success) {
                 sendResponseMessage(msg, message, success);
                 QObject::disconnect(requestVehicle, &Vehicle::rthResult, this, nullptr);
@@ -1310,12 +1323,18 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
             qWarning() << "=================================================";
             qWarning() << "recieved VERTICAL_LANDING";
             qWarning() << "=================================================";
+            if(verifyManualMode()){
+                break;
+            }
             requestVehicle->land(msg, message, state_value);
             break; // check if isFlying == false for SMA (land can return true if on ground)
         case 17:
             qWarning() << "=================================================";
             qWarning() << "recieved FLYING_TERMINATION_SYSTEM";
             qWarning() << "=================================================";
+            if(verifyManualMode()){
+                break;
+            }
             QObject::connect(requestVehicle, &Vehicle::ftsResult, this, [this, msg, message, requestVehicle](bool success) {
                 sendResponseMessage(msg, message, success);
                 QObject::disconnect(requestVehicle, &Vehicle::ftsResult, this, nullptr);
@@ -1352,6 +1371,9 @@ void QGCApplication::updateMessage(const QMqttMessage &msg)
                 qWarning() << "*****   No vehicle available   *****";
                 break;
             };
+            if(verifyManualMode()){
+                break;
+            }
             if(!_smaAuthorized && smaClients.contains(clientId)) {
                 qWarning() << "*****   SMA client detected   *****";
                 message.insert("error","SMA client blocked");
