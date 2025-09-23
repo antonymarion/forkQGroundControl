@@ -726,13 +726,13 @@ QJsonArray Vehicle::getCameras()
     if(_dgProductName == "TUNDRA 2"){
         QJsonObject thisCamera;
         thisCamera.insert("index",0);
-        thisCamera.insert("name","Caméra intégrée Tundra II");
+        thisCamera.insert("name","Caméra de pilotage");
         cameraList.append(thisCamera);
     }
     if(_dgProductName == "SL-450-NG"){
         QJsonObject thisCamera;
         thisCamera.insert("index",0);
-        thisCamera.insert("name","Caméra intégrée SL-450-NG");
+        thisCamera.insert("name","Caméra de pilotage");
         cameraList.append(thisCamera);
     }
     if(_dgProductName == "Gazebo"){
@@ -744,7 +744,7 @@ QJsonArray Vehicle::getCameras()
     if(_dgProductName == "S500"){
         QJsonObject thisCamera;
         thisCamera.insert("index",0);
-        thisCamera.insert("name","Caméra intégrée S500");
+        thisCamera.insert("name","Caméra de pilotage");
         cameraList.append(thisCamera);
     }
     return cameraList;
